@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+extends('adminlte::page')
 
 @section('title', $title ?? 'Dashboard')
 
@@ -18,4 +18,4 @@
 
 @section('js')
     @stack('scripts')
-@stop
+@stop@
