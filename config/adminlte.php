@@ -63,12 +63,14 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo' => '<b>Billar</b>Nexus',
+    'logo_img' => 'vendor/adminlte/dist/img/logonexus.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'Billar Nexus',
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +88,7 @@ return [
     'auth_logo' => [
         'enabled' => false,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+            'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Auth Logo',
             'class' => '',
             'width' => 50,
@@ -113,11 +115,11 @@ return [
         'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'vendor/adminlte/dist/img/logonexus.png',
+            'alt' => 'Billar Nexus Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 60,
-            'height' => 60,
+            'width' => 800,
+            'height' => 800,
         ],
     ],
 
@@ -316,82 +318,84 @@ return [
             'text' => 'search',
         ],
         [
+            'text' => 'blog',
+            'url'  => 'admin/blog',
+            'can'  => 'manage-blog',
+        ],
+        [
+            'text' => 'inicio',
+            'url'  => 'admin/home',
+            'icon' => 'fas fa-fw fa-home',
+        ],
+        [
+            'text' => 'Clientes',
+            'url' => 'admin/users',
+            'icon' => 'fas fa-fw fa-users',
+        ],
+        [
             'text' => 'mesas',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
+            'url' => 'admin/pages',
+            'icon' => 'fas fa-chair',
+            'label' => 6,
+            'label_color' => 'success',
         ],
         [
             'text' => 'pagos',
             'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
+            'icon' => 'fas fa-money-bill-wave',
             'label_color' => 'success',
         ],
-        ['header' => 'account_settings'],
         [
-            'text' => 'perfiles',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'productos',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
+            'text' => 'Productos',
+            'url' => 'admin/productos',
+            'icon' => 'fas fa-wine-bottle',
+            'label_color' => 'success',
         ],
         [
             'text' => 'torneos',
-            'icon' => 'fas fa-fw fa-share',
+            'icon' => 'fas fa-trophy',
             'submenu' => [
                 [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
+                    'text' => 'crear torneo',
                     'url' => '#',
                     'submenu' => [
                         [
-                            'text' => 'level_two',
+                            'text' => 'individual',
                             'url' => '#',
+                            'icon' => 'fas fa-user'
                         ],
                         [
-                            'text' => 'level_two',
+                            'text' => 'equipos',
                             'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
+                            'icon' => 'fas fa-users',
+                            
                         ],
                     ],
                 ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
+                
             ],
         ],
-        ['header' => 'labels'],
+        ['header' => 'reportes'],
         [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
+            'text' => 'informes',
             'icon_color' => 'cyan',
             'url' => '#',
+            'icon' => 'fas fa-chart-bar', 
+            'icon_color' => 'cyan',
         ],
+        ['header' => 'ajustes'],
+        [
+            'text' => 'tema ',
+            'url' => 'admin/settings',
+            'icon' => 'fas fa-paint-brush',
+        ],
+        [
+            'text' => 'configuraciones',
+            'url' => 'admin/settings',
+            'icon' => 'fas fa-cogs',
+        ],
+        
+        
     ],
 
     /*
