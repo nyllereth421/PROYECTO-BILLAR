@@ -2,64 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\productos;
+use App\Models\Productos;
 use Illuminate\Http\Request;
 
 class ProductosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Mostrar lista
     public function index()
     {
-        //
+        $productos = Productos::all();
+        return view('productos.index', compact('productos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Mostrar formulario para crear
     public function create()
     {
-        //
+        return view('productos.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Guardar nuevo producto
     public function store(Request $request)
     {
-        //
+        Productos::create($request->all());
+        return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(productos $productos)
+    // Mostrar formulario para editar
+    public function edit($id)
     {
-        //
+        $producto = Productos::findOrFail($id);
+        return view('productos.edit', compact('producto'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(productos $productos)
+    // Actualizar producto
+    public function update(Request $request, $id)
     {
-        //
+        $producto = Productos::findOrFail($id);
+        $producto->update($request->all());
+
+        return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, productos $productos)
+    // Eliminar producto (opcional)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(productos $productos)
-    {
-        //
+        $producto = Productos::findOrFail($id);
+        $producto->delete();
+        return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
 }
