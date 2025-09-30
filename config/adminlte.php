@@ -91,8 +91,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Auth Logo',
             'class' => '',
-            'width' => 50,
-            'height' => 50,
+            'width' => 200,
+            'height' => 200,
         ],
     ],
 
@@ -328,7 +328,7 @@ return [
             'icon' => 'fas fa-fw fa-home',
         ],
         [
-            'text' => 'Clientes',
+            'text' => 'jugadores',
             'url' => 'admin/users',
             'icon' => 'fas fa-fw fa-users',
         ],
