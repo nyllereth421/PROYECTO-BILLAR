@@ -19,12 +19,12 @@
     <div class="container-fluid">
       <div class="row ">
 
-        <!-- Tarjeta: Mesas disponibles -->
+        <!-- Tarjeta: Mesas  -->
         <div class="col-lg-3 col-4">
           <div class="small-box bg-success">
             <div class="inner">
               <h3>12</h3>
-              <p>Mesas </p>
+              <p class="text-center">Mesas </p>
             </div>
             <div class="icon">
               <i class="fas fa-table"></i>
@@ -38,21 +38,21 @@
           <div class="small-box bg-info">
             <div class="inner">
               <h3>35</h3>
-              <p>Productos</p>
+              <p class="text-center">Productos</p>
             </div>
             <div class="icon">
               <i class="fas fa-cocktail"></i>
             </div>
-            <a href="3" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="{{ route('productos.index') }}" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
           </div>
         </div>
 
-        <!-- Tarjeta: Partidas activas -->
+        <!-- Tarjeta:torneos -->
         <div class="col-lg-3 col-4">
           <div class="small-box bg-warning">
             <div class="inner">
               <h3>5</h3>
-              <p>Torneos</p>
+              <p class="text-center">Torneos</p>
             </div>
             <div class="icon">
               <i class="fas fa-play-circle"></i>
@@ -61,12 +61,12 @@
           </div>
         </div>
 
-        <!-- Tarjeta: Ingresos de hoy -->
+        <!-- Tarjeta: Ingresos -->
         <div class="col-lg-3 col-4">
           <div class="small-box bg-danger">
             <div class="inner">
               <h3>$450</h3>
-              <p>Ingresos</p>
+              <p class="text-center">Ingresos</p>
             </div>
             <div class="icon">
               <i class="fas fa-dollar-sign"></i>
@@ -80,7 +80,7 @@
           <div class="small-box bg-primary">
             <div class="inner">
               <h3>18</h3>
-              <p>Pagos</p>
+              <p class="text-center">Pagos</p>
             </div>
             <div class="icon">
               <i class="fas fa-credit-card"></i>
@@ -94,7 +94,7 @@
           <div class="small-box bg-secondary">
             <div class="inner">
               <h3>7</h3>
-              <p>Informes</p>
+              <p class="text-center">Informes</p>
             </div>
             <div class="icon">
               <i class="fas fa-chart-line"></i>
@@ -107,10 +107,9 @@
 
 
 
-      </div>
+     
 
-      <!-- Más contenido si deseas -->
-      <!-- Por ejemplo: últimos movimientos, estadísticas, etc -->
+     
 
     </div>
   </section>
