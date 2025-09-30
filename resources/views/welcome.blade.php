@@ -41,7 +41,7 @@
                             <div class="icon">
                                 <i class="fas fa-cocktail"></i>
                             </div>
-                            <a href="3" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{ route('productos.index') }}" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
 
