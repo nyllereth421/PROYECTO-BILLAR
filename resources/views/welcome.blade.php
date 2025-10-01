@@ -2,7 +2,7 @@
 @section('title', $title ?? '  Pagina principal')
 
 @section('content')
-
+    
     <div class="content-wrapper">
         <!-- Encabezado -->
         <section class="content-header">

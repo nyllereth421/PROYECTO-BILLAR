@@ -49,9 +49,9 @@
             @endforeach
         </tbody>
     </table>
-        <div>
-            <a href="{{ route('dashboard') }}" class="btn btn-primary mb-3">Atras</a>
-        </div>
+    <div>
+        <a href="{{ route('welcome') }}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
 </div>
         
 @stop
