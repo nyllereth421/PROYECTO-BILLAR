@@ -7,8 +7,8 @@
         <!-- Encabezado -->
         <section class="content-header">
             <div class="container-fluid">
-                <h1 class="text-center">Bienvenido a Billar Nexus</h1>
-                <p class="text-center">Panel de gestión del sistema</p>
+                <h1 class="text-center ">Bienvenido a Billar Nexus</h1>
+                <p class="text-center ">Panel de gestión del sistema</p>
             </div>
         </section>
 
@@ -41,7 +41,7 @@
                             <div class="icon">
                                 <i class="fas fa-cocktail"></i>
                             </div>
-                            <a href="3" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{ route('productos.index') }}" class="small-box-footer">Ver productos <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
 
@@ -124,10 +124,14 @@
 @section('css')
     @stack('styles')
     <style>
-        .content-wrapper {
-            background: url("{{ asset('vendor/adminlte/dist/img/fondo.png') }}") no-repeat center center fixed;
-            background-size: cover;
-        }
+        
+          .content-wrapper {
+        background: url("{{ asset('vendor/adminlte/dist/img/fondo_blanco.png') }}") no-repeat center center fixed;
+        background-size: 109%;
+        background-repeat: no-repeat;
+        background-position: center center;
+
+          }
     </style>
 @stop
 
