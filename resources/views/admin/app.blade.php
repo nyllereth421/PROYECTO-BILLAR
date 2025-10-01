@@ -3,7 +3,7 @@ extends('adminlte::page')
 @section('title', $title ?? 'Dashboard')
 
 @section('content_header')
-
+    
 
     <h1>@yield('page-title', 'Admin Panel')</h1>
 @stop
@@ -19,5 +19,6 @@ extends('adminlte::page')
 @stop
 
 @section('js')
+  
     @stack('scripts')
 @stop@

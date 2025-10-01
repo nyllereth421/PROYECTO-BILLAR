@@ -45,5 +45,8 @@
             @endforeach
         </tbody>
     </table>
+    <div>
+        <a href="{{ route('welcome') }}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
 </div>
 @stop
