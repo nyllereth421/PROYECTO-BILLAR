@@ -156,10 +156,9 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
     'layout_fixed_navbar' => null,
     'layout_fixed_footer' => null,
-    'layout_dark_mode' => null,
+    'layout_dark_mode' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -301,6 +300,7 @@ return [
     */
 
     'menu' => [
+        
         // Navbar items:
         [
             'type' => 'navbar-search',
@@ -309,6 +309,10 @@ return [
         ],
         [
             'type' => 'fullscreen-widget',
+            'topnav_right' => true,
+        ],
+        [
+            'type' => 'darkmode-widget', // ✅ Cambio 2: Añadir el interruptor de modo oscuro
             'topnav_right' => true,
         ],
 

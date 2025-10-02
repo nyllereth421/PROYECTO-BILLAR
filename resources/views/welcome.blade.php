@@ -4,7 +4,7 @@
 
 {{-- Usamos content_header para un título más limpio en AdminLTE --}}
 @section('content_header')
-    <div class="container-fluid">
+    <div class="container-fluid text-center">
         <h1 class="text-dark"><i class="fas fa-chart-line mr-2"></i> Panel de Gestión Billar Nexus</h1>
         <p class="text-muted">Vista genral del negocio.</p>
     </div>
@@ -180,18 +180,18 @@
             </div>
         </div>
 
-        {{-- Resumen de Pagos --}}
+        {{-- proveedores --}}
         <div class="col-md-6">
             <div class="small-box bg-secondary">
                 <div class="inner">
-                    <h3>$1,200,000<sup style="font-size: 20px">/Mes</sup></h3>
-                    <p>Meta Mensual de Ingresos</p>
+                    <h3>$20<sup style="font-size: 20px">/proveedores</sup></h3>
+                    <p>activos</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-trophy"></i>
+                    <i class="fas fa-bus"></i>
                 </div>
-                <a href="#" class="small-box-footer">
-                    Ajustar metas <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ route('proveedores.index') }}" class="small-box-footer">
+                    ver proveedores <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
             
