@@ -12,7 +12,8 @@ class EmpleadosController extends Controller
      */
     public function index()
     {
-        //
+        $empleados = empleados::all();
+        return view('empleados.index', compact('empleados'));
     }
 
     /**
@@ -21,6 +22,7 @@ class EmpleadosController extends Controller
     public function create()
     {
         //
+        return view('empleados.create');
     }
 
     /**
@@ -28,7 +30,8 @@ class EmpleadosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        empleados::create($request->all());
+        return redirect()->route('empleados.index')->with('success', 'Empleado creado exitosamente.');
     }
 
     /**
@@ -42,24 +45,29 @@ class EmpleadosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(empleados $empleados)
+    public function edit($numerodocumento)
     {
-        //
+        $empleados = empleados::findOrFail($numerodocumento);
+        return view('empleados.edit', compact('empleados'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, empleados $empleados)
+    public function update(Request $request, $numerodocumento)
     {
-        //
+        $empleados = empleados::findOrFail($numerodocumento);
+        $empleados->update($request->all());
+        return redirect()->route('empleados.index')->with('success', 'Empleado actualizado exitosamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(empleados $empleados)
+    public function destroy($numerodocumento)
     {
-        //
+        $empleados = empleados::findOrFail($numerodocumento);
+        $empleados->delete();
+        return redirect()->route('empleados.index')->with('success', 'Empleado eliminado exitosamente.');
     }
 }

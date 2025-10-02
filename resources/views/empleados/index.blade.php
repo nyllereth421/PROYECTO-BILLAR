@@ -1,42 +1,57 @@
 @extends('adminlte::page')
 
-@section('title', 'Lista de Productos')
+@section('title', 'Empleados')
 
 @section('content')
 <div class="container">
-    <h1>Productos</h1>
+    <h1>Empleados</h1>
 
     @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('productos.create') }}" class="btn btn-primary mb-3">Nuevo Producto</a>
+    <a href="{{ route('empleados.create') }}" class="btn btn-primary mb-3">Nuevo Empleado</a>
      
 
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Numero Documento</th>
                 <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Stock</th>
+                <th>Cargo</th>
+                <th>Salario</th>
+                <th>Estado</th>
+                <th>Tipo Documento</th>
+                <th>Apellidos</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Direccion</th>
+                <th>Fecha Ingreso</th>
+                <th>Fecha Final</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($productos as $producto)
+            @foreach($empleados as $empleado)
             <tr>
-                <td>{{ $producto->idproducto }}</td>
-                <td>{{ $producto->nombre }}</td>
-                <td>{{ $producto->descripcion }}</td>
-                <td>${{ number_format($producto->precio, 2) }}</td>
-                <td>{{ $producto->stock }}</td>
+                <td>{{ $empleado->numerodocumento }}</td>
+                <td>{{ $empleado->nombre }}</td>
+                <td>{{ $empleado->cargo }}</td>
+                <td>{{ $empleado->salario }}</td>
+                <td>{{ $empleado->estado }}</td>
+                <td>{{ $empleado->tipodocumento }}</td>
+                <td>{{ $empleado->apellidos }}</td>
+                <td>{{ $empleado->email }}</td>
+                <td>{{ $empleado->telefono }}</td>
+                <td>{{ $empleado->direccion }}</td>
+                <td>{{ $empleado->fechaingreso }}</td>
+                <td>{{ $empleado->fechafinal }}</td>
+
                 <td>
-                    <a href="{{ route('productos.edit', $producto->idproducto) }}" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="{{ route('empleados.edit', $empleado->numerodocumento) }}" class="btn btn-sm btn-warning">Editar</a>
                     
 
-                    <form action="{{ route('productos.destroy', $producto->idproducto) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar este producto?');">
+                    <form action="{{ route('empleados.destroy', $empleado->numerodocumento) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar este empleado?');">
                         @csrf
                        
                         <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
