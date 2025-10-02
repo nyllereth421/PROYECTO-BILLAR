@@ -324,7 +324,7 @@ return [
         ],
         [
             'text' => 'inicio',
-            'url'  => 'admin/home',
+            'url'  => 'welcome',
             'icon' => 'fas fa-fw fa-home',
         ],
         [
@@ -347,7 +347,7 @@ return [
         ],
         [
             'text' => 'Productos',
-            'url' => 'admin/productos',
+            'url' => '/productos.index',
             'icon' => 'fas fa-wine-bottle',
             'label_color' => 'success',
         ],
@@ -359,6 +359,7 @@ return [
         ],
         [
             'text' => 'torneos',
+            'url' => 'admin/torneos',
             'icon' => 'fas fa-trophy',
             'submenu' => [
                 [
