@@ -12,7 +12,8 @@ class MetodopagosController extends Controller
      */
     public function index()
     {
-        //
+        $metodopagos = metodopagos::all();
+        return view('metodopago.index', compact('metodopagos'));
     }
 
     /**

@@ -12,7 +12,8 @@ class ProveedoresController extends Controller
      */
     public function index()
     {
-        //
+        $proveedores = proveedores::all();
+        return view('proveedores.index', compact('proveedores'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ProveedoresController extends Controller
      */
     public function create()
     {
-        //
+        return view('proveedores.create');
     }
 
     /**
@@ -28,7 +29,8 @@ class ProveedoresController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        proveedores::create($request->all());
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor creado correctamente.');
     }
 
     /**
@@ -42,24 +44,32 @@ class ProveedoresController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(proveedores $proveedores)
+    public function edit($idproveedor)
     {
-        //
+        $proveedor = proveedores::findOrFail($idproveedor);
+        return view('proveedores.edit', compact('proveedor'));
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, proveedores $proveedores)
+    public function update(Request $request, $idproveedor)
     {
-        //
+        $proveedor = proveedores::findOrFail($idproveedor);
+        $proveedor->update($request->all());
+
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(proveedores $proveedores)
+    public function destroy($id)
     {
-        //
+        $proveedor = proveedores::findOrFail($id);
+        $proveedor->delete();
+
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
     }
 }

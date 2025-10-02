@@ -28,25 +28,25 @@ class ProductosController extends Controller
     }
 
     // Mostrar formulario para editar
-    public function edit($id)
+    public function edit($idproducto)
     {
-        $producto = Productos::findOrFail($id);
+        $producto = Productos::findOrFail($idproducto);
         return view('productos.edit', compact('producto'));
     }
 
     // Actualizar producto
-    public function update(Request $request, $id)
+    public function update(Request $request, $idproducto)
     {
-        $producto = Productos::findOrFail($id);
+        $producto = Productos::findOrFail($idproducto);
         $producto->update($request->all());
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
     // Eliminar producto (opcional)
-    public function destroy($id)
+    public function destroy($idproducto)
     {
-        $producto = Productos::findOrFail($id);
+        $producto = Productos::findOrFail($idproducto);
         $producto->delete();
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
