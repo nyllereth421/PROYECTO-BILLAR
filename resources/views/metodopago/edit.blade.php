@@ -18,12 +18,7 @@
 
     <form action="{{ route('productos.update', $producto->idproducto) }}" method="POST">
         @csrf
-
-         
-         <div class="form-group">
-            <label for="idproducto">id Producto</label>
-            <input type="integer" name="idproducto" id="idproducto" class="form-control" value="{{ old('idproducto', $producto->idproducto) }}" required>
-        
+        @method('PUT')
 
         <div class="form-group">
             <label for="nombre">Nombre</label>

@@ -352,6 +352,12 @@ return [
             'label_color' => 'success',
         ],
         [
+            'text' => 'Proveedores',
+            'url' => 'admin/proveedores/index',
+            'icon' => 'fas fa-truck',   
+            'label_color' => 'success',
+        ],
+        [
             'text' => 'torneos',
             'url' => 'admin/torneos',
             'icon' => 'fas fa-trophy',
