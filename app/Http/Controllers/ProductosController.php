@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Proveedores;
 use App\Models\Productos;
 use Illuminate\Http\Request;
 
@@ -11,13 +11,16 @@ class ProductosController extends Controller
     public function index()
     {
         $productos = Productos::all();
-        return view('productos.index', compact('productos'));
+        $proveedores = Proveedores::all();
+
+        return view('productos.index', compact('productos', 'proveedores'));
     }
 
     // Mostrar formulario para crear
     public function create()
     {
-        return view('productos.create');
+        $proveedores = Proveedores::all();
+        return view('productos.create', compact('proveedores'));
     }
 
     // Guardar nuevo producto
@@ -25,13 +28,15 @@ class ProductosController extends Controller
     {
         Productos::create($request->all());
         return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
+
     }
 
     // Mostrar formulario para editar
     public function edit($idproducto)
     {
         $producto = Productos::findOrFail($idproducto);
-        return view('productos.edit', compact('producto'));
+        $proveedores = Proveedores::all();
+        return view('productos.edit', compact('producto', 'proveedores'));
     }
 
     // Actualizar producto

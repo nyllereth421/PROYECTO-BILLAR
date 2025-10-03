@@ -43,6 +43,7 @@
                         <th style="width: 5%">ID</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
+                        <th>Proveedor</th>
                         <th style="width: 10%">Precio</th>
                         <th style="width: 5%">Stock</th>
                         <th style="width: 15%">Acciones</th>
@@ -54,6 +55,7 @@
                         <td>{{ $producto->idproducto }}</td>
                         <td>{{ $producto->nombre }}</td>
                         <td>{{ $producto->descripcion }}</td>
+                        <td>{{ $producto->proveedor->nombre ?? 'Proveedor no encontrado' }}</td>
                         <td><strong>${{ number_format($producto->precio, 2) }}</strong></td>
                         <td><span class="badge @if($producto->stock > 10) bg-success @elseif($producto->stock > 0) bg-warning @else bg-danger @endif">{{ $producto->stock }}</span></td>
                         <td class="text-center">
