@@ -185,11 +185,7 @@
             </ul>
         </div>
 
-        <!-- NUEVA SECCIÓN DE PATROCINADORES -->
-        <div class="card-footer">
-            <h5 class="mb-2"><i class="fas fa-handshake mr-1 text-warning"></i> Patrocinadores</h5>
-            <a href="#">
-        </div>
+        
     </div>
 </div>
 
