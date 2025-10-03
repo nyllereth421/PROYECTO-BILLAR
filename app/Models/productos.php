@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class productos extends Model
 {
-    protected $table = 'productos';   
-    protected $primaryKey = 'idproducto';  //  aquí indicas tu PK real
-    protected $keyType = 'int';    // tipo de dato de tu PK
+    protected $table = 'productos';
+    protected $primaryKey = 'idproducto';
+    public $timestamps = true;
 
     protected $fillable = [
-        'idproducto',
         'nombre',
         'descripcion',
         'precio',
