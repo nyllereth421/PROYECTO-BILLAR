@@ -9,8 +9,6 @@ class Proveedores extends Model
     protected $table = 'proveedores';   // nombre de la tabla
 
     protected $primaryKey = 'idproveedor';  //  aquí indicas tu PK real
-
-    public $incrementing = true;   // si tu PK es autoincremental
     protected $keyType = 'int';    // tipo de dato de tu PK
 
     protected $fillable = [
@@ -19,4 +17,8 @@ class Proveedores extends Model
         'contacto',
         'direccion',
     ];
+     public function productos()
+    {
+        return $this->hasMany(Productos::class, 'idproveedor');
+    }
 }

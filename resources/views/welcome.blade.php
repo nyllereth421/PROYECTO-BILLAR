@@ -74,7 +74,7 @@
                 <div class="icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <a href="#" class="small-box-footer">Ver empleados <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ route('empleados.index') }}" class="small-box-footer">Ver empleados <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>
@@ -144,8 +144,9 @@
     </ul>
 </div>
                 <div class="card-footer text-center">
-                    <a href="javascript:void(0)" class="uppercase">Ver Todos los Productos</a>
+                <a href="{{ route('productos.index') }}" class="uppercase">Ver Todos los Productos</a>
                 </div>
+
             </div>
         </div>
     </div>

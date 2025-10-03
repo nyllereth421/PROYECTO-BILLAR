@@ -45,6 +45,7 @@ class EmpleadosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    
     public function edit($numerodocumento)
     {
         $empleados = empleados::findOrFail($numerodocumento);
