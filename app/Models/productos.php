@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Productos extends Model
+class productos extends Model
 {
-    protected $table = 'productos';             // nombre de la tabla
-    protected $primaryKey = 'idproducto';       // clave primaria
-    public $incrementing = true;                // si tu idproducto es autoincremental
-    protected $keyType = 'int';                 // tipo de la PK
+    protected $table = 'productos';   
+    protected $primaryKey = 'idproducto';  //  aquí indicas tu PK real
+    protected $keyType = 'int';    // tipo de dato de tu PK
 
     protected $fillable = [
         'idproducto',
@@ -17,5 +16,11 @@ class Productos extends Model
         'descripcion',
         'precio',
         'stock',
+        'idproveedor',
     ];
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedores::class, 'idproveedor');
+    }
 }
