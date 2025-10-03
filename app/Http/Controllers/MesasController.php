@@ -46,7 +46,7 @@ class MesasController extends Controller
      */
     public function edit($idmesa)
     {
-        $mesa = mesas::findorFail($idmesa);
+        $mesa = mesas::findOrFail($idmesa);
         return view('mesas.edit', compact('mesa'));
     }
 
@@ -55,7 +55,7 @@ class MesasController extends Controller
      */
     public function update(Request $request, $idmesa)
     {
-        $mesa = mesas::findorFail($idmesa);
+        $mesa = mesas::findOrFail($idmesa);
         $mesa->update($request->all());
         return redirect()->route('mesas.index')->with('success', 'Mesa actualizada correctamente.');
     }
@@ -65,8 +65,23 @@ class MesasController extends Controller
      */
     public function destroy($idmesa)
     {
-        $mesa = mesas::findorFail($idmesa);
+        $mesa = mesas::findOrFail($idmesa);
         $mesa->delete();
         return redirect()->route('mesas.index')->with('success', 'Mesa eliminada correctamente.');
     }
+
+    public function updateEstado(Request $request, $idmesa)
+{
+    $request->validate([
+        'estado' => 'required|in:libre,ocupada,reservada',
+    ]);
+
+    $mesa = mesas::findOrFail($idmesa);
+    $mesa->estado = $request->estado;
+    $mesa->save();
+
+    return redirect()->back()->with('success', 'Estado de la mesa actualizado correctamente.');
 }
+
+}
+

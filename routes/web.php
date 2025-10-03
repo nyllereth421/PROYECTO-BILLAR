@@ -53,3 +53,4 @@ Route::post('/mesas/store', [MesasController::class,   'store'])->name('mesas.st
 Route::get('/mesas/{idmesa}/edit', [MesasController::class, 'edit'])->name('mesas.edit');
 Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name('mesas.update');
 Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
+Route::put('/mesas/{idmesa}/estado', [MesasController::class, 'updateEstado'])->name('mesas.updateEstado');

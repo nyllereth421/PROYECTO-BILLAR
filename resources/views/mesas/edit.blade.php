@@ -10,8 +10,7 @@
 <div class="container">
     <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST">
         @csrf
-        @method('PUT')
-
+    
         <div class="form-group">
             <label for="numeromesa">Número de Mesa</label>
             <input type="text" class="form-control" name="numeromesa" value="{{ $mesa->numeromesa }}" required>
