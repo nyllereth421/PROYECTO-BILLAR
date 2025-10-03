@@ -27,7 +27,6 @@
                 <th>Telefono</th>
                 <th>Direccion</th>
                 <th>Fecha Ingreso</th>
-                <th>Fecha Final</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -45,7 +44,7 @@
                 <td>{{ $empleado->telefono }}</td>
                 <td>{{ $empleado->direccion }}</td>
                 <td>{{ $empleado->fechaingreso }}</td>
-                <td>{{ $empleado->fechafinal }}</td>
+                
 
                 <td>
                     <a href="{{ route('empleados.edit', $empleado->numerodocumento) }}" class="btn btn-sm btn-warning">Editar</a>

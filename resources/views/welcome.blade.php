@@ -66,18 +66,18 @@
 
         {{-- EMPLEADOS --}}
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-primary"> 
-                <div class="inner">
-                    <h3>7</h3>
-                    <p>Personal Activo</p>
+                <div class="small-box bg-primary"> 
+                    <div class="inner">
+                        <h3>7</h3>
+                        <p>Personal Activo</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="{{route ('empleados.index') }}" class="small-box-footer">Ver empleados <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <div class="icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <a href="{{ route('empleados.index') }}" class="small-box-footer">Ver empleados <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
-    </div>
     
     ---
 

@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('telefono');
             $table->string('direccion');
             $table->date('fechaingreso');
-            $table->date('fechafinal');
             $table->timestamps();
         });
     }
