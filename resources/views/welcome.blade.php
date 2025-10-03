@@ -44,7 +44,7 @@
                     {{-- ¡CAMBIO AQUÍ! Usamos 'fa-hockey-puck' (que se parece a una bola de billar) o 'fa-circle' --}}
                     <i class="fas fa-hockey-puck billar-icon"></i> 
                 </div>
-                <a href="#" class="small-box-footer">Ver estado de mesas <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ route('mesas.index') }}" class="small-box-footer">Ver estado de mesas <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 

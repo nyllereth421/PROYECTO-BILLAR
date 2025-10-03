@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetodopagosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\EmpleadosController;
+use App\Http\Controllers\MesasController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -43,3 +44,12 @@ Route::post('/empleados/store',[EmpleadosController::class,'store'])->name('empl
 Route::get('/empleados/{numerodocumento}/edit',[EmpleadosController::class,'edit'])->name('empleados.edit');
 Route::post('/empleados/{numerodocumento}/update',[EmpleadosController::class,'update'])->name('empleados.update');
 Route::post('/empleados/{numerodocumento}/destroy',[EmpleadosController::class,'destroy'])->name('empleados.destroy');
+
+//mesas
+
+Route::get('/mesas/index', [MesasController::class, 'index'])->name('mesas.index');
+Route::get('/mesas/create', [MesasController::class,   'create'])->name('mesas.create');
+Route::post('/mesas/store', [MesasController::class,   'store'])->name('mesas.store');
+Route::get('/mesas/{idmesa}/edit', [MesasController::class, 'edit'])->name('mesas.edit');
+Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name('mesas.update');
+Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
