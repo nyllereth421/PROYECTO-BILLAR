@@ -158,28 +158,40 @@
         
         {{-- Tareas Pendientes o Eventos --}}
         <div class="col-md-6">
-            <div class="card card-outline card-warning">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-calendar-alt mr-1"></i> Próximos Eventos/Torneos</h3>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="nav nav-pills flex-column">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Torneo Semanal de Bola 8
-                                <span class="float-right text-warning"><i class="far fa-calendar-alt"></i> 15/Oct/2025</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                Reunión de Inventario con Provedores
-                                <span class="float-right text-muted"><i class="far fa-calendar-alt"></i> 20/Oct/2025</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <div class="card card-outline card-warning">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-calendar-alt mr-1"></i> Próximos Eventos/Torneos
+            </h3>
         </div>
+        <div class="card-body p-0">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        Torneo Semanal de Bola 8
+                        <span class="float-right text-warning"><i class="far fa-calendar-alt"></i> 15/Oct/2025</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        Reunión de Inventario con Proveedores
+                        <span class="float-right text-muted"><i class="far fa-calendar-alt"></i> 20/Oct/2025</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- NUEVA SECCIÓN DE PATROCINADORES -->
+        <div class="card-footer">
+            <h5 class="mb-2"><i class="fas fa-handshake mr-1 text-warning"></i> Patrocinadores</h5>
+            <ul class="list-unstyled mb-0">
+                <li><i class="fas fa-star text-warning mr-1"></i> Billares El Diamante</li>
+                <li><i class="fas fa-star text-warning mr-1"></i> Bebidas MaxPower</li>
+                <li><i class="fas fa-star text-warning mr-1"></i> Deportes La Esquina</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
         {{-- proveedores --}}
         <div class="col-md-6">
