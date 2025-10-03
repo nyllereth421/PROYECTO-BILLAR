@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'Crear Producto')
+@section('title', 'Crear nuevo empleado')
 
 @section('content')
 <div class="container">
-    <h1>Crear Producto</h1>
+    <h1>Crear nuevo empleado</h1>
 
     @if ($errors->any())
       <div class="alert alert-danger">
@@ -16,7 +16,7 @@
       </div>
     @endif
 
-    <form action="{{ route('productos.store') }}" method="POST">
+    <form action="{{ route('empleados.store') }}" method="POST">
         @csrf
 
          
@@ -40,7 +40,7 @@
                 <option value="ce">Cédula de Extranjería (CE)</option>
             </select>
         </div>
-        
+
         <div class="form-group">
             <label for="numerodocumento">Número de Documento</label>
             <input type="integer" name="numerodocumento" id="numerodocumento" class="form-control" placeholder="Ingrese el número de documento del empleado" >
@@ -62,7 +62,7 @@
 
         <div class="form-group">
             <label for="salario">salario</label>
-            <input type="number" step="0.01" name="salario" id="salario" class="form-control" placeholder="Ingrese el salario del empleado" >
+            <input type="decimal" step="0.01" name="salario" id="salario" class="form-control" placeholder="Ingrese el salario del empleado" >
         </div>
 
         <div class="form-group">
@@ -95,10 +95,6 @@
             <input type="date" name="fechaingreso" id="fechaingreso" class="form-control" placeholder="Ingrese la fecha de ingreso del empleado" >
         </div>
 
-         <div class="form-group">
-            <label for="fechafinal">Fecha de Finalización</label>
-            <input type="date" name="fechafinal" id="fechafinal" class="form-control" placeholder="Ingrese la fecha de finalización del empleado">
-        </div>
 
         <button type="submit" class="btn btn-success mt-3">Guardar</button>
         <a href="{{ route('empleados.index') }}" class="btn btn-secondary mt-3">Cancelar</a>

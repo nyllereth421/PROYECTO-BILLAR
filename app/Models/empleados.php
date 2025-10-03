@@ -23,6 +23,6 @@ class empleados extends Model
         'telefono',
         'direccion',
         'fechaingreso',
-        'fechafinal'
+        
     ];
 }

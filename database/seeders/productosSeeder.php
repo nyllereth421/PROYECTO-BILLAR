@@ -94,15 +94,7 @@ class ProductosSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            [
-                'nombre' => 'Caja de chocolates surtidos',
-                'descripcion' => 'Caja con chocolates surtidos para regalo o consumo personal.',
-                'precio' => 35.00,
-                'stock' => 40,
-                'idproveedor' => 11, // Súper Proveedores
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            
         ]);
     }
 }
