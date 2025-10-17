@@ -73,7 +73,7 @@ class MesasController extends Controller
     public function updateEstado(Request $request, $idmesa)
 {
     $request->validate([
-        'estado' => 'required|in:libre,ocupada,reservada',
+        'estado' => 'required|in:disponible,ocupada,reservada',
     ]);
 
     $mesa = mesas::findOrFail($idmesa);

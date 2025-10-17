@@ -35,7 +35,7 @@
                                 @csrf
                                 @method('PUT')
                                 <select name="estado" class="form-select form-select-sm w-auto">
-                                    <option value="libre" {{ $mesa->estado == 'libre' ? 'selected' : '' }}>Libre</option>
+                                    <option value="disponible" {{ $mesa->estado == 'disponible' ? 'selected' : '' }}>disponible</option>
                                     <option value="ocupada" {{ $mesa->estado == 'ocupada' ? 'selected' : '' }}>Ocupada</option>
                                     <option value="reservada" {{ $mesa->estado == 'reservada' ? 'selected' : '' }}>Reservada</option>
                                 </select>

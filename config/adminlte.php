@@ -91,8 +91,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Auth Logo',
             'class' => '',
-            'width' => 200,
-            'height' => 200,
+            'width' => 100,
+            'height' => 100,
         ],
     ],
 
@@ -118,8 +118,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Billar Nexus Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 800,
-            'height' => 800,
+            'width' => 180,
+            'height' => 180,
         ],
     ],
 
