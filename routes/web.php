@@ -6,7 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetodopagosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\EmpleadosController;
+use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\MesasController;
+use App\Http\Controllers\MesasConsumosController;
+use App\Http\Controllers\MesasventasController;
+use App\Models\mesasConsumos;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,4 +57,61 @@ Route::post('/mesas/store', [MesasController::class,   'store'])->name('mesas.st
 Route::get('/mesas/{idmesa}/edit', [MesasController::class, 'edit'])->name('mesas.edit');
 Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name('mesas.update');
 Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
-Route::put('/mesas/{idmesa}/estado', [MesasController::class, 'updateEstado'])->name('mesas.updateEstado');
+// rutas finciones mesas
+//  Iniciar tiempo en una mesa
+Route::post('/mesas/{idmesa}/iniciar', [MesasController::class, 'iniciarTiempo'])->name('mesas.iniciar');
+
+//  Finalizar tiempo en una mesa
+Route::post('/mesas/{idmesa}/finalizar', [MesasController::class, 'finalizarTiempo'])->name('mesas.finalizar');
+
+//  Cambiar estado de la mesa (Libre, Ocupada, Reservada)
+Route::post('/mesas/{idmesa}/estado', [MesasController::class, 'updateEstado'])->name('mesas.estado');
+
+//  Agregar productos al consumo de la mesa
+Route::get('/mesas/{idmesa}/agregar-consumo', [mesasConsumosController::class, 'agregar'])->name('consumo.agregar');
+
+//inventario
+Route::get('/inventario/index',[InventarioController::class,'index'])->name('inventario.index');
+
+
+
+// mesasconsumo
+//  Mostrar todas las mesas de consumo
+Route::get('/mesasconsumo', [MesasConsumosController::class, 'index'])->name('mesasconsumo.index');
+
+// Crear nueva mesa de consumo
+Route::get('/mesasconsumo/create', [MesasConsumosController::class, 'create'])->name('mesasconsumo.create');
+Route::post('/mesasconsumo/store', [MesasConsumosController::class, 'store'])->name('mesasconsumo.store');
+
+// Editar mesa de consumo
+Route::get('/mesasconsumo/{idmesaconsumo}/edit', [MesasConsumosController::class, 'edit'])->name('mesasconsumo.edit');
+Route::post('/mesasconsumo/{idmesaconsumo}/update', [MesasConsumosController::class, 'update'])->name('mesasconsumo.update');
+
+// Eliminar mesa de consumo
+Route::post('/mesasconsumo/{idmesaconsumo}/destroy', [MesasConsumosController::class, 'destroy'])->name('mesasconsumo.destroy');
+
+//  Cambiar estado (Libre, Ocupada, Reservada)
+Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
+
+//  Agregar productos a la mesa de consumo
+Route::get('/mesasconsumo/{idmesaconsumo}/agregar-producto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
+
+//  Guardar productos agregados
+Route::post('/mesasconsumo/{idmesaconsumo}/guardar-producto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
+
+
+
+
+// mesasventas
+Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
+Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
+Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name('mesasventas.store');
+Route::get('/mesasventas/{id}/edit', [MesasventasController::class, 'edit'])->name('mesasventas.edit');
+Route::post('/mesasventas/{id}/update', [MesasventasController::class, 'update'])->name('mesasventas.update');
+Route::post('/mesasventas/{id}/destroy', [MesasventasController::class, 'destroy'])->name('mesasventas.destroy');
+
+Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
+Route::get('/mesasconsumo/{idmesaconsumo}/agregar-producto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
+Route::post('/mesasconsumo/{idmesaconsumo}/guardar-producto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
+
+

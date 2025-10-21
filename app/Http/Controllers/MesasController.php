@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\mesas;
+use App\Models\mesasConsumos;
 use Illuminate\Http\Request;
 
 class MesasController extends Controller
@@ -10,11 +11,15 @@ class MesasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $mesas = mesas::all();
-        return view('mesas.index', compact('mesas'));
-    }
+public function index()
+{
+    $mesas = mesas::all();
+    $mesas_consumos = mesasConsumos::all();
+
+    return view('mesas.index', compact('mesas', 'mesas_consumos'));
+}
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -81,6 +86,25 @@ class MesasController extends Controller
     $mesa->save();
 
     return redirect()->back()->with('success', 'Estado de la mesa actualizado correctamente.');
+}
+public function startTimer($idmesa)
+{
+    $mesa = mesas::findOrFail($idmesa);
+    $mesa->inicio_tiempo = now();
+    $mesa->estado = 'ocupada';
+    $mesa->save();
+
+    return back()->with('success', 'Tiempo iniciado correctamente.');
+}
+
+public function stopTimer($idmesa)
+{
+    $mesa = mesas::findOrFail($idmesa);
+    $mesa->fin_tiempo = now();
+    $mesa->estado = 'libre';
+    $mesa->save();
+
+    return back()->with('success', 'Tiempo finalizado correctamente.');
 }
 
 }

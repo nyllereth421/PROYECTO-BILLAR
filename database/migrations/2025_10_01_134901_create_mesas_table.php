@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mesas', function (Blueprint $table) {
-            $table->id('idmesa')->primary();
+            $table->id('idmesa');
             $table->enum('estado', ['disponible', 'ocupada', 'reservada'])->default('disponible');
             $table->enum('tipo', ['pool', 'tresbandas', 'libre']);
             $table->string('numeromesa'); // Número o identificador de la mesa
