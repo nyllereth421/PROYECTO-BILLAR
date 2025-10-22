@@ -9,9 +9,22 @@
 @section('content')
 <div class="container-fluid">
 
-    {{-- Botón volver --}}
-    <div class="mb-3">
-        <a href="{{ route('welcome') }}" class="btn btn-secondary">Volver al Inicio</a>
+    {{-- 🔙 Botón volver al Inicio --}}
+    <div class="mb-3 d-flex justify-content-between">
+        <a href="{{ route('welcome') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Inicio
+        </a>
+
+        {{-- ✅ Botones para crear nuevas mesas --}}
+        <div>
+            <a href="{{ route('mesas.create') }}" class="btn btn-success mx-1">
+                <i class="fas fa-plus"></i> Nueva Mesa de Juego
+            </a>
+
+            <a href="{{ route('mesasconsumo.create') }}" class="btn btn-primary mx-1">
+                <i class="fas fa-plus-circle"></i> Nueva Mesa de Consumo
+            </a>
+        </div>
     </div>
 
     <div class="row">
@@ -40,7 +53,7 @@
                             <form action="{{ route('mesas.destroy', $mesa->idmesa) }}" method="POST" 
                                   onsubmit="return confirm('¿Estás seguro de eliminar esta mesa?');" class="mx-1">
                                 @csrf
-                              
+                                @method('DELETE')
                                 <button class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </button>
@@ -76,7 +89,7 @@
                             <form action="{{ route('mesasconsumo.destroy', $mesa->idmesaconsumo) }}" method="POST" 
                                   onsubmit="return confirm('¿Seguro deseas eliminar esta mesa de consumo?');" class="mx-1">
                                 @csrf
-                                @method('DELETE')
+                                
                                 <button class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </button>
