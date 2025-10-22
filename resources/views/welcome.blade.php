@@ -44,7 +44,7 @@
                     {{-- ¡CAMBIO AQUÍ! Usamos 'fa-hockey-puck' (que se parece a una bola de billar) o 'fa-circle' --}}
                     <i class="fas fa-hockey-puck billar-icon"></i> 
                 </div>
-                <a href="{{ route('mesas.index') }}" class="small-box-footer">Ver estado de mesas <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ route('mesasventas.index')}}" class="small-box-footer">gestion de mesas <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -53,12 +53,12 @@
             <div class="small-box bg-warning"> {{-- Usamos 'warning' para alerta de stock --}}
                 <div class="inner">
                     <h3>35</h3>
-                    <p>Productos en Almacén</p>
+                    <p>Inventario</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-boxes"></i> 
                 </div>
-                <a href="{{ route('productos.index') }}" class="small-box-footer">
+                <a href="{{ route('inventario.index')}}" class="small-box-footer">
                     Gestión de Inventario <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
@@ -187,22 +187,7 @@
 
         
     </div>
-</div>
 
-        {{-- proveedores --}}
-        <div class="col-md-6">
-            <div class="small-box bg-secondary">
-                <div class="inner">
-                    <h3>$20<sup style="font-size: 20px">/proveedores</sup></h3>
-                    <p>activos</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-bus"></i>
-                </div>
-                <a href="{{ route('proveedores.index') }}" class="small-box-footer">
-                    ver proveedores <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
             
             <div class="small-box bg-danger">
                 <div class="inner">

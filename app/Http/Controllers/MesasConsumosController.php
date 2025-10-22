@@ -2,64 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\mesasConsumos;
+use App\Models\MesasConsumos;
+use App\Models\productos;
 use Illuminate\Http\Request;
 
 class MesasConsumosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // 📌 Mostrar todas las mesas de consumo
     public function index()
     {
-        //
+        $mesas_consumos = MesasConsumos::all();
+        return view('mesasconsumo.index', compact('mesas_consumos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // 📌 Cambiar estado de la mesa (Libre, Ocupada, Reservada)
+    public function cambiarEstado(Request $request, $id)
     {
-        //
+        $mesa = MesasConsumos::findOrFail($id);
+        $mesa->estado = $request->estado;
+        $mesa->save();
+
+        return back()->with('success', '✅ Estado actualizado correctamente.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // 📌 Mostrar productos para agregar al consumo de esta mesa
+    public function agregarProducto($id)
     {
-        //
+        $mesa = MesasConsumos::findOrFail($id);
+        $productos = productos::all();
+
+        return view('mesasconsumo.agregar', compact('mesa', 'productos'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(mesasConsumos $mesasConsumos)
+    // 📌 Guardar producto agregado al consumo de la mesa
+    public function guardarProducto(Request $request, $id)
     {
-        //
-    }
+        $request->validate([
+            'idproducto' => 'required|exists:productos,idproducto',
+            'cantidad' => 'required|integer|min:1'
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(mesasConsumos $mesasConsumos)
-    {
-        //
-    }
+        // Evita crear otra mesa; actualiza consumos en la misma
+        $mesa = MesasConsumos::findOrFail($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, mesasConsumos $mesasConsumos)
-    {
-        //
-    }
+        // Guarda el consumo como texto o puedes usar una tabla pivote si la tienes
+        $nuevoConsumo = $mesa->consumos . "\nProducto: " . $request->idproducto . " - Cantidad: " . $request->cantidad;
+        $mesa->consumos = trim($nuevoConsumo);
+        $mesa->save();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(mesasConsumos $mesasConsumos)
-    {
-        //
+        return back()->with('success', '✅ Producto agregado correctamente.');
     }
 }
