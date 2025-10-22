@@ -58,25 +58,10 @@ Route::get('/mesas/{idmesa}/edit', [MesasController::class, 'edit'])->name('mesa
 Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name('mesas.update');
 Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
 // rutas finciones mesas
-//  Iniciar tiempo en una mesa
-Route::post('/mesas/{idmesa}/iniciar', [MesasController::class, 'iniciarTiempo'])->name('mesas.iniciar');
-
-//  Finalizar tiempo en una mesa
-Route::post('/mesas/{idmesa}/finalizar', [MesasController::class, 'finalizarTiempo'])->name('mesas.finalizar');
-
-//  Cambiar estado de la mesa (Libre, Ocupada, Reservada)
-Route::post('/mesas/{idmesa}/estado', [MesasController::class, 'updateEstado'])->name('mesas.estado');
-
-//  Agregar productos al consumo de la mesa
-Route::get('/mesas/{idmesa}/agregar-consumo', [mesasConsumosController::class, 'agregar'])->name('consumo.agregar');
 
 //inventario
 Route::get('/inventario/index',[InventarioController::class,'index'])->name('inventario.index');
 
-
-
-// mesasconsumo
-//  Mostrar todas las mesas de consumo
 Route::get('/mesasconsumo', [MesasConsumosController::class, 'index'])->name('mesasconsumo.index');
 
 // Crear nueva mesa de consumo
@@ -113,5 +98,15 @@ Route::post('/mesasventas/{id}/destroy', [MesasventasController::class, 'destroy
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
 Route::get('/mesasconsumo/{idmesaconsumo}/agregar-producto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
 Route::post('/mesasconsumo/{idmesaconsumo}/guardar-producto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
+
+
+Route::get('/mesasventas', [MesasVentasController::class, 'index'])->name('mesasventas.index');
+
+Route::get('/mesasventas/iniciar/{idmesa}', [MesasVentasController::class, 'iniciarTiempo'])->name('mesasventas.iniciar');
+
+Route::get('/mesasventas/finalizar/{idmesa}', [MesasVentasController::class, 'finalizarTiempo'])->name('mesasventas.finalizar');
+
+Route::post('/mesasventas/estado/{idmesa}', [MesasVentasController::class, 'actualizarEstado'])->name('mesasventas.estado');
+Route::get('/mesasventas/{idmesa}', [MesasVentasController::class, 'show'])->name('mesasventas.show');
 
 
