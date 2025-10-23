@@ -24,6 +24,7 @@ Route::post('/productos/store', [ProductosController::class, 'store'])->name('pr
 Route::get('/productos/{idproducto}/edit', [ProductosController::class, 'edit'])->name('productos.edit');
 Route::post('/productos/{idproducto}/update', [ProductosController::class, 'update'])->name('productos.update');
 Route::post('/productos/{idproducto}/destroy', [ProductosController::class, 'destroy'])->name('productos.destroy');
+Route::get('/', [ProductosController::class, 'mostrarEnInicio'])->name('welcome');
 
 
 // ---------------------- MÉTODOS DE PAGO ----------------------

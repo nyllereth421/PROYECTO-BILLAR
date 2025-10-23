@@ -105,59 +105,73 @@
             </div>
         </div>
 
-        {{-- CARD para Productos Más Vendidos --}}
-        <div class="col-md-5">
-            <div class="card card-outline card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-fire mr-1"></i>
-                        Top 5 Productos Vendidos (Hoy)
-                    </h3>
-                </div>
-                <div class="card-body p-0">
-    <ul class="products-list product-list-in-card pl-2 pr-2">
-        
-        <li class="item">
-            {{-- CERVEZA: Usamos el ícono de cerveza --}}
-            <div class="product-img"><i class="fas fa-beer text-warning"></i></div>
-            <div class="product-info">Cerveza <span class="badge bg-primary float-right">25 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- EMPANADAS: Usamos el ícono de taco/comida (o drumstick) --}}
-            <div class="product-img"><i class="fas fa-cookie-bite text-warning"></i></div>
-            <div class="product-info">Empanadas <span class="badge bg-primary float-right">18 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- GASEOSA COLA-COLA: Usamos el ícono de taza de café para representar una bebida simple o un vaso --}}
-            <div class="product-img"><i class="fas fa-cocktail text-info"></i></div>
-            <div class="product-info">Gaseosa Cola-cola <span class="badge bg-primary float-right">15 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- TINTO (VINO O CAFÉ): Usamos el ícono de copa de vino, que es más representativo de un bar/lounge --}}
-            <div class="product-img"><i class="fas fa-mug-hot text-info"></i></div>
-            <div class="product-info">Tinto <span class="badge bg-primary float-right">10 Unidades</span></div>
-        </li>
-        
-    </ul>
-</div>
-                <div class="card-footer text-center">
-                <a href="{{ route('productos.index') }}" class="uppercase">Ver Todos los Productos</a>
-                </div>
+   {{-- CARD para Productos Más Vendidos --}}
+<div class="col-md-5">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-fire mr-1"></i>
+                Top 5 Productos Vendidos (Hoy)
+            </h3>
+        </div>
 
-            </div>
+        @php
+            // Función para asignar iconos según el nombre del producto
+            function iconoProductoDashboard($nombre) {
+                $nombre = strtolower($nombre);
+
+                if (str_contains($nombre, 'cerveza')) return 'fa-beer text-warning';
+                if (str_contains($nombre, 'gaseosa') || str_contains($nombre, 'cola')) return 'fa-cocktail text-info';
+                if (str_contains($nombre, 'empanada')) return 'fa-cookie-bite text-warning';
+                if (str_contains($nombre, 'tinto') || str_contains($nombre, 'café') || str_contains($nombre, 'cafe')) return 'fa-mug-hot text-danger';
+                if (str_contains($nombre, 'agua')) return 'fa-tint text-primary';
+                if (str_contains($nombre, 'papas') || str_contains($nombre, 'snack')) return 'fa-drumstick-bite text-success';
+
+                return 'fa-box-open text-secondary'; // genérico
+            }
+        @endphp
+
+        <div class="card-body p-0">
+            <ul class="products-list product-list-in-card pl-2 pr-2">
+
+                @forelse ($productos as $producto)
+                    <li class="item">
+                        <div class="product-img">
+                            <i class="fas {{ iconoProductoDashboard($producto->nombre) }}"></i>
+                        </div>
+                        <div class="product-info">
+                            {{ $producto->nombre }}
+                            <span class="badge bg-primary float-right">
+                                {{ $producto->cantidad_vendida ?? 0 }} Unidades
+                            </span>
+                        </div>
+                    </li>
+                @empty
+                    <li class="item text-center p-3">
+                        <span class="text-muted">No hay productos registrados aún.</span>
+                    </li>
+                @endforelse
+
+            </ul>
+        </div>
+
+        <div class="card-footer text-center">
+            <a href="{{ route('productos.index') }}" class="uppercase">Ver Todos los Productos</a>
         </div>
     </div>
+</div>
 
-    ---
+
+    
+
+
+
 
     {{-- 3. Fila de Listas y Métricas Adicionales --}}
     <div class="row">
         
         {{-- Tareas Pendientes o Eventos --}}
-        <div class="col-md-6">
+        <div class="col-md-13">
     <div class="card card-outline card-warning">
         <div class="card-header">
             <h3 class="card-title">

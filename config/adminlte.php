@@ -357,34 +357,12 @@ return [
                 [
                     'text' => 'Inventario Mesas',
                     'route' => 'mesas.index',
-                    'submenu' => [
-                        [
-                            'text' => 'Listar',
-                            'route' => 'mesas.index',
-                            'icon'  => 'fas fa-list',
-                        ],
-                        [
-                            'text' => 'Crear',
-                            'route' => 'mesas.create',
-                            'icon'  => 'fas fa-plus',
-                        ],
-                    ],
+                    
                 ],
                 [
                     'text' => 'Inventario Productos',
                     'route' => 'productos.index',
-                    'submenu' => [
-                        [
-                    'text' => 'Listar',
-                    'route' => 'productos.index',
-                    'icon'  => 'fas fa-list',
-                ],
-                [
-                    'text' => 'Crear',
-                    'route' => 'productos.create',
-                    'icon'  => 'fas fa-plus',
-                ]
-                    ],
+                    
                 ],
                 [
                     'text' => 'Inventario proveedores',
