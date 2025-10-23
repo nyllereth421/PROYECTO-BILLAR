@@ -108,5 +108,5 @@ Route::get('/mesasventas/finalizar/{idmesa}', [MesasVentasController::class, 'fi
 
 Route::post('/mesasventas/estado/{idmesa}', [MesasVentasController::class, 'actualizarEstado'])->name('mesasventas.estado');
 Route::get('/mesasventas/{idmesa}', [MesasVentasController::class, 'show'])->name('mesasventas.show');
-
+Route::post('/mesasventas/agregar-productos', [MesasVentasController::class, 'agregarProductos'])->name('mesasventas.agregarProductos');
 
