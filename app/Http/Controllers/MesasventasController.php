@@ -7,6 +7,9 @@ use App\Models\MesasConsumos;
 use App\Models\Productos;
 use App\Models\ventas;
 use Illuminate\Http\Request;
+use App\Models\mesas;
+use App\Models\Productos;
+use App\Models\MesasConsumos;
 use Carbon\Carbon;
 use App\Models\MesaProducto;
 use App\Models\mesaproductos;
@@ -15,6 +18,7 @@ use App\Models\Mesaventas;
 
 class MesasVentasController extends Controller
 {
+    // ✅ Muestra todas las mesas
     public function index()
     {
         $mesas = Mesas::all();
@@ -24,33 +28,37 @@ class MesasVentasController extends Controller
         return view('mesasventas.index', compact('mesas', 'productos', 'mesas_consumos'));
     }
 
+    // ✅ Inicia el tiempo de una mesa
     public function iniciarTiempo($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
-        $mesa->hora_inicio = Carbon::now();
-        $mesa->estado = 'ocupada';
-        $mesa->save();
 
-        return redirect()->route('mesasventas.index')->with('success', 'Tiempo iniciado correctamente');
+        if ($mesa->horainicio) {
+            $mesa->fechainicio = Carbon::now();
+            $mesa->save();
+        }
+
+        return redirect()->back()->with('success', 'Tiempo iniciado correctamente.');
     }
 
+
+    // ✅ Finaliza el tiempo de una mesa
     public function finalizarTiempo($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
 
-        if ($mesa->hora_inicio) {
-            $horaInicio = Carbon::parse($mesa->hora_inicio);
-            $difMinutos = $horaInicio->diffInMinutes(Carbon::now());
-            $mesa->tiempo_total = $difMinutos . ' minutos';
+        if ($mesa->horainicio && !$mesa->horafin) {
+            $mesa->fechafin = Carbon::now();
+            $mesa->total = Carbon::parse($mesa->horainicio)->diffInMinutes(Carbon::now());
+            $mesa->save();
         }
 
-        $mesa->estado = 'disponible';
-        $mesa->hora_inicio = null;
-        $mesa->save();
-
-        return redirect()->route('mesasventas.index')->with('success', 'Tiempo finalizado');
+        return redirect()->back()->with('success', 'Tiempo finalizado correctamente.');
+      
     }
-
+  
+  
+  
     public function actualizarEstado(Request $request, $idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
@@ -95,11 +103,14 @@ class MesasVentasController extends Controller
 
     return redirect()->back()->with('success', 'Producto agregado a la mesa correctamente.');
     }
+  
+  
     public function finalizarMesa($idmesa)
 {
     $productos = mesaproductos::where('idmesa', $idmesa)->get();
     if($productos->isEmpty()){
         return back()->with('error', 'No hay productos agregados a esta mesa.');
+
     }
 
     $total = $productos->sum(function($p){ 
