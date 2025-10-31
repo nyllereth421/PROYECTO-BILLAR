@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\productos;
+use App\Models\producto;
 use App\Models\mesas;
+use App\Models\productos;
 
 class InventarioController extends Controller
 {

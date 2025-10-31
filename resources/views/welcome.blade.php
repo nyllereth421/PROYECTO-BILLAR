@@ -6,7 +6,7 @@
 @section('content_header')
     <div class="container-fluid text-center">
         <h1 class="text-dark"><i class="fas fa-chart-line mr-2"></i> Panel de Gestión Billar Nexus</h1>
-        <p class="text-muted">Vista genral del negocio.</p>
+        <p class="text-muted">Vista general del negocio.</p>
     </div>
 @stop
 
@@ -17,13 +17,12 @@
 
         {{-- INGRESO DIARIO/ACTUAL --}}
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-info"> {{-- Cambiamos a 'info' para un azul profesional --}}
+            <div class="small-box bg-info">
                 <div class="inner">
                     <h3>$450<sup style="font-size: 20px">/Hoy</sup></h3>
                     <p>Ingresos del Día</p>
                 </div>
                 <div class="icon">
-                    {{-- Icono nativo de Font Awesome para dinero --}}
                     <i class="fas fa-dollar-sign"></i> 
                 </div>
                 <a href="#" class="small-box-footer">
@@ -36,21 +35,21 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    {{-- Suponemos 4 activas de 12 total --}}
                     <h3>4<sup style="font-size: 20px">/12</sup></h3> 
                     <p>Mesas Ocupadas</p>
                 </div>
                 <div class="icon">
-                    {{-- ¡CAMBIO AQUÍ! Usamos 'fa-hockey-puck' (que se parece a una bola de billar) o 'fa-circle' --}}
                     <i class="fas fa-hockey-puck billar-icon"></i> 
                 </div>
-                <a href="{{ route('mesasventas.index')}}" class="small-box-footer">gestion de mesas <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="{{ route('mesasventas.index')}}" class="small-box-footer">
+                    Gestión de mesas <i class="fas fa-arrow-circle-right"></i>
+                </a>
             </div>
         </div>
 
         {{-- PRODUCTOS BAJO STOCK --}}
         <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning"> {{-- Usamos 'warning' para alerta de stock --}}
+            <div class="small-box bg-warning">
                 <div class="inner">
                     <h3>35</h3>
                     <p>Inventario</p>
@@ -66,20 +65,20 @@
 
         {{-- EMPLEADOS --}}
         <div class="col-lg-3 col-6">
-                <div class="small-box bg-primary"> 
-                    <div class="inner">
-                        <h3>7</h3>
-                        <p>Personal Activo</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <a href="{{route ('empleados.index') }}" class="small-box-footer">Ver empleados <i class="fas fa-arrow-circle-right"></i></a>
+            <div class="small-box bg-primary"> 
+                <div class="inner">
+                    <h3>7</h3>
+                    <p>Personal Activo</p>
                 </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <a href="{{route ('empleados.index') }}" class="small-box-footer">
+                    Ver empleados <i class="fas fa-arrow-circle-right"></i>
+                </a>
             </div>
         </div>
-    
-    ---
+    </div>
 
     {{-- 2. Fila de Gráficos y Tendencias --}}
     <div class="row">
@@ -98,8 +97,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {{-- Aquí iría un canvas para un gráfico (Chart.js recomendado) --}}
-                    <p class="text-center text-muted">*(Espacio para gráfico de ingresos por día/semana)*</p>
                     <canvas id="salesChart" style="height:250px; min-height:250px"></canvas>
                 </div>
             </div>
@@ -114,81 +111,87 @@
                         Top 5 Productos Vendidos (Hoy)
                     </h3>
                 </div>
+
+                @php
+                    // Función para asignar iconos según el nombre del producto
+                    function iconoProductoDashboard($nombre) {
+                        $nombre = strtolower($nombre);
+
+                        if (str_contains($nombre, 'cerveza')) return 'fa-beer text-warning';
+                        if (str_contains($nombre, 'gaseosa') || str_contains($nombre, 'cola')) return 'fa-cocktail text-info';
+                        if (str_contains($nombre, 'empanada')) return 'fa-cookie-bite text-warning';
+                        if (str_contains($nombre, 'tinto') || str_contains($nombre, 'café') || str_contains($nombre, 'cafe')) return 'fa-mug-hot text-danger';
+                        if (str_contains($nombre, 'agua')) return 'fa-tint text-primary';
+                        if (str_contains($nombre, 'papas') || str_contains($nombre, 'snack')) return 'fa-drumstick-bite text-success';
+
+                        return 'fa-box-open text-secondary'; // genérico
+                    }
+                @endphp
+
                 <div class="card-body p-0">
-    <ul class="products-list product-list-in-card pl-2 pr-2">
-        
-        <li class="item">
-            {{-- CERVEZA: Usamos el ícono de cerveza --}}
-            <div class="product-img"><i class="fas fa-beer text-warning"></i></div>
-            <div class="product-info">Cerveza <span class="badge bg-primary float-right">25 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- EMPANADAS: Usamos el ícono de taco/comida (o drumstick) --}}
-            <div class="product-img"><i class="fas fa-cookie-bite text-warning"></i></div>
-            <div class="product-info">Empanadas <span class="badge bg-primary float-right">18 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- GASEOSA COLA-COLA: Usamos el ícono de taza de café para representar una bebida simple o un vaso --}}
-            <div class="product-img"><i class="fas fa-cocktail text-info"></i></div>
-            <div class="product-info">Gaseosa Cola-cola <span class="badge bg-primary float-right">15 Unidades</span></div>
-        </li>
-        
-        <li class="item">
-            {{-- TINTO (VINO O CAFÉ): Usamos el ícono de copa de vino, que es más representativo de un bar/lounge --}}
-            <div class="product-img"><i class="fas fa-mug-hot text-info"></i></div>
-            <div class="product-info">Tinto <span class="badge bg-primary float-right">10 Unidades</span></div>
-        </li>
-        
-    </ul>
-</div>
-                <div class="card-footer text-center">
-                <a href="{{ route('productos.index') }}" class="uppercase">Ver Todos los Productos</a>
+                    <ul class="products-list product-list-in-card pl-2 pr-2">
+                        @forelse ($productos as $producto)
+                            <li class="item">
+                                <div class="product-img">
+                                    <i class="fas {{ iconoProductoDashboard($producto->nombre) }}"></i>
+                                </div>
+                                <div class="product-info">
+                                    {{ $producto->nombre }}
+                                    <span class="badge bg-primary float-right">
+                                        {{ $producto->cantidad_vendida ?? 0 }} Unidades
+                                    </span>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="item text-center p-3">
+                                <span class="text-muted">No hay productos registrados aún.</span>
+                            </li>
+                        @endforelse
+                    </ul>
                 </div>
 
+                <div class="card-footer text-center">
+                    <a href="{{ route('productos.index') }}" class="uppercase">Ver Todos los Productos</a>
+                </div>
             </div>
         </div>
     </div>
 
-    ---
-
-    {{-- 3. Fila de Listas y Métricas Adicionales --}}
+    {{-- 3. Fila de Eventos y Mantenimiento --}}
     <div class="row">
-        
-        {{-- Tareas Pendientes o Eventos --}}
-        <div class="col-md-6">
-    <div class="card card-outline card-warning">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="fas fa-calendar-alt mr-1"></i> Próximos Eventos/Torneos
-            </h3>
-        </div>
-        <div class="card-body p-0">
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        Torneo Semanal de Bola 8
-                        <span class="float-right text-warning"><i class="far fa-calendar-alt"></i> 15/Oct/2025</span>
+        {{-- Próximos Eventos/Torneos --}}
+        <div class="col-md-8">
+            <div class="card card-outline card-warning">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-calendar-alt mr-1"></i> Próximos Eventos/Torneos
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                Torneo Semanal de Bola 8
+                                <span class="float-right text-warning">
+                                    <i class="far fa-calendar-alt"></i> 15/Oct/2025
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <h5 class="mb-2">
+                        <i class="fas fa-handshake mr-1 text-warning"></i> Patrocinadores
+                    </h5>
+                    <a href="#" class="btn btn-outline-warning btn-sm">
+                        Ver todos los patrocinadores
                     </a>
-                </li>
-                <li class="nav-item">
-                    <div class="card-footer">
-                <h5 class="mb-2">
-                    <i class="fas fa-handshake mr-1 text-warning"></i> Patrocinadores
-                </h5>
-                <a href="#" class="btn btn-outline-warning btn-sm">
-                    Ver todos los patrocinadores
-                </a>
+                </div>
             </div>
-                </li>
-            </ul>
         </div>
 
-        
-    </div>
-
-            
+        {{-- Mantenimiento --}}
+        <div class="col-md-4">
             <div class="small-box bg-danger">
                 <div class="inner">
                     <h3>2<sup style="font-size: 20px">/7</sup></h3>
@@ -210,12 +213,9 @@
 @section('css')
     @stack('styles')
     <style>
-        /* Eliminamos el fondo de imagen del content-wrapper para un look más limpio */
-        /* .content-wrapper { background: none !important; } */
-
         /* Ajustes finos a los Small Boxes para look ejecutivo */
         .small-box {
-            border-radius: 0.5rem; /* Bordes ligeramente redondeados */
+            border-radius: 0.5rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -226,23 +226,23 @@
         }
 
         .small-box .inner h3 {
-            font-weight: 700; /* Más audaz */
+            font-weight: 700;
         }
 
-        /* Usar colores de AdminLTE, pero puedes refinar más */
+        /* Colores personalizados */
         .small-box.bg-info { background-color: #17a2b8 !important; }
         .small-box.bg-success { background-color: #28a745 !important; }
         .small-box.bg-warning { 
             background-color: #ffc107 !important; 
-            color: #333 !important; /* Texto oscuro para la tarjeta amarilla */
+            color: #333 !important;
         }
         .small-box.bg-primary { background-color: #007bff !important; }
         .small-box.bg-danger { background-color: #dc3545 !important; }
         .small-box.bg-secondary { background-color: #6c757d !important; }
 
         .small-box .icon { 
-            font-size: 80px; /* Tamaño del icono grande */
-            color: rgba(0, 0, 0, 0.15) !important; /* Icono gris más sutil */
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.15) !important;
         }
         
         /* Ajuste para que el texto de las tarjetas warning se vea bien */
@@ -261,7 +261,7 @@
         .card-outline.card-primary { border-top: 3px solid #007bff; }
         .card-outline.card-warning { border-top: 3px solid #ffc107; }
 
-        /* Estilo para la lista de productos (Products List - AdminLTE) */
+        /* Estilo para la lista de productos */
         .products-list .product-img i {
             font-size: 24px;
             text-align: center;
@@ -271,11 +271,56 @@
             background-color: #f8f9fa;
             border-radius: 4px;
         }
+
+        /* Espaciado entre filas */
+        .row {
+            margin-bottom: 20px;
+        }
     </style>
 @stop
 
 @section('js')
     @stack('scripts')
-    {{-- Aquí iría la inicialización de Chart.js si lo usas --}}
-    {{-- <script> /* Tu código de Chart.js aquí */ </script> --}}
+    {{-- Inicialización de Chart.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Datos de ejemplo para el gráfico
+        const ctx = document.getElementById('salesChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Ingresos ($)',
+                        data: [320, 450, 380, 520, 490, 650, 450],
+                        borderColor: '#17a2b8',
+                        backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 @stop

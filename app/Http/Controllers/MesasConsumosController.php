@@ -15,7 +15,72 @@ class MesasConsumosController extends Controller
         return view('mesasconsumo.index', compact('mesas_consumos'));
     }
 
-    // 📌 Cambiar estado de la mesa (Libre, Ocupada, Reservada)
+    // 📌 Mostrar formulario de creación
+    public function create()
+    {
+        return view('mesasconsumo.create');
+    }
+
+    // 📌 Guardar una nueva mesa de consumo
+    public function store(Request $request)
+    {
+        $request->validate([
+            'estado' => 'required|in:libre,ocupada,reservada',
+            'consumos' => 'nullable|string',
+        ]);
+
+        MesasConsumos::create([
+            'estado' => $request->estado,
+            'consumos' => $request->consumos ?? '',
+        ]);
+
+        return redirect()->route('mesasconsumo.index')
+            ->with('success', '✅ Mesa de consumo creada correctamente.');
+    }
+
+    // 📌 Mostrar detalles de una mesa de consumo
+    public function show($id)
+    {
+        $mesa = MesasConsumos::findOrFail($id);
+        return view('mesasconsumo.show', compact('mesa'));
+    }
+
+    // 📌 Editar una mesa de consumo
+    public function edit($id)
+    {
+        $mesa = MesasConsumos::findOrFail($id);
+        return view('mesasconsumo.edit', compact('mesa'));
+    }
+
+    // 📌 Actualizar mesa de consumo
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'estado' => 'required|in:libre,ocupada,reservada',
+            'consumos' => 'nullable|string',
+        ]);
+
+        $mesa = MesasConsumos::findOrFail($id);
+        $mesa->update([
+            'estado' => $request->estado,
+            'consumos' => $request->consumos,
+        ]);
+
+        return redirect()->route('mesasconsumo.index')
+            ->with('success', '✅ Mesa actualizada correctamente.');
+    }
+
+    // 📌 Eliminar mesa de consumo
+    public function destroy($id)
+    {
+        $mesa = MesasConsumos::findOrFail($id);
+        $mesa->delete();
+
+        return redirect()->route('mesasconsumo.index')
+            ->with('success', '🗑️ Mesa eliminada correctamente.');
+    }
+
+    // 📌 Cambiar estado de mesa
     public function cambiarEstado(Request $request, $id)
     {
         $mesa = MesasConsumos::findOrFail($id);
@@ -25,7 +90,7 @@ class MesasConsumosController extends Controller
         return back()->with('success', '✅ Estado actualizado correctamente.');
     }
 
-    // 📌 Mostrar productos para agregar al consumo de esta mesa
+    // 📌 Mostrar productos para agregar al consumo
     public function agregarProducto($id)
     {
         $mesa = MesasConsumos::findOrFail($id);
@@ -34,7 +99,7 @@ class MesasConsumosController extends Controller
         return view('mesasconsumo.agregar', compact('mesa', 'productos'));
     }
 
-    // 📌 Guardar producto agregado al consumo de la mesa
+    // 📌 Guardar producto agregado a la mesa
     public function guardarProducto(Request $request, $id)
     {
         $request->validate([
@@ -42,10 +107,7 @@ class MesasConsumosController extends Controller
             'cantidad' => 'required|integer|min:1'
         ]);
 
-        // Evita crear otra mesa; actualiza consumos en la misma
         $mesa = MesasConsumos::findOrFail($id);
-
-        // Guarda el consumo como texto o puedes usar una tabla pivote si la tienes
         $nuevoConsumo = $mesa->consumos . "\nProducto: " . $request->idproducto . " - Cantidad: " . $request->cantidad;
         $mesa->consumos = trim($nuevoConsumo);
         $mesa->save();
