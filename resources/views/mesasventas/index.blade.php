@@ -189,10 +189,28 @@
                         @endif
 
                         @if($mesa->estado == 'ocupada')
-                        <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-danger btn-sm"><i class="fas fa-stop"></i></button>
-                        </form>
+                            <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST">
+                                @csrf
+                                <button class="btn btn-danger btn-sm"><i class="fas fa-stop"></i> Fin de tiempo</button>
+                            </form>
+                        @endif
+
+                        @if($mesa->fechainicio)
+                            <p class="mt-2">
+                                ⏱ <strong>Tiempo:</strong>
+                                <span id="timer-{{ $mesa->idmesa }}" data-inicio="{{ $mesa->fechainicio }}">
+                                    <span class="tiempo">00:00:00</span>
+                                </span>
+                            </p>
+                        @endif
+
+                        @if($mesa->fechainicio)
+                            <p class="mt-2">
+                                ⏱ <strong>Tiempo:</strong>
+                                <span id="timer-{{ $mesa->idmesa }}" data-inicio="{{ $mesa->fechainicio }}">
+                                    <span class="tiempo">00:00:00</span>
+                                </span>
+                            </p>
                         @endif
 
                         <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
@@ -442,6 +460,28 @@ document.addEventListener("DOMContentLoaded", function() {
         actualizar();
         setInterval(actualizar, 1000);
     });
+    
 });
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('[id^="timer-"]').forEach(timer => {
+        const startTime = new Date(timer.dataset.inicio);
+        const span = timer.querySelector(".tiempo");
+
+        function actualizar() {
+            const ahora = new Date();
+            const diff = Math.floor((ahora - startTime) / 1000); // segundos
+            const horas = Math.floor(diff / 3600);
+            const minutos = Math.floor((diff % 3600) / 60);
+            const segundos = diff % 60;
+            span.textContent =
+                `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
+
+        actualizar();
+        setInterval(actualizar, 1000);
+    });
+});
+</script>
 </script>
 @stop

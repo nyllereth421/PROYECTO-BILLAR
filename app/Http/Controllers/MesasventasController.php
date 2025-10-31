@@ -27,12 +27,13 @@ class MesasVentasController extends Controller
     }
 
     // ✅ Inicia el tiempo de una mesa
-    public function iniciarTiempo($idmesa)
+     public function iniciarTiempo($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
 
-        if ($mesa->horainicio) {
+        if (!$mesa->fechainicio) {
             $mesa->fechainicio = Carbon::now();
+            $mesa->estado = 'ocupada';
             $mesa->save();
         }
 
@@ -45,16 +46,20 @@ class MesasVentasController extends Controller
     {
         $mesa = Mesas::findOrFail($idmesa);
 
-        if ($mesa->horainicio && !$mesa->horafin) {
+        if ($mesa->fechainicio && !$mesa->fechafin) {
             $mesa->fechafin = Carbon::now();
-            $mesa->total = Carbon::parse($mesa->horainicio)->diffInMinutes(Carbon::now());
+            $diferenciaEnMinutos = Carbon::parse($mesa->fechainicio)->diffInMinutes(Carbon::now());
+            // Calcula el costo en función de los minutos (ejemplo: 0.1 por minuto)
+            $costoPorMinuto = 0.1;
+            $mesa->total = $diferenciaEnMinutos * $costoPorMinuto; // Calcula el total
+            $mesa->estado = 'disponible'; // Cambia el estado a disponible
+            $mesa->fechainicio = null;  // Reinicia el tiempo
+            $mesa->fechafin = null;   // Reinicia el tiempo
             $mesa->save();
         }
 
         return redirect()->back()->with('success', 'Tiempo finalizado correctamente.');
-      
     }
-  
   
   
     public function actualizarEstado(Request $request, $idmesa)
