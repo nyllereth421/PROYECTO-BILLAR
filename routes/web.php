@@ -94,6 +94,9 @@ Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name
 Route::get('/mesasventas/{id}/edit', [MesasventasController::class, 'edit'])->name('mesasventas.edit');
 Route::post('/mesasventas/{id}/update', [MesasventasController::class, 'update'])->name('mesasventas.update');
 Route::post('/mesasventas/{id}/destroy', [MesasventasController::class, 'destroy'])->name('mesasventas.destroy');
+Route::post('/mesasventas/iniciar/{idmesa}', [MesasVentasController::class, 'iniciarTiempo'])->name('mesasventas.iniciar');
+Route::post('/mesasventas/finalizar/{idmesa}', [MesasVentasController::class, 'finalizarTiempo'])->name('mesasventas.finalizar');
+
 
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
 Route::get('/mesasconsumo/{idmesaconsumo}/agregar-producto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');

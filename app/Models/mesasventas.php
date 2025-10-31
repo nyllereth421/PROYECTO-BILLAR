@@ -2,9 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class mesasventas extends Model
+class Mesa extends Model
 {
-    //
+    use HasFactory;
+
+    protected $table = 'mesasventas';
+    protected $fillable = [
+        'ventas',
+        'horainicio',
+        'horafin',
+        'total',
+        'idmesa',
+    ];
 }

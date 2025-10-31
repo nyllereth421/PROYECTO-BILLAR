@@ -11,6 +11,7 @@
 
     <div class="mb-3">
         <a href="{{ route('welcome') }}" class="btn btn-secondary">Volver al Inicio</a>
+        <a href="{{ route('mesas.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> Agregar Mesa</a>
     </div>
 
     <div class="row">
@@ -25,6 +26,7 @@
                     <img src="{{ asset('img/mesas/' . $mesa->tipo . '.png') }}" style="height:120px;">
                     <p><strong>Estado:</strong> {{ $mesa->estado }}</p>
 
+                    {{-- Botones --}}
                     <div class="d-flex justify-content-center gap-2 flex-wrap">
                         @if($mesa->estado == 'disponible')
                         <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST">
@@ -55,6 +57,15 @@
                             <i class="fas fa-cart-plus"></i>
                         </button>
                     </div>
+
+                    {{-- Mostrar tiempos --}}
+                    @if($mesa->fechainicio)
+                        <p class="mt-2">⏱ <strong>Inicio:</strong> {{ $mesa->fechainicio }}</p>
+                    @endif
+                    @if($mesa->fechafin)
+                        <p>🕓 <strong>Fin:</strong> {{ $mesa->fechafin }}</p>
+                        <p><strong>Total:</strong> {{ $mesa->total }} minutos</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -192,6 +203,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
             modalInstance.hide();
         });
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('[id^="timer-"]').forEach(timer => {
+        const startTime = new Date(timer.dataset.inicio);
+        const span = timer.querySelector(".tiempo");
+
+        function actualizar() {
+            const ahora = new Date();
+            const diff = Math.floor((ahora - startTime) / 1000); // segundos
+            const horas = Math.floor(diff / 3600);
+            const minutos = Math.floor((diff % 3600) / 60);
+            const segundos = diff % 60;
+            span.textContent = 
+                `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
+
+        actualizar();
+        setInterval(actualizar, 1000);
     });
 });
 </script>

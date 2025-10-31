@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mesas;
-use App\Models\MesasConsumos;
-use App\Models\Productos;
 use Illuminate\Http\Request;
+use App\Models\mesas;
+use App\Models\Productos;
+use App\Models\MesasConsumos;
 use Carbon\Carbon;
 
 class MesasVentasController extends Controller
 {
+    // ✅ Muestra todas las mesas
     public function index()
     {
         $mesas = Mesas::all();
@@ -19,53 +20,30 @@ class MesasVentasController extends Controller
         return view('mesasventas.index', compact('mesas', 'productos', 'mesas_consumos'));
     }
 
+    // ✅ Inicia el tiempo de una mesa
     public function iniciarTiempo($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
-        $mesa->hora_inicio = Carbon::now();
-        $mesa->estado = 'ocupada';
-        $mesa->save();
 
-        return redirect()->route('mesasventas.index')->with('success', 'Tiempo iniciado correctamente');
+        if ($mesa->horainicio) {
+            $mesa->fechainicio = Carbon::now();
+            $mesa->save();
+        }
+
+        return redirect()->back()->with('success', 'Tiempo iniciado correctamente.');
     }
 
+    // ✅ Finaliza el tiempo de una mesa
     public function finalizarTiempo($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
 
-        if ($mesa->hora_inicio) {
-            $horaInicio = Carbon::parse($mesa->hora_inicio);
-            $difMinutos = $horaInicio->diffInMinutes(Carbon::now());
-            $mesa->tiempo_total = $difMinutos . ' minutos';
+        if ($mesa->horainicio && !$mesa->horafin) {
+            $mesa->fechafin = Carbon::now();
+            $mesa->total = Carbon::parse($mesa->horainicio)->diffInMinutes(Carbon::now());
+            $mesa->save();
         }
 
-        $mesa->estado = 'disponible';
-        $mesa->hora_inicio = null;
-        $mesa->save();
-
-        return redirect()->route('mesasventas.index')->with('success', 'Tiempo finalizado');
-    }
-
-    public function actualizarEstado(Request $request, $idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
-        $mesa->estado = $request->estado;
-        $mesa->save();
-
-        return redirect()->route('mesasventas.index')->with('success', 'Estado actualizado');
-    }
-
-    public function show($idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
-        $productos = Productos::all();
-        $productosMesa = $mesa->productos ?? collect();
-
-        // Si la solicitud viene por AJAX => se envía solo el contenido del modal
-        if (request()->ajax()) {
-            return view('mesasventas.partials.modal-contenido', compact('mesa', 'productos', 'productosMesa'))->render();
-        }
-
-        return view('mesasventas.show', compact('mesa', 'productos', 'productosMesa'));
+        return redirect()->back()->with('success', 'Tiempo finalizado correctamente.');
     }
 }
