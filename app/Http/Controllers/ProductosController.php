@@ -10,10 +10,11 @@ class ProductosController extends Controller
     // Mostrar lista
     public function index()
     {
-        $productos = Productos::all();
-        $proveedores = Proveedores::all();
+        $productos = Productos::orderBy('cantidad_vendida', 'desc')
+                          ->take(5)
+                          ->get();
 
-        return view('productos.index', compact('productos', 'proveedores'));
+    return view('welcome', compact('productos'));
     }
 
     // Mostrar formulario para crear
@@ -55,4 +56,21 @@ class ProductosController extends Controller
         $producto->delete();
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
+
+    public function mostrarEnInicio()
+{
+    // Consulta los 5 productos más vendidos o solo todos los productos
+    $productos = Productos::take(5)->get();
+
+
+    // Pasar los datos a la vista welcome
+    return view('welcome', compact('productos'));
+}
+
+
+
+
+
+
+
 }

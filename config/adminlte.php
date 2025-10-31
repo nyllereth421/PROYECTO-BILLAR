@@ -336,31 +336,41 @@ return [
             'url' => 'admin/users',
             'icon' => 'fas fa-fw fa-users',
         ],
-        [
-            'text' => 'mesas',
-            'url' => 'admin/pages',
-            'icon' => 'fas fa-chair',
-            'label' => 6,
-            'label_color' => 'success',
+
+                [
+            'text' => ' Gestion de Mesas ',
+            'icon' => 'fas fa-table',
+            'submenu' => [
+                [
+                    'text' => 'Ver Mesas',
+                    'route' => 'mesasventas.index',
+                ],
+                
+            ]
         ],
+        
         [
-            'text' => 'pagos',
-            'url' => 'admin/pages',
-            'icon' => 'fas fa-money-bill-wave',
-            'label_color' => 'success',
+            'text' => 'Inventario',
+            'route' => 'inventario.index',
+            'icon'  => 'fas fa-warehouse',
+            'submenu' => [
+                [
+                    'text' => 'Inventario Mesas',
+                    'route' => 'mesas.index',
+                    
+                ],
+                [
+                    'text' => 'Inventario Productos',
+                    'route' => 'productos.index',
+                    
+                ],
+                [
+                    'text' => 'Inventario proveedores',
+                    'route' => 'proveedores.index',
+                ]
+            ]
         ],
-        [
-            'text' => 'Productos',
-            'url' => '/productos.index',
-            'icon' => 'fas fa-wine-bottle',
-            'label_color' => 'success',
-        ],
-        [
-            'text' => 'Proveedores',
-            'url' => 'admin/proveedores/index',
-            'icon' => 'fas fa-truck',   
-            'label_color' => 'success',
-        ],
+        
         [
             'text' => 'torneos',
             'url' => 'admin/torneos',
