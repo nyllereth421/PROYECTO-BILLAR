@@ -7,14 +7,12 @@ use App\Models\MesasConsumos;
 use App\Models\Productos;
 use App\Models\ventas;
 use Illuminate\Http\Request;
-use App\Models\mesas;
-use App\Models\Productos;
-use App\Models\MesasConsumos;
 use Carbon\Carbon;
-use App\Models\MesaProducto;
 use App\Models\mesaproductos;
 use App\Models\mesasventas;
-use App\Models\Mesaventas;
+
+
+
 
 class MesasVentasController extends Controller
 {
@@ -126,13 +124,14 @@ class MesasVentasController extends Controller
     ]);
 
     // Crear registro en mesasventas
-    mesasventas::create([
-        'ventas' => $venta->id,
-        'fechainicio' => now(),
-        'fechafin' => now(),
-        'total' => $total,
-        'idmesa' => $idmesa
-    ]);
+       mesasventas::create([
+            'ventas' => $venta->id,
+            'fechainicio' => now(),
+            'fechafin' => now(),
+            'total' => $total,
+            'idmesa' => $idmesa
+        ]); 
+      
 
     // Limpiar productos de la mesa
     mesaproductos::where('idmesa', $idmesa)->delete();
