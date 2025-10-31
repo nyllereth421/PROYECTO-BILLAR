@@ -10,11 +10,15 @@ class Mesa extends Model
     use HasFactory;
 
     protected $table = 'mesasventas';
+
     protected $fillable = [
         'ventas',
-        'horainicio',
-        'horafin',
+        'fechainicio',
+        'fechafin',
         'total',
         'idmesa',
     ];
+
+
+
 }
