@@ -5,18 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Mesas;
 use App\Models\MesasConsumos;
 use App\Models\Productos;
-use App\Models\ventas;
+use App\Models\Ventas;
+use App\Models\MesasVentas;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\mesaproductos;
-use App\Models\mesasventas;
-
-
-
 
 class MesasVentasController extends Controller
 {
-    // ✅ Muestra todas las mesas
+    // ✅ Mostrar todas las mesas con productos y consumos
     public function index()
     {
         $mesas = Mesas::all();
@@ -26,125 +22,174 @@ class MesasVentasController extends Controller
         return view('mesasventas.index', compact('mesas', 'productos', 'mesas_consumos'));
     }
 
-    // ✅ Inicia el tiempo de una mesa
-     public function iniciarTiempo($idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
-
-        if (!$mesa->fechainicio) {
-            $mesa->fechainicio = Carbon::now();
-            $mesa->estado = 'ocupada';
-            $mesa->save();
-        }
-
-        return redirect()->back()->with('success', 'Tiempo iniciado correctamente.');
-    }
-
-
-    // ✅ Finaliza el tiempo de una mesa
-    public function finalizarTiempo($idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
-
-        if ($mesa->fechainicio && !$mesa->fechafin) {
-            $mesa->fechafin = Carbon::now();
-            $diferenciaEnMinutos = Carbon::parse($mesa->fechainicio)->diffInMinutes(Carbon::now());
-            // Calcula el costo en función de los minutos (ejemplo: 0.1 por minuto)
-            $costoPorMinuto = 0.1;
-            $mesa->total = $diferenciaEnMinutos * $costoPorMinuto; // Calcula el total
-            $mesa->estado = 'disponible'; // Cambia el estado a disponible
-            $mesa->fechainicio = null;  // Reinicia el tiempo
-            $mesa->fechafin = null;   // Reinicia el tiempo
-            $mesa->save();
-        }
-
-        return redirect()->back()->with('success', 'Tiempo finalizado correctamente.');
-    }
-  
-  
+    // ✅ Actualizar estado de la mesa (disponible / ocupada)
     public function actualizarEstado(Request $request, $idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
         $mesa->estado = $request->estado;
         $mesa->save();
 
-        return redirect()->route('mesasventas.index')->with('success', 'Estado actualizado');
+        return redirect()->route('mesasventas.index')->with('success', 'Estado actualizado correctamente.');
     }
 
-   
+    // ✅ Agregar productos a la mesa
     public function agregarProductos(Request $request)
     {
-    $mesa = Mesas::findOrFail($request->mesa_id);
-    $producto = Productos::findOrFail($request->producto_id);
-    $cantidad = $request->cantidad;
+        $mesa = Mesas::findOrFail($request->mesa_id);
+        $producto = Productos::findOrFail($request->producto_id);
+        $cantidad = $request->cantidad;
 
-    // Verificar stock disponible
-    if ($producto->stock < $cantidad) {
-        return redirect()->back()->with('error', 'No hay suficiente stock del producto.');
+        // Verificar stock
+        if ($producto->stock < $cantidad) {
+            return response()->json(['success' => false, 'message' => 'Stock insuficiente']);
+        }
+
+        // Revisar si ya existe el producto en la mesa
+        $exists = $mesa->productos()->where('producto_id', $producto->idproducto)->first();
+
+        if ($exists) {
+            $mesa->productos()->updateExistingPivot($producto->idproducto, [
+                'cantidad' => $exists->pivot->cantidad + $cantidad,
+                'precio' => $producto->precio
+            ]);
+        } else {
+            $mesa->productos()->attach($producto->idproducto, [
+                'cantidad' => $cantidad,
+                'precio' => $producto->precio
+            ]);
+        }
+
+        $producto->stock -= $cantidad;
+        $producto->save();
+
+        return response()->json(['success' => true, 'message' => 'Producto agregado correctamente']);
     }
 
-    // Revisar si el producto ya está en la mesa
-    $exists = $mesa->productos()->where('producto_id', $producto->idproducto)->first();
+    // ✅ Iniciar cronómetro (crear registro en mesasventas)
+    public function iniciar($idmesa)
+    {
+        $mesa = Mesas::findOrFail($idmesa);
+        $mesa->estado = 'ocupada';
+        $mesa->save();
 
-    if ($exists) {
-        // Actualizar cantidad si ya existe
-        $mesa->productos()->updateExistingPivot($producto->idproducto, [
-            'cantidad' => $exists->pivot->cantidad + $cantidad,
-            'precio' => $producto->precio
-        ]);
-    } else {
-        // Agregar nuevo producto a la mesa
-        $mesa->productos()->attach($producto->idproducto, [
-            'cantidad' => $cantidad,
-            'precio' => $producto->precio
-        ]);
+        // Crear registro solo si no existe uno abierto
+        $ventaAbierta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
+        if (!$ventaAbierta) {
+            MesasVentas::create([
+                'idmesa' => $idmesa,
+                'fechainicio' => now(),
+                'total' => 0,
+            ]);
+        }
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Cronómetro iniciado']);
+        }
+
+        return redirect()->back()->with('success', 'Tiempo iniciado correctamente.');
     }
 
-    // Descontar stock
-    $producto->stock -= $cantidad;
-    $producto->save();
+    // ✅ Finalizar cronómetro (calcula total de tiempo + productos)
+    public function finalizar($idmesa)
+    {
+        $mesa = Mesas::findOrFail($idmesa);
+        $mesa->estado = 'disponible';
+        $mesa->save();
 
-    return redirect()->back()->with('success', 'Producto agregado a la mesa correctamente.');
+        $venta = MesasVentas::where('idmesa', $idmesa)
+            ->whereNull('fechafin')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($venta) {
+            $venta->fechafin = now();
+
+            // Duración
+            $inicio = Carbon::parse($venta->fechainicio);
+            $fin = Carbon::parse($venta->fechafin);
+            $minutes = $inicio->diffInMinutes($fin);
+
+            // Tarifa
+            $tarifa_por_hora = 7000;
+            $tarifa_por_minuto = $tarifa_por_hora / 60;
+            $cargo_tiempo = round($minutes * $tarifa_por_minuto, 2);
+
+            // Total productos
+            $productos_total = 0;
+            if (method_exists($mesa, 'productos')) {
+                foreach ($mesa->productos as $p) {
+                    $productos_total += $p->pivot->cantidad * $p->pivot->precio;
+                }
+            }
+
+            // Total final
+            $venta->total = round($productos_total + $cargo_tiempo, 2);
+            $venta->save();
+        }
+
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tiempo finalizado.',
+                'minutes' => $minutes ?? 0,
+                'cargo_tiempo' => $cargo_tiempo ?? 0,
+                'productos_total' => $productos_total ?? 0,
+                'total' => $venta->total ?? 0
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Tiempo finalizado correctamente.');
     }
-  
-  
-    public function finalizarMesa($idmesa)
+
+    // ✅ Reiniciar cronómetro (borrar venta abierta)
+    public function reiniciar($idmesa)
+    {
+        $mesa = Mesas::findOrFail($idmesa);
+        $mesa->estado = 'disponible';
+        $mesa->save();
+
+        MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->delete();
+
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Cronómetro reiniciado']);
+        }
+
+        return redirect()->back()->with('success', 'Cronómetro reiniciado.');
+    }
+
+    public function iniciarTiempo($id)
 {
-    $productos = mesaproductos::where('idmesa', $idmesa)->get();
-    if($productos->isEmpty()){
-        return back()->with('error', 'No hay productos agregados a esta mesa.');
+    $mesaVenta = MesasVentas::findOrFail($id);
+    $mesaVenta->fechainicio = now();
+    $mesaVenta->fechafin = null;
+    $mesaVenta->save();
 
-    }
-
-    $total = $productos->sum(function($p){ 
-        return $p->precio * $p->cantidad; 
-    });
-
-    // Crear venta
-    $venta = ventas::create([
-        'fecha' => now(),
-        'numerodocumento' => null, // empleado que genera la venta
-        'idmesaconsumo' => null,
-        'total' => $total
+    return response()->json([
+        'success' => true,
+        'message' => 'Tiempo iniciado correctamente',
+        'fechainicio' => $mesaVenta->fechainicio
     ]);
-
-    // Crear registro en mesasventas
-       mesasventas::create([
-            'ventas' => $venta->id,
-            'fechainicio' => now(),
-            'fechafin' => now(),
-            'total' => $total,
-            'idmesa' => $idmesa
-        ]); 
-      
-
-    // Limpiar productos de la mesa
-    mesaproductos::where('idmesa', $idmesa)->delete();
-
-    return back()->with('success', 'Venta finalizada y recibo generado correctamente.');
 }
 
+public function finalizarTiempo($id)
+{
+    $mesaVenta = MesasVentas::findOrFail($id);
+    $mesaVenta->fechafin = now();
 
+    // Calcular tiempo total en horas
+    $inicio = strtotime($mesaVenta->fechainicio);
+    $fin = strtotime($mesaVenta->fechafin);
+    $horas = ($fin - $inicio) / 3600;
+    $valorHora = 7000;
+    $mesaVenta->total = round($horas * $valorHora, 2);
+    $mesaVenta->save();
 
+    return response()->json([
+        'success' => true,
+        'message' => 'Tiempo finalizado correctamente',
+        'fechafin' => $mesaVenta->fechafin,
+        'total' => $mesaVenta->total
+    ]);
+}
 
 }

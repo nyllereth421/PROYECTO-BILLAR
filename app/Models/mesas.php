@@ -15,4 +15,9 @@ class mesas extends Model
         'tipo',
         'numeromesa',
     ];
+    public function ventaActiva()
+{
+    return $this->hasOne(Ventas::class, 'idmesaconsumo')->latest();
+}
+
 }
