@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('ventas')
                   ->references('id')->on('ventas');
             $table->dateTime('fechainicio')->default(now());
-            $table->dateTime('fechafin')->default(now());  
+            $table->dateTime('fechafin')->nullable();  
             $table->decimal('total', 10, 2);
             $table->unsignedBigInteger('idmesa');
             $table->foreign('idmesa')

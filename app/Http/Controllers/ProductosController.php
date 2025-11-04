@@ -14,7 +14,7 @@ class ProductosController extends Controller
                           ->take(5)
                           ->get();
 
-    return view('welcome', compact('productos'));
+    return view('productos.index', compact('productos'));
     }
 
     // Mostrar formulario para crear

@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class productosventas extends Model
+// models/ProductosVentas.php
+class ProductosVentas extends Model
 {
     protected $table = 'productosventas';
     protected $fillable = [
@@ -14,4 +15,14 @@ class productosventas extends Model
         'total',
         'descripcion',
     ];
+
+    public function producto()
+    {
+        return $this->belongsTo(Productos::class, 'idproducto', 'idproducto');
+    }
+
+    public function venta()
+    {
+        return $this->belongsTo(Ventas::class, 'id', 'id');
+    }
 }
