@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('mesasventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ventas');
+            $table->unsignedBigInteger('ventas')->nullable();
             $table->foreign('ventas')
                   ->references('id')->on('ventas');
             $table->dateTime('fechainicio')->default(now());
             $table->dateTime('fechafin')->nullable();  
-            $table->decimal('total', 10, 2);
+            $table->decimal('total', 10, 2)->default(0);
             $table->unsignedBigInteger('idmesa');
             $table->foreign('idmesa')
                   ->references('idmesa')->on('mesas');   

@@ -13,4 +13,13 @@ class mesasConsumos extends Model
         'consumos',
         'estado',
     ];
+
+ 
+public function ventaActiva()
+    {
+        return $this->hasOne(MesasVentas::class, 'idmesa', 'idmesaconsumo')
+                    ->whereNull('fechafin')
+                    ->latest();
+    }
+
 }
