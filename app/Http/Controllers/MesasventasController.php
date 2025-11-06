@@ -6,7 +6,7 @@ use App\Models\Mesas;
 use App\Models\MesasConsumos;
 use App\Models\Productos;
 use App\Models\Ventas;
-use App\Models\MesasVentas;
+use App\Models\Mesasventas;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -73,9 +73,9 @@ class MesasVentasController extends Controller
         $mesa->save();
 
         // Crear registro solo si no existe uno abierto
-        $ventaAbierta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
+        $ventaAbierta = Mesasventas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
         if (!$ventaAbierta) {
-            MesasVentas::create([
+            Mesasventas::create([
                 'idmesa' => $idmesa,
                 'fechainicio' => now(),
                 'total' => 0,

@@ -126,7 +126,6 @@
                 <th>Producto</th>
                 <th>Precio</th>
                 <th>Stock</th>
-                <th>Cantidad</th>
                 <th>Agregar</th>
               </tr>
             </thead>
@@ -135,7 +134,7 @@
                 <tr>
                   <td>{{ $producto->nombre }}</td>
                   <td>${{ number_format($producto->precio, 0, ',', '.') }}</td>
-                  <td>{{ $producto->cantidad }}</td>
+                  <td>{{ $producto->stock }}</td>
                   <td>
                     <input type="number" name="cantidades[{{ $producto->id }}]" min="1" max="{{ $producto->cantidad }}" class="form-control text-center" value="1">
                   </td>
