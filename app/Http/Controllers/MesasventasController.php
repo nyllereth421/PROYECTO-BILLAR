@@ -11,6 +11,7 @@ use Carbon\Carbon;
 class MesasventasController extends Controller
 {
     public function index()
+
 {
     // Cargar mesas con ventaActiva y los productos asociados
     $mesas = Mesas::with(['ventaActiva.productos'])->get();
@@ -92,6 +93,7 @@ class MesasventasController extends Controller
     public function agregarProductosConsumo(Request $request, $idmesa)
 {
     $mesa = MesasConsumos::findOrFail($idmesa);
+
 
     $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first(); 
     if (!$venta) {

@@ -81,7 +81,6 @@ Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::cl
 Route::get('/mesasconsumo/{idmesaconsumo}/agregarproducto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
 Route::post('/mesasconsumo/{idmesaconsumo}/guardarproducto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
 
-
 // MESAS VENTAS
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');

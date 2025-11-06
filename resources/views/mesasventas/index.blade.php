@@ -10,6 +10,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+
 <style>
     .modal-header { 
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -108,6 +109,7 @@
         <a href="{{ route('welcome') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Volver al Inicio
         </a>
+
     </div>
 
     {{-- Mensajes flash --}}
@@ -191,6 +193,59 @@
                 </div>
             </div>
         </div>
+
+{{-- Modal de productos agregados --}}
+@if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
+<div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1" aria-labelledby="productosAgregadosLabel-{{ $mesa->idmesa }}" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title" id="productosAgregadosLabel-{{ $mesa->idmesa }}">
+          Productos agregados a Mesa #{{ $mesa->numeromesa }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        {{-- Cronómetro --}}
+        <p><strong>Tiempo transcurrido:</strong> 
+          <span id="modal-cronometro-{{ $mesa->idmesa }}">00:00:00</span>
+        </p>
+
+        {{-- Lista de productos --}}
+        <ul class="list-group">
+          @foreach($mesa->ventaActiva->productos as $producto)
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ $producto->nombre }}
+                <span class="badge bg-primary rounded-pill">{{ $producto->pivot->cantidad }}</span>
+            </li>
+          @endforeach
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Obtener fecha de inicio de la venta desde Blade
+  let startTimeModal{{ $mesa->idmesa }} = new Date("{{ $mesa->ventaActiva->fechainicio }}").getTime();
+
+  function updateModalTimer{{ $mesa->idmesa }}() {
+      const now = new Date().getTime();
+      let diff = Math.floor((now - startTimeModal{{ $mesa->idmesa }}) / 1000);
+
+      const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+      const s = String(diff % 60).padStart(2, '0');
+
+      const el = document.getElementById('modal-cronometro-{{ $mesa->idmesa }}');
+      if(el) el.innerText = `${h}:${m}:${s}`;
+  }
+
+  // Actualizar cada segundo
+  setInterval(updateModalTimer{{ $mesa->idmesa }}, 1000);
+</script>
+@endif
+
 
         {{-- Modal de productos agregados --}}
         @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
@@ -316,7 +371,8 @@
                             </button>
                         </form>
 
-                        {{-- Botón Carrito / Modal Agregar Productos--}}
+
+                        {{-- Botón Carrito --}}
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#productosModalConsumo-{{ $mesa->idmesaconsumo }}">
                             <i class="fas fa-cart-plus"></i>
                         </button>
@@ -331,6 +387,46 @@
                 </div>
             </div>
         </div>
+
+        {{-- Modal de productos para mesa consumo --}}
+        <div class="modal fade" id="productosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" aria-labelledby="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}">Agregar productos a Mesa Consumo #{{ $mesa->idmesaconsumo }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <form action="{{ route('mesasventas.agregarProductosConsumo', $mesa->idmesaconsumo) }}" method="POST">
+                  @csrf
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center align-middle">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>Producto</th>
+                          <th>Precio</th>
+                          <th>Stock</th>
+                          <th>Cantidad</th>
+                          <th>Seleccionar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @foreach($productos as $producto)
+                        <tr>
+                          <td>{{ $producto->nombre }}</td>
+                          <td>${{ number_format($producto->precio, 0, ',', '.') }}</td>
+                          <td>{{ $producto->stock }}</td>
+                          <td>
+                            <input type="number" name="cantidades[]" min="0" max="{{ $producto->stock }}" class="form-control text-center" value="0">
+                          </td>
+                          <td>
+                            <input type="checkbox" name="productosSeleccionados[]" value="{{ $producto->idproducto }}">
+                          </td>
+                        </tr>
+                        @endforeach
+                      </tbody>
+                    </table>
+                  </div>
 
         {{-- Modal de productos agregados para mesa consumo --}}
         @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
@@ -416,6 +512,7 @@
             </div>
         </div>
         @endforeach
+
     </div>
 </div>
 @stop
