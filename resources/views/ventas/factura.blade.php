@@ -3,8 +3,6 @@
 @section('title', 'Factura de Venta')
 
 @section('content_header')
-
-    <h1><i class="fas fa-file-invoice-dollar"></i> Factura de la Mesa #{{ $mesa->numeromesa }}</h1>
     <h1>
         <i class="fas fa-file-invoice-dollar"></i>
         Factura de la Mesa #{{ $mesa->numeromesa ?? 'Sin mesa' }}
@@ -25,8 +23,6 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <p><strong>Fecha:</strong> {{ $venta->fecha }}</p>
-                    <p><strong>Mesa:</strong> #{{ $mesa->numeromesa }}</p>
-                    <p><strong>Estado:</strong> {{ ucfirst($mesa->estado) }}</p>
                     <p><strong>Mesa:</strong> #{{ $mesa->numeromesa ?? 'N/A' }}</p>
                     <p><strong>Estado:</strong> {{ $mesa->estado ?? 'No definido' }}</p>
                 </div>
@@ -50,16 +46,6 @@
                         </tr>
                     </thead>
                     <tbody>
-
-                        @foreach($productosVentas as $detalle)
-                        <tr>
-                            <td>{{ $detalle->producto->nombre }}</td>
-                            <td>{{ $detalle->descripcion }}</td>
-                            <td>{{ $detalle->cantidad }}</td>
-                            <td>${{ number_format($detalle->producto->precio, 2) }}</td>
-                            <td>${{ number_format($detalle->total, 2) }}</td>
-                        </tr>
-                        @endforeach
                         @forelse($productosVentas as $detalle)
                             <tr>
                                 <td>{{ $detalle->producto->nombre ?? 'Desconocido' }}</td>
