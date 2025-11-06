@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ventas extends Model
+// models/Ventas.php
+class Ventas extends Model
 {
     protected $table = 'ventas';
 
@@ -14,4 +15,10 @@ class ventas extends Model
         'idmesaconsumo',
         'total',
     ];
+
+    public function productos()
+    {
+        return $this->hasMany(ProductosVentas::class, 'idventa', 'id');
+    }
 }
+
