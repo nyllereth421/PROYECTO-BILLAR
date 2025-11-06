@@ -11,94 +11,147 @@ use Carbon\Carbon;
 class MesasventasController extends Controller
 {
     public function index()
-    {
-        // Cargar mesas con ventaActiva
-        $mesas = Mesas::with(['ventaActiva.productos'])->get();
-        $mesas_consumos = MesasConsumos::with(['ventaActiva.productos'])->get();
-        $productos = Productos::all();
+{
+    // Cargar mesas con ventaActiva y los productos asociados
+    $mesas = Mesas::with(['ventaActiva.productos'])->get();
+    $mesas_consumos = MesasConsumos::with(['ventaActiva.productos'])->get();
+    $productos = Productos::all();
 
-        return view('mesasventas.index', compact('mesas','mesas_consumos','productos'));
+    // ...
+    return view('mesasventas.index', compact('mesas','mesas_consumos','productos'));
+}
+
+    
+    // Esto asegura que el total se actualice al agregar productos.
+    
+    private function _actualizarTotalVenta(MesasVentas $venta)
+{
+    // Vuelve a cargar la relación productos para tener los datos más recientes
+    $venta->load('productos'); 
+    
+    // Suma todos los subtotales (cantidad * precio_unitario) de la tabla pivote.
+    $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
+    
+    // Asignar el total solo de consumo (el tiempo se agrega al finalizar)
+    $venta->total = round($productos_total, 2); 
+    $venta->save();
+}
+  
+
+
+   public function agregarProductos(Request $request, $idmesa)
+{
+    $mesa = Mesas::findOrFail($idmesa);
+
+    $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
+    if (!$venta) {
+        $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+        if ($mesa->estado !== 'ocupada') {
+             $mesa->estado = 'ocupada';
+             $mesa->save();
+        }
     }
 
-    public function agregarProductos(Request $request, $idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
+    $productosSeleccionados = $request->input('productosSeleccionados', []);
+    // 💡 CAMBIO CLAVE: Recibir el array asociativo de cantidades
+    $cantidadesInput = $request->input('cantidades', []); 
+    $hayCambios = false;
 
-        $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
-        if (!$venta) {
-            $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+    // Iteramos SOLAMENTE sobre los IDs de los productos marcados
+    foreach ($productosSeleccionados as $productoId) {
+        // 💡 CAMBIO CLAVE: Obtener la cantidad usando el ID del producto como llave
+        $cantidad = $cantidadesInput[$productoId] ?? 0; 
+        
+        if ($cantidad <= 0) continue;
+
+        $producto = Productos::findOrFail($productoId);
+        if ($producto->stock < $cantidad) {
+            return redirect()->back()->with('error', "Stock insuficiente para {$producto->nombre}");
         }
 
-        $productosSeleccionados = $request->input('productosSeleccionados', []);
-        $cantidades = $request->input('cantidades', []);
+        $venta->productos()->attach($producto->idproducto, [
+            'cantidad' => $cantidad,
+            'precio_unitario' => $producto->precio,
+            'subtotal' => $producto->precio * $cantidad,
+        ]);
 
-        // En tu vista envía cantidades[] y productosSeleccionados[] (mismo orden)
-        foreach ($productosSeleccionados as $index => $productoId) {
-            $cantidad = $cantidades[$index] ?? 0;
-            if ($cantidad <= 0) continue;
+        $producto->stock -= $cantidad;
+        $producto->save();
 
-            $producto = Productos::findOrFail($productoId);
-            if ($producto->stock < $cantidad) {
-                return redirect()->back()->with('error', "Stock insuficiente para {$producto->nombre}");
-            }
-
-            $venta->productos()->attach($producto->idproducto, [
-                'cantidad' => $cantidad,
-                'precio_unitario' => $producto->precio,
-                'subtotal' => $producto->precio * $cantidad,
-            ]);
-
-            $producto->stock -= $cantidad;
-            $producto->save();
-        }
-
-        return redirect()->back()->with('success','Productos agregados correctamente.');
+        $hayCambios = true;
     }
+
+    // Actualiza el campo 'total' en la base de datos
+    if ($hayCambios) {
+        $this->_actualizarTotalVenta($venta);
+    }
+
+    return redirect()->back()->with('success','Productos agregados correctamente.');
+}
 
     public function agregarProductosConsumo(Request $request, $idmesa)
-    {
-        // Misma lógica pero con MesasConsumos
-        $mesa = MesasConsumos::findOrFail($idmesa);
+{
+    $mesa = MesasConsumos::findOrFail($idmesa);
 
-        $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
-        if (!$venta) {
-            $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+    $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first(); 
+    if (!$venta) {
+        $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+        if ($mesa->estado !== 'ocupada') {
+             $mesa->estado = 'ocupada';
+             $mesa->save();
         }
-
-        $productosSeleccionados = $request->input('productosSeleccionados', []);
-        $cantidades = $request->input('cantidades', []);
-
-        foreach ($productosSeleccionados as $index => $productoId) {
-            $cantidad = $cantidades[$index] ?? 0;
-            if ($cantidad <= 0) continue;
-
-            $producto = Productos::findOrFail($productoId);
-            if ($producto->stock < $cantidad) {
-                return redirect()->back()->with('error', "Stock insuficiente para {$producto->nombre}");
-            }
-
-            $venta->productos()->attach($producto->idproducto, [
-                'cantidad' => $cantidad,
-                'precio_unitario' => $producto->precio,
-                'subtotal' => $producto->precio * $cantidad,
-            ]);
-
-            $producto->stock -= $cantidad;
-            $producto->save();
-        }
-
-        return redirect()->back()->with('success','Productos agregados correctamente a la mesa de consumo.');
     }
+
+    $productosSeleccionados = $request->input('productosSeleccionados', []);
+    // 💡 CAMBIO CLAVE: Recibir el array asociativo de cantidades
+    $cantidadesInput = $request->input('cantidades', []); 
+    $hayCambios = false;
+
+    // Iteramos SOLAMENTE sobre los IDs de los productos marcados
+    foreach ($productosSeleccionados as $productoId) {
+        // 💡 CAMBIO CLAVE: Obtener la cantidad usando el ID del producto como llave
+        $cantidad = $cantidadesInput[$productoId] ?? 0; 
+        
+        if ($cantidad <= 0) continue;
+
+        $producto = Productos::findOrFail($productoId);
+        if ($producto->stock < $cantidad) {
+            return redirect()->back()->with('error', "Stock insuficiente para {$producto->nombre}");
+        }
+
+        $venta->productos()->attach($producto->idproducto, [
+            'cantidad' => $cantidad,
+            'precio_unitario' => $producto->precio,
+            'subtotal' => $producto->precio * $cantidad,
+        ]);
+
+        $producto->stock -= $cantidad;
+        $producto->save();
+        
+        $hayCambios = true;
+    }
+
+    // Actualiza el campo 'total' en la base de datos
+    if ($hayCambios) {
+        $this->_actualizarTotalVenta($venta);
+    }
+
+    return redirect()->back()->with('success','Productos agregados correctamente a la mesa de consumo.');
+}
 
     public function iniciar($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
-        $mesa->estado = 'ocupada';
-        $mesa->save();
+        
+        // Solo inicia si está disponible para evitar problemas
+        if ($mesa->estado == 'disponible') {
+            $mesa->estado = 'ocupada';
+            $mesa->save();
 
-        $venta = MesasVentas::where('idmesa',$idmesa)->whereNull('fechafin')->first();
-        if (!$venta) {
-            MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+            $venta = MesasVentas::where('idmesa',$idmesa)->whereNull('fechafin')->first();
+            if (!$venta) {
+                MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+            }
         }
 
         return redirect()->back();
@@ -107,13 +160,14 @@ class MesasventasController extends Controller
     public function finalizar($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
-        $mesa->estado = 'disponible';
+        $mesa->estado = 'disponible'; // Cambia el estado
         $mesa->save();
 
         $venta = MesasVentas::where('idmesa',$idmesa)->whereNull('fechafin')->latest()->first();
         if ($venta) {
             $venta->fechafin = now();
-            // calculo tiempo ejemplo (minutos)
+            
+            // Cálculos para finalizar la venta
             $inicio = Carbon::parse($venta->fechainicio);
             $fin = Carbon::parse($venta->fechafin);
             $minutes = $inicio->diffInMinutes($fin);
@@ -121,8 +175,8 @@ class MesasventasController extends Controller
             $tarifaMinuto = $tarifaHora / 60;
             $cargoTiempo = round($minutes * $tarifaMinuto,2);
 
-            // productos total
-            $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
+            // Se calcula el total de productos directamente de la tabla pivote
+            $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal); 
             $venta->total = round($productos_total + $cargoTiempo,2);
             $venta->save();
         }
@@ -147,7 +201,7 @@ class MesasventasController extends Controller
         $inicio = Carbon::parse($venta->fechainicio);
         $fin = Carbon::parse($venta->fechafin);
         $minutes = $inicio->diffInMinutes($fin);
-        $tarifaHora = 7000;
+        $tarifaHora = 10000;
         $tarifaMinuto = $tarifaHora / 60;
         $cargoTiempo = round($minutes * $tarifaMinuto, 2);
 
