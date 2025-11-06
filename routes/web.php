@@ -13,10 +13,6 @@ use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\VentasController;
 
 
-// Página de inicio
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
 
 
 // ---------------------- PRODUCTOS ----------------------
@@ -73,7 +69,7 @@ Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name(
 Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
 
 
-// ---------------------- MESAS DE CONSUMO ----------------------
+// MESAS DE CONSUMO
 Route::get('/mesasconsumo', [MesasConsumosController::class, 'index'])->name('mesasconsumo.index');
 Route::get('/mesasconsumo/create', [MesasConsumosController::class, 'create'])->name('mesasconsumo.create');
 Route::post('/mesasconsumo/store', [MesasConsumosController::class, 'store'])->name('mesasconsumo.store');
@@ -81,12 +77,16 @@ Route::get('/mesasconsumo/{idmesaconsumo}/edit', [MesasConsumosController::class
 Route::post('/mesasconsumo/{idmesaconsumo}/update', [MesasConsumosController::class, 'update'])->name('mesasconsumo.update');
 Route::post('/mesasconsumo/{idmesaconsumo}/destroy', [MesasConsumosController::class, 'destroy'])->name('mesasconsumo.destroy');
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
+
 Route::post('/mesasconsumo/agregar-productos', [MesasConsumosController::class, 'agregarProductos'])->name('mesasconsumo.agregarProductos');
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
 Route::get('/mesasconsumo/{idmesaconsumo}/agregar-producto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
 Route::post('/mesasconsumo/{idmesaconsumo}/guardar-producto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
+Route::get('/mesasconsumo/{idmesaconsumo}/agregarproducto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
+Route::post('/mesasconsumo/{idmesaconsumo}/guardarproducto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
 
-// ---------------------- MESAS VENTAS ----------------------
+
+// MESAS VENTAS
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
 Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name('mesasventas.store');
@@ -108,6 +108,26 @@ Route::post('/mesasventas/{idmesa}/reiniciar', [MesasventasController::class, 'r
 // ------------------------- VENTAS -----------------------------------
 Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
 Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
+=======
+Route::get('/mesasventas/{idmesa}', [MesasventasController::class, 'show'])->name('mesasventas.show');
+
+Route::post('/mesasventas/{idmesa}/iniciar', [MesasventasController::class, 'iniciar'])->name('mesasventas.iniciar');
+Route::post('/mesasventas/{idmesa}/finalizar', [MesasventasController::class, 'finalizar'])->name('mesasventas.finalizar');
+Route::post('/mesasventas/{idmesa}/estado', [MesasventasController::class, 'actualizarEstado'])->name('mesasventas.estado');
+Route::post('/mesasventas/{idmesa}/reiniciar', [MesasventasController::class, 'reiniciar'])->name('mesasventas.reiniciar');
+
+// Agregar productos (mesas normales)
+Route::post('/mesasventas/{idmesa}/agregarproductos', [MesasventasController::class, 'agregarProductos'])
+    ->name('mesasventas.agregarProductos');
+
+// Agregar productos (mesas de consumo)
+Route::post('/mesasventas/{idmesa}/agregarproductosconsumo', [MesasventasController::class, 'agregarProductosConsumo'])
+    ->name('mesasventas.agregarProductosConsumo');
+
+// VENTAS - factura
+Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
+Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
+
 
 
 

@@ -27,4 +27,16 @@ return new class extends Migration
     {
         Schema::dropIfExists('mesas');
     }
+     public function ventaActiva()
+    {
+        return $this->hasOne(MesasVentas::class, 'idmesa', 'idmesa')
+                    ->whereNull('fechafin')
+                    ->latest();
+    }
+
+    // Si quieres acceder a ventas históricas
+    public function ventas()
+    {
+        return $this->hasMany(MesasVentas::class, 'idmesa', 'idmesa');
+    }
 };
