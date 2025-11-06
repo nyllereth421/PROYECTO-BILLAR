@@ -15,6 +15,11 @@ class mesas extends Model
         'tipo',
         'numeromesa',
     ];
+
+    public function ventaActiva()
+{
+    return $this->hasOne(Ventas::class, 'idmesaconsumo')->latest();
+}
  public function ventas()
     {
         return $this->hasMany(MesasVentas::class, 'idmesa', 'idmesa');
