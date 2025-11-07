@@ -234,6 +234,48 @@ class MesasventasController extends Controller
 
     return redirect()->back()->with('success', 'Estado de la mesa de consumo actualizado correctamente.');
 }
+public function eliminarProducto($ventaId, $productoId)
+{
+    $venta = MesasVentas::findOrFail($ventaId);
+
+    $productoPivot = $venta->productos()->where('productos.idproducto', $productoId)->first();
+    if ($productoPivot) {
+        $producto = Productos::findOrFail($productoId);
+        $producto->stock += $productoPivot->pivot->cantidad;
+        $producto->save();
+
+        $venta->productos()->detach($productoId);
+
+        $this->_actualizarTotalVenta($venta);
+    }
+
+    return redirect()->back()->with('success', 'Producto eliminado correctamente.');
+}
+public function eliminarProductoConsumo($ventaId, $productoId)
+{
+    // Obtener la venta activa de la mesa de consumo
+    $venta = MesasVentas::findOrFail($ventaId);
+
+    // Buscar el producto en la relación muchos a muchos especificando la tabla para evitar ambigüedad
+    $productoPivot = $venta->productos()->where('productos.idproducto', $productoId)->first();
+
+    if ($productoPivot) {
+        // Recuperar el producto original
+        $producto = Productos::findOrFail($productoId);
+
+        // Devolver la cantidad eliminada al stock
+        $producto->stock += $productoPivot->pivot->cantidad;
+        $producto->save();
+
+        // Eliminar el producto de la venta
+        $venta->productos()->detach($productoId);
+
+        // Actualizar el total de la venta
+        $this->_actualizarTotalVenta($venta);
+    }
+
+    return redirect()->back()->with('success', 'Producto eliminado correctamente de la mesa de consumo.');
+}
 
 
 }
