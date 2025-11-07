@@ -90,13 +90,10 @@
                                         <i class="fa fa-lg fa-fw fa-pen"></i>
                                     </a>
                                     
-                                    <form action="{{ route('productos.destroy', $producto->idproducto) }}" method="POST" class="d-inline delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-xs btn-default text-danger mx-1 shadow" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar el producto {{ $producto->nombre }}?')">
-                                            <i class="fa fa-lg fa-fw fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    {{-- Formulario para Eliminar --}}
+                            <button class="btn btn-secondary btn-sm" onclick="alert('❌ Este producto NO se puede eliminar');">
+                                <i class="fas fa-ban"></i> Eliminar
+                            </button>
                                 </td>
                             </tr>
                         @endforeach

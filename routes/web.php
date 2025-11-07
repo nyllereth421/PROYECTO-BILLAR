@@ -80,29 +80,27 @@ Route::post('/mesasconsumo/{idmesaconsumo}/destroy', [MesasConsumosController::c
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
 Route::get('/mesasconsumo/{idmesaconsumo}/agregarproducto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
 Route::post('/mesasconsumo/{idmesaconsumo}/guardarproducto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
+Route::delete('/mesasconsumo/{venta}/producto/{producto}', [MesasventasController::class, 'eliminarProductoConsumo'])->name('mesasventas.eliminarProductoConsumo');
 
 // MESAS VENTAS
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
 Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name('mesasventas.store');
 Route::get('/mesasventas/{idmesa}', [MesasventasController::class, 'show'])->name('mesasventas.show');
-
 Route::post('/mesasventas/{idmesa}/iniciar', [MesasventasController::class, 'iniciar'])->name('mesasventas.iniciar');
 Route::post('/mesasventas/{idmesa}/finalizar', [MesasventasController::class, 'finalizar'])->name('mesasventas.finalizar');
 Route::post('/mesasventas/{idmesa}/estado', [MesasventasController::class, 'actualizarEstado'])->name('mesasventas.estado');
 Route::post('/mesasventas/{idmesa}/reiniciar', [MesasventasController::class, 'reiniciar'])->name('mesasventas.reiniciar');
+Route::post('/mesasventas/{idmesa}/agregarproductos', [MesasventasController::class, 'agregarProductos'])->name('mesasventas.agregarProductos');
+Route::post('/mesasventas/{idmesa}/agregarproductosconsumo', [MesasventasController::class, 'agregarProductosConsumo'])->name('mesasventas.agregarProductosConsumo');
+Route::get('/mesasventas/{idmesa}/total', [MesasventasController::class, 'verTotalVenta'])->name('mesasventas.verTotalVenta');
+Route::delete('/mesasventas/{venta}/producto/{producto}', [MesasventasController::class, 'eliminarProducto'])->name('mesasventas.eliminarProducto');
 
-// Agregar productos (mesas normales)
-Route::post('/mesasventas/{idmesa}/agregarproductos', [MesasventasController::class, 'agregarProductos'])
-    ->name('mesasventas.agregarProductos');
-
-// Agregar productos (mesas de consumo)
-Route::post('/mesasventas/{idmesa}/agregarproductosconsumo', [MesasventasController::class, 'agregarProductosConsumo'])
-    ->name('mesasventas.agregarProductosConsumo');
 
 // VENTAS - factura
 Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
 Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
+Route::get('/mesas/vertotal/{id}', [MesasVentasController::class, 'verTotalVenta'])->name('mesas.verTotalVenta');
 
 
 

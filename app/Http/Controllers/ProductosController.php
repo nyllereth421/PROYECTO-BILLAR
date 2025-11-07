@@ -95,16 +95,11 @@ class ProductosController extends Controller
      * Elimina un producto, validando si tiene relaciones activas.
      */
     public function destroy($id)
-    {
-        $producto = Productos::findOrFail($id);
-
-        try {
-            $producto->delete();
-            return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
-        } catch (QueryException $e) {
-            return redirect()->route('productos.index')->with('error', 'No se puede eliminar el producto porque está asociado a un registro de venta.');
-        }
-    }
+    
+{
+    return redirect()->route('productos.index')
+        ->with('error', '❌ No está permitido eliminar productos.');
+}
 
     /**
      * Muestra los 5 productos más vendidos (para el dashboard o welcome).
@@ -114,4 +109,13 @@ class ProductosController extends Controller
         $topProductos = Productos::orderByDesc('cantidad_vendida')->take(5)->get();
         return view('welcome', compact('topProductos'));
     }
+      public function mostrarEnInicio()
+{
+    // Consulta los 5 productos más vendidos o solo todos los productos
+    $productos = Productos::take(5)->get();
+
+
+    // Pasar los datos a la vista welcome
+    return view('welcome', compact('productos'));
+}
 }
