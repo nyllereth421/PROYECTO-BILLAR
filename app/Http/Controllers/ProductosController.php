@@ -1,76 +1,117 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Proveedores;
+
 use App\Models\Productos;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class ProductosController extends Controller
 {
-    // Mostrar lista
-    public function index()
+    /**
+     * Muestra la lista de productos con buscador y alertas.
+     */
+    public function index(Request $request)
     {
-        $productos = Productos::orderBy('cantidad_vendida', 'desc')
-                          ->take(5)
-                          ->get();
+        // Texto de búsqueda
+        $buscar = $request->input('buscar', null);
 
-    return view('productos.index', compact('productos'));
+        // Construcción de la consulta
+        $query = Productos::with('proveedor');
+
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
+                  ->orWhere('idproducto', $buscar);
+            });
+        }
+
+        // Se listan todos los productos ordenados alfabéticamente
+        $productos = $query->orderBy('nombre', 'asc')->get();
+
+        // Verificar si hay productos con poco stock
+        $productosBajoStock = $productos->where('cantidad', '<', 10)->count();
+
+        if ($productosBajoStock < 10) {
+            session()->flash('alerta_stock', '¡Atención! Algunos productos tienen menos de 10 unidades disponibles.');
+        }
+
+        return view('productos.index', compact('productos', 'buscar'));
     }
 
-    // Mostrar formulario para crear
+    /**
+     * Muestra el formulario de creación.
+     */
     public function create()
     {
-        $proveedores = Proveedores::all();
-        return view('productos.create', compact('proveedores'));
+        return view('productos.create');
     }
 
-    // Guardar nuevo producto
+    /**
+     * Guarda un nuevo producto.
+     */
     public function store(Request $request)
     {
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'precio' => 'required|numeric|min:1000',
+            'cantidad' => 'required|integer|min:10',
+        ]);
+
         Productos::create($request->all());
-        return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
 
+        return redirect()->route('productos.index')->with('success', 'Producto agregado correctamente.');
     }
 
-    // Mostrar formulario para editar
-    public function edit($idproducto)
+    /**
+     * Muestra el formulario de edición.
+     */
+    public function edit($id)
     {
-        $producto = Productos::findOrFail($idproducto);
-        $proveedores = Proveedores::all();
-        return view('productos.edit', compact('producto', 'proveedores'));
+        $producto = Productos::findOrFail($id);
+        return view('productos.edit', compact('producto'));
     }
 
-    // Actualizar producto
-    public function update(Request $request, $idproducto)
+    /**
+     * Actualiza los datos del producto.
+     */
+    public function update(Request $request, $id)
     {
-        $producto = Productos::findOrFail($idproducto);
+        $producto = Productos::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'precio' => 'required|numeric|min:1000',
+            'cantidad' => 'required|integer|min:10',
+        ]);
+
         $producto->update($request->all());
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
-    // Eliminar producto (opcional)
-    public function destroy($idproducto)
+    /**
+     * Elimina un producto, validando si tiene relaciones activas.
+     */
+    public function destroy($id)
     {
-        $producto = Productos::findOrFail($idproducto);
-        $producto->delete();
-        return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
+        $producto = Productos::findOrFail($id);
+
+        try {
+            $producto->delete();
+            return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
+        } catch (QueryException $e) {
+            return redirect()->route('productos.index')->with('error', 'No se puede eliminar el producto porque está asociado a un registro de venta.');
+        }
     }
 
-    public function mostrarEnInicio()
-{
-    // Consulta los 5 productos más vendidos o solo todos los productos
-    $productos = Productos::take(5)->get();
-
-
-    // Pasar los datos a la vista welcome
-    return view('welcome', compact('productos'));
-}
-
-
-
-
-
-
-
+    /**
+     * Muestra los 5 productos más vendidos (para el dashboard o welcome).
+     */
+    public function topProductos()
+    {
+        $topProductos = Productos::orderByDesc('cantidad_vendida')->take(5)->get();
+        return view('welcome', compact('topProductos'));
+    }
 }

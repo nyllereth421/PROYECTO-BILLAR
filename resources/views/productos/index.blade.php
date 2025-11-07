@@ -1,111 +1,137 @@
 @extends('adminlte::page')
 
-@section('title', 'Lista de Productos')
-
-{{-- Incluir estilos si usas DataTables --}}
-@section('css')
-    {{-- Generalmente DataTables se configura con JS, pero si necesitas estilos específicos, irían aquí --}}
-@stop
+@section('title', 'Gestión de Productos')
 
 @section('content_header')
-    <h1><i class="fas fa-box-open"></i> Productos</h1>
+    <h1 class="m-0 text-dark"><i class="fas fa-boxes"></i> Gestión de Productos</h1>
 @stop
 
 @section('content')
 <div class="container-fluid">
-    {{-- Mensajes de Sesión --}}
+
+    {{-- ALERTAS --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+        <x-adminlte-alert theme="success" title="Éxito" dismissable>
+            {{ session('success') }}
+        </x-adminlte-alert>
     @endif
 
-    {{-- Inicio de la Tarjeta AdminLTE --}}
-    <div class="card card-primary card-outline">
-        <div class="card-header">
-            <h3 class="card-title">Listado de Productos en Inventario</h3>
-            <div class="card-tools">
-                {{-- Botón de Nuevo Producto --}}
-                <a href="{{ route('productos.create') }}" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus-circle"></i> Nuevo Producto
-                </a>
-            </div>
-        </div>
-        
-        <div class="card-body">
-            {{-- La clase 'data-table' es una convención para el JS de DataTables --}}
-            <table class="table table-bordered table-striped data-table" id="productos-table">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">ID</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Proveedor</th>
-                        <th style="width: 10%">Precio</th>
-                        <th style="width: 5%">Stock</th>
-                        <th style="width: 15%">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($productos as $producto)
-                    <tr>
-                        <td>{{ $producto->idproducto }}</td>
-                        <td>{{ $producto->nombre }}</td>
-                        <td>{{ $producto->descripcion }}</td>
-                        <td>{{ $producto->proveedor->nombre ?? 'Proveedor no encontrado' }}</td>
-                        <td><strong>${{ number_format($producto->precio, 2) }}</strong></td>
-                        <td><span class="badge @if($producto->stock > 10) bg-success @elseif($producto->stock > 0) bg-warning @else bg-danger @endif">{{ $producto->stock }}</span></td>
-                        <td class="text-center">
-                            {{-- Botón Editar --}}
-                            <a href="{{ route('productos.edit', $producto->idproducto) }}" class="btn btn-xs btn-warning" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            
-                            {{-- Formulario para Eliminar --}}
-                            <form action="{{ route('productos.destroy', $producto->idproducto) }}" method="POST" style="display:inline-block; margin-left: 5px;" onsubmit="return confirm('¿Está seguro de eliminar el producto: {{ $producto->nombre }}?');">
-                                @csrf
-                                @method('DELETE') {{-- Usa el método DELETE --}}
-                                <button class="btn btn-xs btn-danger" type="submit" title="Eliminar">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="card-footer clearfix">
-            <a href="{{ route('welcome') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-alt-circle-left"></i> Volver al Inicio
-            </a>
+    @if(session('error'))
+        <x-adminlte-alert theme="danger" title="Error" dismissable>
+            {{ session('error') }}
+        </x-adminlte-alert>
+    @endif
+
+    @if(session('alerta_stock'))
+        <x-adminlte-alert theme="warning" title="Alerta de Stock" dismissable>
+            <i class="fas fa-box-open"></i> {{ session('alerta_stock') }}
+        </x-adminlte-alert>
+    @endif
+
+    {{-- FILTROS Y BUSCADOR --}}
+    <div class="row">
+        <div class="col-12">
+            <x-adminlte-card title="Filtros y Acciones" theme="info" icon="fas fa-filter" collapsible>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex mb-3 mb-md-0 me-md-3 flex-grow-1">
+                        <input type="text" id="buscarProducto" class="form-control me-2" placeholder="Buscar por nombre o descripción...">
+                        <button type="button" class="btn btn-outline-primary" id="btnLimpiar">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+            
+                    <a href="{{ route('productos.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i> Agregar Producto
+                    </a>
+                </div>
+            </x-adminlte-card>
         </div>
     </div>
-    {{-- Fin de la Tarjeta AdminLTE --}}
+
+    {{-- TABLA DE PRODUCTOS --}}
+    <div class="card shadow-sm">
+        <div class="card-header bg-gradient-primary">
+            <h3 class="card-title"><i class="fas fa-list-alt"></i> Listado de Productos</h3>
+        </div>
+        <div class="card-body table-responsive p-0">
+            @if(isset($productos) && $productos->count() > 0)
+                <table class="table table-striped table-valign-middle" id="tablaProductos">
+                    <thead class="bg-light">
+                        <tr class="text-center">
+                            <th style="width: 5%">ID</th>
+                            <th style="width: 30%">Nombre</th>
+                            <th style="width: 15%">Precio</th>
+                            <th style="width: 20%">Stock Disponible</th>
+                            <th style="width: 15%">Cantidad Vendida</th>
+                            <th style="width: 15%">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($productos as $producto)
+                            <tr>
+                                <td class="text-center">{{ $producto->idproducto }}</td>
+                                <td>{{ $producto->nombre }}</td>
+                                <td class="text-end">${{ number_format($producto->precio, 2) }}</td>
+                                <td class="text-center">
+                                    @if($producto->stock < 10)
+                                        <span class="badge bg-warning text-dark p-2">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Stock Bajo ({{ $producto->cantidad_disponible }} un.)
+                                        </span>
+                                    @else
+                                        <span class="text-secondary">
+                                            {{ $producto->stock }} unidades
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">{{ $producto->cantidad_vendida ?? 0 }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('productos.edit', $producto->idproducto) }}" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Editar">
+                                        <i class="fa fa-lg fa-fw fa-pen"></i>
+                                    </a>
+                                    
+                                    <form action="{{ route('productos.destroy', $producto->idproducto) }}" method="POST" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-xs btn-default text-danger mx-1 shadow" title="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar el producto {{ $producto->nombre }}?')">
+                                            <i class="fa fa-lg fa-fw fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <div class="alert alert-secondary m-3 text-center">
+                    <i class="fas fa-info-circle"></i> No hay productos registrados.
+                </div>
+            @endif
+        </div>
+    </div>
 </div>
 @stop
 
-{{-- Script para DataTables y SweetAlert2 (opcional) --}}
 @section('js')
-    <script>
-        $(document).ready(function() {
-            // Inicialización de DataTables
-            $('#productos-table').DataTable({
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json" // Idioma español
-                }
-            });
+<script>
+    console.log('Vista de productos lista 🟢');
+
+    // Filtro en tiempo real
+    document.getElementById('buscarProducto').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll('#tablaProductos tbody tr');
+
+        filas.forEach(fila => {
+            let texto = fila.textContent.toLowerCase();
+            fila.style.display = texto.includes(filtro) ? '' : 'none';
         });
-    </script>
+    });
+
+    // Botón para limpiar el buscador y mostrar todo de nuevo
+    document.getElementById('btnLimpiar').addEventListener('click', function() {
+        document.getElementById('buscarProducto').value = '';
+        let filas = document.querySelectorAll('#tablaProductos tbody tr');
+        filas.forEach(fila => fila.style.display = '');
+    });
+</script>
 @stop
