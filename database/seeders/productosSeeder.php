@@ -172,16 +172,8 @@ class ProductosSeeder extends Seeder
     ],
 
 
-    // 🥤 Gaseosas y refrescos → CocaCola (2) y Postobón (3)
-    [
-        'nombre' => 'Coca Cola',
-        'descripcion' => 'Bebida gaseosa',
-        'precio' => 0.00,
-        'stock' => 50,
-        'idproveedor' => 2,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ],
+    // 🥤 Gaseosas y refrescos → CocaCola  y Postobón 
+
     [
         'nombre' => 'Coca Cola 350 ml',
         'descripcion' => 'Presentación personal',
@@ -228,7 +220,7 @@ class ProductosSeeder extends Seeder
         'updated_at' => now(),
     ],
     [
-        'nombre' => 'Gaseosa 350 ml',
+        'nombre' => 'Gaseosa 350 ml postobon',
         'descripcion' => 'Gaseosa mediana',
         'precio' => 3500.00,
         'stock' => 50,
@@ -256,7 +248,7 @@ class ProductosSeeder extends Seeder
     ],
 
 
-    // 💧 Aguas → Postobón (3)
+    // 💧 Aguas →  (2)
     [
         'nombre' => 'Agua pequeña',
         'descripcion' => 'Agua embotellada 300ml.',
@@ -275,15 +267,7 @@ class ProductosSeeder extends Seeder
         'created_at' => now(),
         'updated_at' => now(),
     ],
-    [
-        'nombre' => 'Agua saborizada',
-        'descripcion' => 'Agua con sabor.',
-        'precio' => 0.00,
-        'stock' => 50,
-        'idproveedor' => 3,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ],
+    
 
 
     // 🧃 Jugos y energéticas → Postobón y CocaCola
