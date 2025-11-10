@@ -80,7 +80,7 @@ Route::post('/mesasconsumo/{idmesaconsumo}/destroy', [MesasConsumosController::c
 Route::post('/mesasconsumo/{idmesaconsumo}/estado', [MesasConsumosController::class, 'cambiarEstado'])->name('mesasconsumo.estado');
 Route::get('/mesasconsumo/{idmesaconsumo}/agregarproducto', [MesasConsumosController::class, 'agregarProducto'])->name('mesasconsumo.agregar');
 Route::post('/mesasconsumo/{idmesaconsumo}/guardarproducto', [MesasConsumosController::class, 'guardarProducto'])->name('mesasconsumo.guardar');
-Route::delete('/mesasconsumo/{venta}/producto/{producto}', [MesasventasController::class, 'eliminarProductoConsumo'])->name('mesasventas.eliminarProductoConsumo');
+Route::delete('ventas/consumo/{ventaId}/productos/{productoId}', [MesasventasController::class, 'eliminarProductoConsumo'])->name('mesasventas.eliminarProductoConsumo');
 
 // MESAS VENTAS
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
@@ -94,8 +94,9 @@ Route::post('/mesasventas/{idmesa}/reiniciar', [MesasventasController::class, 'r
 Route::post('/mesasventas/{idmesa}/agregarproductos', [MesasventasController::class, 'agregarProductos'])->name('mesasventas.agregarProductos');
 Route::post('/mesasventas/{idmesa}/agregarproductosconsumo', [MesasventasController::class, 'agregarProductosConsumo'])->name('mesasventas.agregarProductosConsumo');
 Route::get('/mesasventas/{idmesa}/total', [MesasventasController::class, 'verTotalVenta'])->name('mesasventas.verTotalVenta');
-Route::delete('/mesasventas/{venta}/producto/{producto}', [MesasventasController::class, 'eliminarProducto'])->name('mesasventas.eliminarProducto');
-
+Route::delete('ventas/{ventaId}/productos/{productoId}', [MesasventasController::class, 'eliminarProducto'])->name('mesasventas.eliminarProducto');
+Route::post('/mesasventas/finalizarVenta/{venta}', [MesasventasController::class, 'finalizarVenta'])->name('mesasventas.finalizarVenta');
+Route::post('/mesasventas/{idmesa}/cerrar', [MesasventasController::class, 'cerrarVenta'])->name('mesasventas.cerrarVenta');
 
 // VENTAS - factura
 Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');

@@ -39,7 +39,7 @@
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
-            
+                    <a href="{{ route('inventario.index') }}" class="btn btn-secondary">Volver a inventario</a>
                     <a href="{{ route('productos.create') }}" class="btn btn-success">
                         <i class="fas fa-plus-circle"></i> Agregar Producto
                     </a>

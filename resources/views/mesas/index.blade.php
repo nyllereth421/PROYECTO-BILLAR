@@ -14,6 +14,7 @@
         <a href="{{ route('welcome') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Volver al Inicio
         </a>
+        <a href="{{ route('inventario.index') }}" class="btn btn-secondary">Volver a inventario</a>
 
         {{-- ✅ Botones para crear nuevas mesas --}}
         <div>
