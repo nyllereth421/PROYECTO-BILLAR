@@ -37,9 +37,9 @@
                     <form action="{{ route('proveedores.destroy', $proveedor->idproveedor) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Eliminar este producto?');">
                         @csrf
                        
-                        <button class="btn btn-sm btn-danger" type="submit">Eliminar</button>
-                        
-                    </form>
+                        <button class="btn btn-xs btn-secondary" disabled title="No permitido">
+                            <i class="fas fa-ban"></i>
+                        </button>
 
                 </td>
                 

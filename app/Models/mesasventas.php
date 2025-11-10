@@ -17,6 +17,7 @@ class MesasVentas extends Model
         'fechafin',
         'total',
         'idmesa',
+        ''
     ];
 
     
