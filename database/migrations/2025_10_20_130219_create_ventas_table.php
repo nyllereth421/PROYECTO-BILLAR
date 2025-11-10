@@ -14,14 +14,16 @@ return new class extends Migration
     Schema::create('ventas', function (Blueprint $table) {
         $table->id(); 
         $table->datetime('fecha');
-        $table->unsignedBigInteger('numerodocumento');
-        $table->foreign('numerodocumento')
-              ->references('numerodocumento')->on('empleados');
-
         $table->unsignedBigInteger('idmesaconsumo');
         $table->foreign('idmesaconsumo')
               ->references('idmesaconsumo')->on('mesas_consumos');
         $table->decimal('total', 10, 2);
+        $table->unsignedBigInteger('idusuario');
+        $table->foreign('idusuario')
+              ->references('id')->on('users');
+        $table->unsignedBigInteger('idmesa');
+        $table->foreign('idmesa')
+              ->references('idmesa')->on('mesas');
         $table->timestamps();
     });
 }
