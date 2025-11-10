@@ -90,13 +90,7 @@
                             </form>
                         @endif
 
-                        {{-- Factura --}}
-                        @if(!empty($mesa->ventaActiva))
-                            <a href="{{ route('ventas.factura', $mesa->ventaActiva->id) }}" class="btn btn-info btn-sm" title="Ver factura">
-                                <i class="fas fa-file-invoice"></i>
-                            </a>
-                        @endif
-
+                        
                         {{-- Cambiar estado --}}
                         <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
                             @csrf
@@ -114,6 +108,7 @@
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal-{{ $mesa->idmesa }}">
                             <i class="fas fa-cart-plus"></i>
                         </button>
+                        
 
                         {{-- Botón para ver productos agregados --}}
                         @if($mesa->ventaActiva && $mesa->ventaActiva->productos->count() > 0)
@@ -126,57 +121,148 @@
             </div>
         </div>
 
-        {{-- Modal de productos agregados --}}
-        @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
-        <div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1" aria-labelledby="productosAgregadosLabel-{{ $mesa->idmesa }}" aria-hidden="true">
-            <div class="modal-dialog modal-md">
-                <div class="modal-content">
-                    <div class="modal-header bg-info">
-                        <h5 class="modal-title" id="productosAgregadosLabel-{{ $mesa->idmesa }}">
-                            Productos agregados a Mesa #{{ $mesa->numeromesa }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        {{-- Modal de productos agregados (Mesa NORMAL) --}}
+@if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
+<div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1" 
+     aria-labelledby="productosAgregadosLabel-{{ $mesa->idmesa }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            {{-- Header --}}
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title d-flex align-items-center" id="productosAgregadosLabel-{{ $mesa->idmesa }}">
+                    <i class="fas fa-utensils me-2"></i>
+                    Mesa #{{ $mesa->numeromesa }} - Productos Agregados
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body">
+                {{-- Información del cronómetro --}}
+                <div class="alert alert-light border d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <i class="fas fa-clock text-info me-2"></i>
+                        <strong>Tiempo transcurrido:</strong>
                     </div>
-                    <div class="modal-body">
-                        {{-- Cronómetro --}}
-                        <p><strong>Tiempo transcurrido:</strong> 
-                            <span id="modal-cronometro-{{ $mesa->idmesa }}">00:00:00</span>
-                        </p>
+                    <span class="badge bg-info fs-6" id="modal-cronometro-{{ $mesa->idmesa }}">00:00:00</span>
+                </div>
 
-                        
+                {{-- Lista de productos --}}
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Productos ({{ $mesa->ventaActiva->productos->count() }})
+                        </h6>
+                    </div>
+                    <ul class="list-group list-group-flush lista-productos">
+                        @foreach($mesa->ventaActiva->productos as $producto)
+                            <li class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <strong>{{ $producto->nombre }}</strong>
+                                        @if(!empty($producto->descripcion))
+                                            <small class="text-muted d-block">{{ $producto->descripcion }}</small>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <span class="badge bg-primary rounded-pill fs-6">
+                                            Cantidad: {{ $producto->pivot->cantidad }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <div class="d-flex justify-content-end align-items-center gap-2">
+                                            @if(!empty($producto->pivot->precio))
+                                                <span class="text-success fw-bold">
+                                                    ${{ number_format($producto->pivot->precio * $producto->pivot->cantidad, 0, ',', '.') }}
+                                                </span>
+                                            @endif
+                                            
+                                            {{-- Botón eliminar con confirmación --}}
+                                            <form action="{{ route('mesasventas.eliminarProducto', [$mesa->ventaActiva->id, $producto->idproducto]) }}" 
+                                                  method="POST" 
+                                                  onsubmit="return confirm('¿Está seguro de eliminar {{ $producto->nombre }}?');"
+                                                  class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar producto">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
 
-                        {{-- Lista de productos --}}
-                        <ul class="list-group lista-productos">
-                            @foreach($mesa->ventaActiva->productos as $producto)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $producto->nombre }}
-                                    <span class="badge bg-primary rounded-pill">{{ $producto->pivot->cantidad }}</span>
+                {{-- Resumen de totales --}}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {{-- Total productos --}}
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                    <span class="text-muted">
+                                        <i class="fas fa-box me-2"></i>Total Productos:
+                                    </span>
+                                    <span class="fw-bold text-primary fs-5">
+                                        $<span id="modal-total-productos-{{ $mesa->idmesa }}">
+                                            {{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
 
-                                    {{-- Botón eliminar --}}
-                                    <form action="{{ route('mesasventas.eliminarProducto', [$mesa->ventaActiva->id, $producto->idproducto]) }}" method="POST" class="ms-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" title="Eliminar producto">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </li>
-                            @endforeach
-                        </ul>
+                            {{-- Costo tiempo --}}
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                    <span class="text-muted">
+                                        <i class="fas fa-hourglass-half me-2"></i>Costo Tiempo:
+                                    </span>
+                                    <span class="fw-bold text-warning fs-5">
+                                        $<span id="modal-costo-tiempo-{{ $mesa->idmesa }}">0</span>
+                                    </span>
+                                </div>
+                            </div>
 
-
-
-                        {{-- Total de la Venta Activa --}}
-                        <h5 class="mt-3 text-end text-success">
-                            <strong>Total Acumulado:</strong> ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
-                        </h5>
+                            {{-- Total final --}}
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-success text-white rounded">
+                                    <span>
+                                        <i class="fas fa-calculator me-2"></i>Total Final:
+                                    </span>
+                                    <span class="fw-bold fs-5">
+                                        $<span id="modal-total-final-{{ $mesa->idmesa }}">0</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {{-- Inputs hidden para cálculos --}}
+                <input type="hidden" id="total-productos-{{ $mesa->idmesa }}" 
+                       data-total="{{ $mesa->ventaActiva->total ?? 0 }}">
+                <input type="hidden" id="total-con-tiempo-{{ $mesa->idmesa }}">
+            </div>
+
+            {{-- Footer con acciones --}}
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-success" onclick="finalizarVenta({{ $mesa->idmesa }})">
+                    <i class="fas fa-check-circle me-2"></i>Finalizar Venta
+                </button>
             </div>
         </div>
-        @endif
+    </div>
+</div>
+@endif
 
-        {{-- Modal de agregar productos --}}
+        {{-- Modal de agregar productos (Mesa NORMAL) --}}
         <div class="modal fade" id="productosModal-{{ $mesa->idmesa }}" tabindex="-1" aria-labelledby="productosModalLabel-{{ $mesa->idmesa }}" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -197,7 +283,7 @@
                                             <th>Precio</th>
                                             <th>Stock</th>
                                             <th>Cantidad</th>
-                                            <th>Seleccionar</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -209,13 +295,15 @@
                                             <td>
                                                 <input type="number" name="cantidades[{{ $producto->idproducto }}]" min="0" max="{{ $producto->stock }}" class="form-control text-center" value="0">
                                             </td>
-                                            <td>
-                                                <input type="checkbox" name="productosSeleccionados[]" value="{{ $producto->idproducto }}">
-                                            </td>
+                                            
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            {{-- 🔹 Enlaces de paginación centrados --}}
+                            <div class="d-flex justify-content-center mt-3">
+                                {{ $productos->links('pagination::bootstrap-5') }}
                             </div>
                             <div class="text-end mt-3">
                                 <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Agregar Seleccionados</button>
@@ -237,8 +325,6 @@
                 <div class="card-body text-center">
                     <img src="{{ asset('img/mesas/mesaconsumo.png') }}" alt="mesaconsumo" style="height:110px;">
                     <p class="mt-2"><strong>Estado:</strong> {{ ucfirst($mesa->estado) }}</p>
-
-                    
 
                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
                         {{-- Factura --}}
@@ -343,7 +429,7 @@
                                             <th>Precio</th>
                                             <th>Stock</th>
                                             <th>Cantidad</th>
-                                            <th>Seleccionar</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -355,13 +441,15 @@
                                             <td>
                                                 <input type="number" name="cantidades[{{ $producto->idproducto }}]" min="0" max="{{ $producto->stock }}" class="form-control text-center" value="0">
                                             </td>
-                                            <td>
-                                                <input type="checkbox" name="productosSeleccionados[]" value="{{ $producto->idproducto }}">
-                                            </td>
+                                            
                                         </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                            {{-- 🔹 Paginación centrada --}}
+                            <div class="d-flex justify-content-center mt-3">
+                                {{ $productos->links('pagination::bootstrap-5') }}
                             </div>
                             <div class="text-end mt-3">
                                 <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Agregar Seleccionados</button>
@@ -379,117 +467,208 @@
 
 @section('js')
 <script>
+const PRECIO_POR_HORA = 10000; // 💰 Precio por hora
 let timers = {};
 
+// 🕐 Iniciar cronómetro
 function startTimer(event, id) {
     event.preventDefault();
+
+    if (localStorage.getItem('startTime-' + id)) {
+        event.target.submit();
+        return;
+    }
+
     const startTime = Date.now();
     localStorage.setItem('startTime-' + id, startTime);
+
     updateTimer(id);
-    timers[id] = setInterval(() => updateTimer(id), 1000);
-    event.target.submit();
+    timers[id] = setInterval(() => {
+        updateTimer(id);
+        calculateAndDisplayCardTotals(id); // Actualiza el total en el card principal
+    }, 1000);
+
+    setTimeout(() => {
+        event.target.submit();
+    }, 500);
 }
 
+// 🛑 Detener cronómetro
 function stopTimer(event, id) {
     event.preventDefault();
+
     clearInterval(timers[id]);
     localStorage.removeItem('startTime-' + id);
+
     const el = document.getElementById('cronometro-' + id);
     if (el) el.innerText = "00:00:00";
+
+    // Ocultar o resetear valores del modal al detener
+    document.getElementById('modal-costo-tiempo-' + id).textContent = "0";
+    document.getElementById('modal-total-final-' + id).textContent = "0";
+    document.getElementById('modal-cronometro-' + id).innerText = "00:00:00";
+
+
     event.target.submit();
 }
 
-function syncModalTimer(id) {
-    const mainEl = document.getElementById('cronometro-' + id);
-    const modalEl = document.getElementById('modal-cronometro-' + id);
-    if(mainEl && modalEl) modalEl.innerText = mainEl.innerText;
-}
-
+// 🔁 Actualizar cronómetro y totales
 function updateTimer(id) {
     const startTime = localStorage.getItem('startTime-' + id);
     if (!startTime) return;
-    const diff = Math.floor((Date.now() - startTime) / 1000);
+
+    const diff = Math.floor((Date.now() - parseInt(startTime)) / 1000);
     const h = String(Math.floor(diff / 3600)).padStart(2, '0');
     const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
     const s = String(diff % 60).padStart(2, '0');
+
+    const tiempoStr = `${h}:${m}:${s}`;
     const el = document.getElementById('cronometro-' + id);
-    if (el) el.innerText = `${h}:${m}:${s}`;
+    if (el) el.innerText = tiempoStr;
+
+    // Sincronizar y calcular totales en el modal si está abierto
     syncModalTimer(id);
+    calculateAndDisplayModalTotals(id); 
+    calculateAndDisplayCardTotals(id); // Mantiene la actualización en el card (oculto en tu HTML original)
 }
 
+// 💲 Sumar productos + tiempo real (Card Principal - función original renombrada para claridad)
+function calculateAndDisplayCardTotals(id) {
+    const cronometro = document.getElementById('cronometro-' + id);
+    const totalProductosEl = document.getElementById('total-productos-' + id);
+    const totalConTiempoEl = document.getElementById('total-con-tiempo-' + id);
+
+    if (!cronometro || !totalProductosEl || !totalConTiempoEl) return;
+
+    const totalProductos = parseFloat(totalProductosEl.dataset.total || 0);
+
+    const tiempo = cronometro.textContent.split(':');
+    if (tiempo.length !== 3) return;
+
+    const horas = parseInt(tiempo[0]);
+    const minutos = parseInt(tiempo[1]);
+    const segundos = parseInt(tiempo[2]);
+
+    const horasTotales = horas + minutos / 60 + segundos / 3600;
+    const costoTiempo = horasTotales * PRECIO_POR_HORA;
+    const totalFinal = totalProductos + costoTiempo;
+
+    totalConTiempoEl.textContent = new Intl.NumberFormat('es-CO').format(Math.round(totalFinal));
+}
+
+// 📋 Calcular y mostrar totales en el Modal (Productos + Tiempo)
+function calculateAndDisplayModalTotals(id) {
+    const modalCronometroEl = document.getElementById('modal-cronometro-' + id);
+    const modalTotalProductosEl = document.getElementById('modal-total-productos-' + id);
+    const modalCostoTiempoEl = document.getElementById('modal-costo-tiempo-' + id);
+    const modalTotalFinalEl = document.getElementById('modal-total-final-' + id);
+    
+    // Asegurarse de que los elementos existan
+    if (!modalCronometroEl || !modalTotalProductosEl || !modalCostoTiempoEl || !modalTotalFinalEl) {
+        return;
+    }
+
+    const totalProductosStr = modalTotalProductosEl.textContent.replace(/[^0-9,-]+/g, "").replace(",", ".");
+    const totalProductos = parseFloat(totalProductosStr) || 0;
+    
+    const tiempo = modalCronometroEl.textContent.split(':');
+    if (tiempo.length !== 3) return;
+
+    const horas = parseInt(tiempo[0]);
+    const minutos = parseInt(tiempo[1]);
+    const segundos = parseInt(tiempo[2]);
+
+    const horasTotales = horas + minutos / 60 + segundos / 3600;
+    const costoTiempo = horasTotales * PRECIO_POR_HORA;
+    const totalFinal = totalProductos + costoTiempo;
+
+    // Formatear y mostrar los valores
+    const formatter = new Intl.NumberFormat('es-CO');
+    
+    modalCostoTiempoEl.textContent = formatter.format(Math.round(costoTiempo));
+    modalTotalFinalEl.textContent = formatter.format(Math.round(totalFinal));
+}
+
+
+// 🔁 Restaurar cronómetros al recargar
 window.addEventListener('load', () => {
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith('startTime-')) {
             const id = key.split('-')[1];
             updateTimer(id);
-            timers[id] = setInterval(() => updateTimer(id), 1000);
+            timers[id] = setInterval(() => {
+                updateTimer(id);
+                calculateAndDisplayCardTotals(id);
+            }, 1000);
         }
     });
 });
 
+// 🔍 Buscador de productos
 document.addEventListener('DOMContentLoaded', function() {
-    // Buscador para todas las tablas de productos
     document.querySelectorAll('.buscador-productos').forEach(function(input) {
         input.addEventListener('keyup', function() {
             const filter = this.value.toLowerCase();
             const table = this.closest('.modal-body').querySelector('tbody');
             if (!table) return;
             table.querySelectorAll('tr').forEach(function(row) {
-                const text = row.querySelector('td').textContent.toLowerCase(); // nombre del producto
+                const text = row.querySelector('td').textContent.toLowerCase();
                 row.style.display = text.includes(filter) ? '' : 'none';
             });
         });
     });
 });
 
+// 🌀 Mantener modales abiertos entre páginas
+$(document).ready(function() {
+    // Al abrir el modal de productos agregados, forzar el cálculo inicial
+    $(document).on('shown.bs.modal', function (e) {
+        localStorage.setItem('lastModalOpen', '#' + e.target.id);
+        const modalId = e.target.id;
+        const match = modalId.match(/productosAgregadosModal-(\d+)/);
+        if (match) {
+            const mesaId = match[1];
+            // Asegurarse de que el cronómetro se haya sincronizado primero
+            syncModalTimer(mesaId);
+            calculateAndDisplayModalTotals(mesaId);
+        }
+    });
 
+    $(document).on('hidden.bs.modal', function () {
+        localStorage.removeItem('lastModalOpen');
+    });
 
+    let lastModal = localStorage.getItem('lastModalOpen');
+    if (lastModal) {
+        $(lastModal).modal('show');
+    }
 
-
-function paginateTable(modalId, rowsPerPage = 10) {
-    const table = document.querySelector(`#${modalId} table`);
-    if (!table) return;
-    const rows = Array.from(table.querySelectorAll('tbody tr'));
-    let currentPage = 1;
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
-
-    function showPage(page) {
-        rows.forEach((row, i) => {
-            row.style.display = (i >= (page-1)*rowsPerPage && i < page*rowsPerPage) ? '' : 'none';
+    // Lógica para mantener el modal abierto al paginar (AJAX)
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        let target = $(this).closest('.modal-content').find('table').parent().parent().parent().parent().attr('id'); // ID del modal
+        
+        // Cargar el contenido de la paginación dentro del modal
+        $.get(url, function(data) {
+            // Reemplazar solo el contenido del modal-body
+            let newModalBody = $(data).find('#' + target + ' .modal-body').html();
+            $('#' + target + ' .modal-body').html(newModalBody);
+            
+            // Mantener el modal abierto
+            let lastModal = localStorage.getItem('lastModalOpen');
+            if (lastModal) $(lastModal).modal('show');
         });
-        const paginationEl = table.parentElement.querySelector('.pagination');
-        if(paginationEl) paginationEl.innerHTML = `Página ${page} de ${totalPages}`;
-    }
-
-    // Crear contenedor de paginación si no existe
-    if(!table.parentElement.querySelector('.pagination')) {
-        const pag = document.createElement('div');
-        pag.className = 'pagination mt-2 text-center';
-        table.parentElement.appendChild(pag);
-
-        const prevBtn = document.createElement('button');
-        prevBtn.innerText = '« Anterior';
-        prevBtn.className = 'btn btn-sm btn-secondary me-1';
-        prevBtn.onclick = () => { if(currentPage>1){ currentPage--; showPage(currentPage);} };
-        pag.appendChild(prevBtn);
-
-        const nextBtn = document.createElement('button');
-        nextBtn.innerText = 'Siguiente »';
-        nextBtn.className = 'btn btn-sm btn-secondary ms-1';
-        nextBtn.onclick = () => { if(currentPage<totalPages){ currentPage++; showPage(currentPage);} };
-        pag.appendChild(nextBtn);
-
-        const pageInfo = document.createElement('span');
-        pageInfo.className = 'mx-2';
-        pag.appendChild(pageInfo);
-    }
-
-    showPage(currentPage);
-}
-
-// Inicializar paginación en todos los modales abiertos
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('shown.bs.modal', () => paginateTable(modal.id));
+    });
 });
+
+// 🔁 Sincronizar cronómetro del modal con la mesa principal
+function syncModalTimer(id) {
+    const mainEl = document.getElementById('cronometro-' + id);
+    const modalEl = document.getElementById('modal-cronometro-' + id);
+    if (mainEl && modalEl) {
+        modalEl.innerText = mainEl.innerText;
+    }
+}
 </script>
 @stop
