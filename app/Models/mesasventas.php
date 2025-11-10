@@ -38,6 +38,11 @@ class MesasVentas extends Model
         // Puede ser mesa normal o de consumo según cómo guardes idmesa
         return $this->belongsTo(Mesas::class, 'idmesa', 'idmesa');
     }
+    public function mesaconsumo()
+    {
+        // Puede ser mesa normal o de consumo según cómo guardes idmesa
+        return $this->belongsTo(MesasConsumos::class, 'idmesaconsumo', 'idmesaconsumo');
+    }
 public function showFactura($id)
 {
     $venta = Ventas::find($id);

@@ -19,8 +19,16 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'apellidos',
         'email',
         'password',
+        'tipo',
+        'salario',
+        'estado',
+        'tipodocumento',
+        'numerodocumento',
+
+
     ];
 
     /**
@@ -45,4 +53,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function ventas(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'idempleado');
+    }
+    
 }

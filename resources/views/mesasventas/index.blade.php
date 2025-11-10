@@ -365,46 +365,119 @@
 
         {{-- Modal de productos agregados para consumo --}}
         @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
-        <div class="modal fade" id="productosAgregadosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" aria-labelledby="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
-            <div class="modal-dialog modal-md">
-                <div class="modal-content">
-                    <div class="modal-header bg-info">
-                        <h5 class="modal-title" id="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}">
-                            Productos agregados a Mesa Consumo #{{ $mesa->idmesaconsumo }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+<div class="modal fade" id="productosAgregadosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" 
+     aria-labelledby="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            
+            {{-- Header --}}
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title d-flex align-items-center" id="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}">
+                    <i class="fas fa-utensils me-2"></i>
+                    Mesa Consumo #{{ $mesa->idmesaconsumo }} - Productos Agregados
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            {{-- Body --}}
+            <div class="modal-body">
+                
+                {{-- Lista de productos --}}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Productos ({{ $mesa->ventaActiva->productos->count() }})
+                        </h6>
                     </div>
-                    <div class="modal-body">
-                        
+                    <ul class="list-group list-group-flush lista-productos">
+                        @foreach($mesa->ventaActiva->productos as $producto)
+                            <li class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <strong>{{ $producto->nombre }}</strong>
+                                        @if(!empty($producto->descripcion))
+                                            <small class="text-muted d-block">{{ $producto->descripcion }}</small>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <span class="badge bg-primary rounded-pill fs-6">
+                                            Cantidad: {{ $producto->pivot->cantidad }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <div class="d-flex justify-content-end align-items-center gap-2">
+                                            @if(!empty($producto->pivot->precio))
+                                                <span class="text-success fw-bold">
+                                                    ${{ number_format($producto->pivot->precio * $producto->pivot->cantidad, 0, ',', '.') }}
+                                                </span>
+                                            @endif
+                                            
+                                            {{-- Botón eliminar --}}
+                                            <form action="{{ route('mesasventas.eliminarProductoConsumo', [$mesa->ventaActiva->id, $producto->idproducto]) }}" 
+                                                  method="POST" 
+                                                  onsubmit="return confirm('¿Está seguro de eliminar {{ $producto->nombre }}?');"
+                                                  class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar producto">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
 
-                        {{-- Lista de productos --}}
-                        <ul class="list-group lista-productos">
-                            @foreach($mesa->ventaActiva->productos as $producto)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ $producto->nombre }}
-                                    <span class="badge bg-primary rounded-pill">{{ $producto->pivot->cantidad }}</span>
+                {{-- Resumen de totales --}}
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            {{-- Total productos --}}
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                    <span class="text-muted">
+                                        <i class="fas fa-box me-2"></i>Total Productos:
+                                    </span>
+                                    <span class="fw-bold text-primary fs-5">
+                                        ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
 
-                                    {{-- Botón eliminar --}}
-                                    <form action="{{ route('mesasventas.eliminarProductoConsumo', [$mesa->ventaActiva->id, $producto->idproducto]) }}" method="POST" class="ms-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" title="Eliminar producto">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        {{-- Total de la Venta Activa --}}
-                        <h5 class="mt-3 text-end text-success">
-                            <strong>Total Acumulado:</strong> ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
-                        </h5>
+                            {{-- Total general --}}
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center p-2 bg-success text-white rounded">
+                                    <span>
+                                        <i class="fas fa-calculator me-2"></i>Total Final:
+                                    </span>
+                                    <span class="fw-bold fs-5">
+                                        ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {{-- Footer --}}
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-success" onclick="finalizarVentaConsumo({{ $mesa->idmesaconsumo }})">
+                    <i class="fas fa-check-circle me-2"></i>Finalizar Consumo
+                </button>
+            </div>
         </div>
-        @endif
+    </div>
+</div>
+@endif
+
 
         {{-- Modal de agregar productos consumo --}}
         <div class="modal fade" id="productosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" aria-labelledby="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
