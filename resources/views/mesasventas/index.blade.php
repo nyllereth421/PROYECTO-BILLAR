@@ -87,6 +87,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+    
 
     <div class="row">
 
@@ -563,106 +564,51 @@
         </div>
         @endif
 
+
         {{-- Modal de agregar productos consumo --}}
         <div class="modal fade" id="productosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" aria-labelledby="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-white fw-bold" id="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}">
-                            <i class="fas fa-utensils me-2"></i>Agregar productos a Mesa Consumo #{{ $mesa->idmesaconsumo }}
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title" id="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}">
+                            Agregar productos a Mesa Consumo #{{ $mesa->idmesaconsumo }}
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="modal-body p-4">
-                        {{-- Buscador mejorado --}}
-                        <div class="mb-4">
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-search text-muted"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control border-start-0 buscador-productos-consumo-{{ $mesa->idmesaconsumo }}" 
-                                       placeholder="Buscar producto por nombre..."
-                                       style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            </div>
-                            <small class="text-muted ms-2">
-                                <span class="resultados-count-consumo-{{ $mesa->idmesaconsumo }}">{{ count($productos) }}</span> productos encontrados
-                            </small>
-                        </div>
-
+                    <div class="modal-body">
+                        {{-- Buscador --}}
+                        <input type="text" class="form-control mb-3 buscador-productos" placeholder="Buscar producto...">
                         <form action="{{ route('mesasventas.agregarProductosConsumo', $mesa->idmesaconsumo) }}" method="POST">
                             @csrf
-                            <div class="productos-container productos-container-consumo-{{ $mesa->idmesaconsumo }}" style="max-height: 500px; overflow-y: auto;">
-                                @php
-                                    $chunks = $productos->chunk(10);
-                                @endphp
-                                
-                                @foreach($chunks as $index => $chunk)
-                                <div class="productos-grupo-consumo mb-4" data-grupo="{{ $index }}">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <span class="badge bg-primary rounded-pill px-3 py-2">
-                                            Productos {{ ($index * 10) + 1 }} - {{ min(($index + 1) * 10, count($productos)) }}
-                                        </span>
-                                        <hr class="flex-grow-1 ms-3">
-                                    </div>
-                                    
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle">
-                                            <thead style="background-color: #e9ecef; position: sticky; top: 0; z-index: 10;">
-                                                <tr>
-                                                    <th class="text-primary fw-semibold">Producto</th>
-                                                    <th class="text-primary fw-semibold text-center">Precio</th>
-                                                    <th class="text-primary fw-semibold text-center">Stock</th>
-                                                    <th class="text-primary fw-semibold text-center" style="width: 150px;">Cantidad</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="productos-tbody-consumo">
-                                                @foreach($chunk as $producto)
-                                                <tr class="producto-row-consumo bg-white" 
-                                                    data-nombre="{{ strtolower($producto->nombre) }}"
-                                                    style="transition: all 0.3s ease;">
-                                                    <td class="fw-medium">
-                                                        <i class="fas fa-box text-muted me-2"></i>
-                                                        {{ $producto->nombre }}
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
-                                                            ${{ number_format($producto->precio, 0, ',', '.') }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <span class="badge {{ $producto->stock > 10 ? 'bg-info' : 'bg-warning' }} bg-opacity-10 {{ $producto->stock > 10 ? 'text-info' : 'text-warning' }} px-3 py-2">
-                                                            {{ $producto->stock }} unid.
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <input type="number" 
-                                                               name="cantidades[{{ $producto->idproducto }}]" 
-                                                               min="0" 
-                                                               max="{{ $producto->stock }}" 
-                                                               class="form-control form-control-sm text-center cantidad-input"
-                                                               value="0"
-                                                               style="border: 2px solid #dee2e6; border-radius: 8px;">
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                @endforeach
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-center align-middle">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Precio</th>
+                                            <th>Stock</th>
+                                            <th>Cantidad</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($productos as $producto)
+                                        <tr>
+                                            <td>{{ $producto->nombre }}</td>
+                                            <td>${{ number_format($producto->precio, 0, ',', '.') }}</td>
+                                            <td>{{ $producto->stock }}</td>
+                                            <td>
+                                                <input type="number" name="cantidades[{{ $producto->idproducto }}]" min="0" max="{{ $producto->stock }}" class="form-control text-center" value="0">
+                                            </td>
+                                            
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                             
-                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                                <div>
-                                    <small class="text-muted">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Selecciona las cantidades deseadas
-                                    </small>
-                                </div>
-                                <button type="submit" class="btn btn-lg px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;">
-                                    <i class="fas fa-check me-2"></i>Agregar Seleccionados
-                                </button>
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Agregar Seleccionados</button>
                             </div>
                         </form>
                     </div>
@@ -695,7 +641,7 @@ function startTimer(event, id) {
     updateTimer(id);
     timers[id] = setInterval(() => {
         updateTimer(id);
-        calculateAndDisplayCardTotals(id);
+        calculateAndDisplayCardTotals(id); // Actualiza el total en el card principal
     }, 1000);
 
     setTimeout(() => {
@@ -713,13 +659,11 @@ function stopTimer(event, id) {
     const el = document.getElementById('cronometro-' + id);
     if (el) el.innerText = "00:00:00";
 
-    const modalCostoTiempo = document.getElementById('modal-costo-tiempo-' + id);
-    const modalTotalFinal = document.getElementById('modal-total-final-' + id);
-    const modalCronometro = document.getElementById('modal-cronometro-' + id);
-    
-    if (modalCostoTiempo) modalCostoTiempo.textContent = "0";
-    if (modalTotalFinal) modalTotalFinal.textContent = "0";
-    if (modalCronometro) modalCronometro.innerText = "00:00:00";
+    // Ocultar o resetear valores del modal al detener
+    document.getElementById('modal-costo-tiempo-' + id).textContent = "0";
+    document.getElementById('modal-total-final-' + id).textContent = "0";
+    document.getElementById('modal-cronometro-' + id).innerText = "00:00:00";
+
 
     event.target.submit();
 }
@@ -738,12 +682,13 @@ function updateTimer(id) {
     const el = document.getElementById('cronometro-' + id);
     if (el) el.innerText = tiempoStr;
 
+    // Sincronizar y calcular totales en el modal si está abierto
     syncModalTimer(id);
     calculateAndDisplayModalTotals(id); 
-    calculateAndDisplayCardTotals(id);
+    calculateAndDisplayCardTotals(id); // Mantiene la actualización en el card (oculto en tu HTML original)
 }
 
-// 💲 Sumar productos + tiempo real (Card Principal)
+// 💲 Sumar productos + tiempo real (Card Principal - función original renombrada para claridad)
 function calculateAndDisplayCardTotals(id) {
     const cronometro = document.getElementById('cronometro-' + id);
     const totalProductosEl = document.getElementById('total-productos-' + id);
@@ -774,6 +719,7 @@ function calculateAndDisplayModalTotals(id) {
     const modalCostoTiempoEl = document.getElementById('modal-costo-tiempo-' + id);
     const modalTotalFinalEl = document.getElementById('modal-total-final-' + id);
     
+    // Asegurarse de que los elementos existan
     if (!modalCronometroEl || !modalTotalProductosEl || !modalCostoTiempoEl || !modalTotalFinalEl) {
         return;
     }
@@ -792,11 +738,13 @@ function calculateAndDisplayModalTotals(id) {
     const costoTiempo = horasTotales * PRECIO_POR_HORA;
     const totalFinal = totalProductos + costoTiempo;
 
+    // Formatear y mostrar los valores
     const formatter = new Intl.NumberFormat('es-CO');
     
     modalCostoTiempoEl.textContent = formatter.format(Math.round(costoTiempo));
     modalTotalFinalEl.textContent = formatter.format(Math.round(totalFinal));
 }
+
 
 // 🔁 Restaurar cronómetros al recargar
 window.addEventListener('load', () => {
@@ -812,97 +760,31 @@ window.addEventListener('load', () => {
     });
 });
 
-// 🔍 Buscador de productos para MESAS NORMALES
+// 🔍 Buscador de productos
 document.addEventListener('DOMContentLoaded', function() {
-    // Buscar todos los modales de mesas normales
-    document.querySelectorAll('[id^="productosModal-"]').forEach(modal => {
-        const modalId = modal.id.replace('productosModal-', '');
-        const buscador = document.querySelector('.buscador-productos-' + modalId);
-        const productosRows = document.querySelectorAll('#productosModal-' + modalId + ' .producto-row');
-        const contadorResultados = document.querySelector('.resultados-count-' + modalId);
-        
-        if (buscador) {
-            buscador.addEventListener('input', function() {
-                const textoBusqueda = this.value.toLowerCase().trim();
-                let contadorVisibles = 0;
-                
-                productosRows.forEach(row => {
-                    const nombreProducto = row.getAttribute('data-nombre');
-                    
-                    if (nombreProducto.includes(textoBusqueda)) {
-                        row.classList.remove('oculto');
-                        contadorVisibles++;
-                    } else {
-                        row.classList.add('oculto');
-                    }
-                });
-                
-                if (contadorResultados) {
-                    contadorResultados.textContent = contadorVisibles;
-                }
-                
-                const grupos = document.querySelectorAll('#productosModal-' + modalId + ' .productos-grupo');
-                grupos.forEach(grupo => {
-                    const rowsVisibles = grupo.querySelectorAll('.producto-row:not(.oculto)');
-                    if (rowsVisibles.length === 0) {
-                        grupo.style.display = 'none';
-                    } else {
-                        grupo.style.display = 'block';
-                    }
-                });
+    document.querySelectorAll('.buscador-productos').forEach(function(input) {
+        input.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const table = this.closest('.modal-body').querySelector('tbody');
+            if (!table) return;
+            table.querySelectorAll('tr').forEach(function(row) {
+                const text = row.querySelector('td').textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
             });
-        }
-    });
-
-    // Buscar todos los modales de mesas de CONSUMO
-    document.querySelectorAll('[id^="productosModalConsumo-"]').forEach(modal => {
-        const modalId = modal.id.replace('productosModalConsumo-', '');
-        const buscador = document.querySelector('.buscador-productos-consumo-' + modalId);
-        const productosRows = document.querySelectorAll('#productosModalConsumo-' + modalId + ' .producto-row-consumo');
-        const contadorResultados = document.querySelector('.resultados-count-consumo-' + modalId);
-        
-        if (buscador) {
-            buscador.addEventListener('input', function() {
-                const textoBusqueda = this.value.toLowerCase().trim();
-                let contadorVisibles = 0;
-                
-                productosRows.forEach(row => {
-                    const nombreProducto = row.getAttribute('data-nombre');
-                    
-                    if (nombreProducto.includes(textoBusqueda)) {
-                        row.classList.remove('oculto');
-                        contadorVisibles++;
-                    } else {
-                        row.classList.add('oculto');
-                    }
-                });
-                
-                if (contadorResultados) {
-                    contadorResultados.textContent = contadorVisibles;
-                }
-                
-                const grupos = document.querySelectorAll('#productosModalConsumo-' + modalId + ' .productos-grupo-consumo');
-                grupos.forEach(grupo => {
-                    const rowsVisibles = grupo.querySelectorAll('.producto-row-consumo:not(.oculto)');
-                    if (rowsVisibles.length === 0) {
-                        grupo.style.display = 'none';
-                    } else {
-                        grupo.style.display = 'block';
-                    }
-                });
-            });
-        }
+        });
     });
 });
 
 // 🌀 Mantener modales abiertos entre páginas
 $(document).ready(function() {
+    // Al abrir el modal de productos agregados, forzar el cálculo inicial
     $(document).on('shown.bs.modal', function (e) {
         localStorage.setItem('lastModalOpen', '#' + e.target.id);
         const modalId = e.target.id;
         const match = modalId.match(/productosAgregadosModal-(\d+)/);
         if (match) {
             const mesaId = match[1];
+            // Asegurarse de que el cronómetro se haya sincronizado primero
             syncModalTimer(mesaId);
             calculateAndDisplayModalTotals(mesaId);
         }
@@ -917,15 +799,19 @@ $(document).ready(function() {
         $(lastModal).modal('show');
     }
 
+    // Lógica para mantener el modal abierto al paginar (AJAX)
     $(document).on('click', '.pagination a', function(e) {
         e.preventDefault();
         let url = $(this).attr('href');
-        let target = $(this).closest('.modal-content').find('table').parent().parent().parent().parent().attr('id');
+        let target = $(this).closest('.modal-content').find('table').parent().parent().parent().parent().attr('id'); // ID del modal
         
+        // Cargar el contenido de la paginación dentro del modal
         $.get(url, function(data) {
+            // Reemplazar solo el contenido del modal-body
             let newModalBody = $(data).find('#' + target + ' .modal-body').html();
             $('#' + target + ' .modal-body').html(newModalBody);
             
+            // Mantener el modal abierto
             let lastModal = localStorage.getItem('lastModalOpen');
             if (lastModal) $(lastModal).modal('show');
         });
