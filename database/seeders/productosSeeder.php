@@ -267,7 +267,15 @@ class ProductosSeeder extends Seeder
         'created_at' => now(),
         'updated_at' => now(),
     ],
-    
+    [
+        'nombre' => 'Agua saborizada',
+        'descripcion' => 'Agua con sabor.',
+        'precio' => 4000.00,
+        'stock' => 50,
+        'idproveedor' => 3,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
 
 
     // 🧃 Jugos y energéticas → Postobón y CocaCola
