@@ -98,6 +98,7 @@ Route::delete('ventas/{ventaId}/productos/{productoId}', [MesasventasController:
 Route::post('/mesasventas/finalizarVenta/{venta}', [MesasventasController::class, 'finalizarVenta'])->name('mesasventas.finalizarVenta');
 Route::post('/mesasventas/{idmesa}/cerrar', [MesasventasController::class, 'cerrarVenta'])->name('mesasventas.cerrarVenta');
 
+
 // VENTAS - factura
 Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
 Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
