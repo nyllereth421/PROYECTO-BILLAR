@@ -16,7 +16,7 @@ class MesasventasController extends Controller
     // Cargar mesas con ventaActiva y los productos asociados
     $mesas = Mesas::with(['ventaActiva.productos'])->get();
     $mesas_consumos = MesasConsumos::with(['ventaActiva.productos'])->get();
-    $productos = Productos::paginate(10);
+    $productos = Productos::all();
 
     // ...
     return view('mesasventas.index', compact('mesas','mesas_consumos','productos'));
@@ -325,6 +325,9 @@ public function finalizarConsumo($idmesa)
 
     return redirect()->back()->with('success', 'Mesa de consumo finalizada y marcada como disponible.');
 }
+
+
+
 
 
 
