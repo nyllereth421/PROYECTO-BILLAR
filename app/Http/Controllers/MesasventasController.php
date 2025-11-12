@@ -106,32 +106,19 @@ class MesasventasController extends Controller
         return redirect()->back();
     }
 
-    public function finalizar($idmesa)
-    {
-        $mesa = Mesas::findOrFail($idmesa);
-        $mesa->estado = 'disponible'; // Cambia el estado
-        $mesa->save();
+    public function finalizar(Request $request, $idmesa)
+{
+    $venta = MesaVenta::findOrFail($idmesa);
 
-        $venta = MesasVentas::where('idmesa',$idmesa)->whereNull('fechafin')->latest()->first();
-        if ($venta) {
-            $venta->fechafin = now();
-            
-            // Cálculos para finalizar la venta
-            $inicio = Carbon::parse($venta->fechainicio);
-            $fin = Carbon::parse($venta->fechafin);
-            $minutes = $inicio->diffInMinutes($fin);
-            $tarifaHora = 7000;
-            $tarifaMinuto = $tarifaHora / 60;
-            $cargoTiempo = round($minutes * $tarifaMinuto,2);
+    // Actualizar costo de tiempo y método de pago
+    $venta->costo_tiempo = $request->costo_tiempo ?? 0;
+    $venta->metodo_pago = $request->metodo_pago ?? 'efectivo';
+    $venta->estado = 'finalizada';
+    $venta->save();
 
-            // Se calcula el total de productos directamente de la tabla pivote
-            $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal); 
-            $venta->total = round($productos_total + $cargoTiempo,2);
-            $venta->save();
-        }
+    return response()->json(['success' => true]);
+}
 
-        return redirect()->back();
-    }
 
    public function reiniciar($idmesa)
 {
@@ -191,16 +178,17 @@ public function eliminarProducto($ventaId, $productoId)
     if ($productoPivot) {
         $producto = Productos::findOrFail($productoId);
 
-        // Cantidad actual en la venta
         $cantidadActual = $productoPivot->pivot->cantidad;
 
         if ($cantidadActual > 1) {
-            // Si hay más de una unidad, solo resta una
+            // Resta una unidad y actualiza subtotal
+            $nuevaCantidad = $cantidadActual - 1;
             $venta->productos()->updateExistingPivot($productoId, [
-                'cantidad' => $cantidadActual - 1,
+                'cantidad' => $nuevaCantidad,
+                'subtotal' => $nuevaCantidad * $producto->precio
             ]);
         } else {
-            // Si solo hay una, elimina completamente el producto de la venta
+            // Elimina completamente el producto
             $venta->productos()->detach($productoId);
         }
 
@@ -212,13 +200,9 @@ public function eliminarProducto($ventaId, $productoId)
         $this->_actualizarTotalVenta($venta);
     }
 
- 
-
-
-
-
     return redirect()->back()->with('success', 'Cantidad eliminada correctamente de la mesa de consumo.');
 }
+
 public function finalizarConsumo($idmesa)
 {
     $mesa = MesasConsumos::findOrFail($idmesa);

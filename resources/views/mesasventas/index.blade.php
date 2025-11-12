@@ -295,6 +295,15 @@
                     </div>
 
                     {{-- Footer con acciones --}}
+                    {{-- Método de pago --}}
+                        <div class="mb-3">
+                            <label for="metodo-pago-{{ $mesa->idmesa }}" class="form-label fw-bold">Método de Pago:</label>
+                            <select id="metodo-pago-{{ $mesa->idmesa }}" class="form-select form-select-sm">
+                                <option value="efectivo" selected>Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="tarjeta">Tarjeta</option>
+                            </select>
+                        </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Cerrar
@@ -678,6 +687,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     @endforeach
 });
+
+function finalizarVenta(idmesa) {
+    const totalConTiempo = document.getElementById(`total-con-tiempo-${idmesa}`).textContent.replace(/\./g, '');
+    const metodoPago = document.getElementById(`metodo-pago-${idmesa}`).value;
+
+    fetch(`/mesasventas/finalizar/${idmesa}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            costo_tiempo: totalConTiempo,
+            metodo_pago: metodoPago
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            location.reload(); // o cerrar modal y actualizar UI
+        } else {
+            alert('Error al finalizar la venta');
+        }
+    })
+    .catch(err => console.error(err));
+}
+document.getElementById(`total-con-tiempo-${idmesa}`).value = costoTiempo;
+
 
 </script>
 @stop
