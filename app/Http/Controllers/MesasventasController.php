@@ -107,16 +107,55 @@ class MesasventasController extends Controller
     }
 
     public function finalizar(Request $request, $idmesa)
+    
 {
-    $venta = MesaVenta::findOrFail($idmesa);
+    // Buscar la venta activa de esa mesa
+    $venta = MesasVentas::where('idmesa', $idmesa)
+        ->whereNull('fechafin')
+        ->latest()
+        ->first();
 
-    // Actualizar costo de tiempo y método de pago
-    $venta->costo_tiempo = $request->costo_tiempo ?? 0;
-    $venta->metodo_pago = $request->metodo_pago ?? 'efectivo';
-    $venta->estado = 'finalizada';
-    $venta->save();
+    if (!$venta) {
+        return response()->json(['success' => false, 'message' => 'No hay venta activa para esta mesa']);
+    }
 
-    return response()->json(['success' => true]);
+    // Calcular tiempo transcurrido
+    $inicio = Carbon::parse($venta->fechainicio);
+    $fin = now();
+    $minutos = $inicio->diffInMinutes($fin);
+
+    // Tarifa por minuto (💰 ajusta según tu negocio)
+    $tarifaHora = 10000;
+    $tarifaMinuto = $tarifaHora / 60;
+    $costoTiempo = round($minutos * $tarifaMinuto, 2);
+
+    // Calcular total de productos (desde la tabla pivote)
+    $totalProductos = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
+
+    // Calcular total final (productos + tiempo)
+    $totalFinal = $totalProductos + $costoTiempo;
+
+    // Guardar todo en la base de datos
+    $venta->update([
+        'fechafin' => $fin,
+        'costo_tiempo' => $costoTiempo,
+        'total_con_tiempo' => $totalFinal,
+        'total' => $totalProductos,
+        'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
+    ]);
+
+    // Liberar la mesa
+    $mesa = Mesas::findOrFail($idmesa);
+    $mesa->estado = 'disponible';
+    $mesa->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Venta finalizada correctamente',
+        'costo_tiempo' => $costoTiempo,
+        'total_productos' => $totalProductos,
+        'total_final' => $totalFinal,
+    ]);
 }
 
 
@@ -217,26 +256,83 @@ public function finalizarConsumo($idmesa)
     if ($venta) {
         $venta->fechafin = now();
 
-        // Cálculo del tiempo
+        // Calcular tiempo transcurrido
         $inicio = Carbon::parse($venta->fechainicio);
         $fin = Carbon::parse($venta->fechafin);
         $minutes = $inicio->diffInMinutes($fin);
 
-        $tarifaHora = 7000; // puedes ajustar este valor
+        $tarifaHora = 10000; // 💰 Tarifa por hora
         $tarifaMinuto = $tarifaHora / 60;
-        $cargoTiempo = round($minutes * $tarifaMinuto, 2);
+        $costoTiempo = round($minutes * $tarifaMinuto, 2);
 
-        // Cálculo de productos
+        // Calcular total de productos
         $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
 
-        $venta->total = round($productos_total + $cargoTiempo, 2);
-        $venta->save();
+        // Calcular total final
+        $totalFinal = $productos_total + $costoTiempo;
+
+        // Guardar todos los valores
+        $venta->update([
+            'costo_tiempo' => $costoTiempo,
+            'total_con_tiempo' => $totalFinal,
+            'total' => $productos_total,
+        ]);
     }
 
     return redirect()->back()->with('success', 'Mesa de consumo finalizada y marcada como disponible.');
 }
 
+public function finalizarVenta(Request $request, $idmesa)
+{
+    // Buscar la venta activa por mesa
+    $venta = MesasVentas::where('idmesa', $idmesa)
+        ->whereNull('fechafin')
+        ->latest()
+        ->first();
 
+    if (!$venta) {
+        return response()->json(['success' => false, 'message' => 'No hay venta activa para esta mesa']);
+    }
+
+    // Calcular tiempo
+    $inicio = \Carbon\Carbon::parse($venta->fechainicio);
+    $fin = now();
+    $minutos = $inicio->diffInMinutes($fin);
+
+    // Cálculo del costo de tiempo
+    $tarifaHora = 10000;
+    $tarifaMinuto = $tarifaHora / 60;
+    $costoTiempo = round($minutos * $tarifaMinuto, 2);
+
+    // Total productos
+    $totalProductos = $venta->productos->sum(function ($p) {
+        return $p->pivot->subtotal;
+    });
+
+    // Total final
+    $totalFinal = $totalProductos + $costoTiempo;
+
+    // Actualizar venta
+    $venta->update([
+        'fechafin' => $fin,
+        'costo_tiempo' => $costoTiempo,
+        'total_con_tiempo' => $totalFinal,
+        'total' => $totalProductos,
+        'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
+    ]);
+
+    // Liberar mesa
+    $mesa = \App\Models\Mesas::findOrFail($idmesa);
+    $mesa->estado = 'disponible';
+    $mesa->save();
+
+    return response()->json([
+        'success' => true,
+        'costo_tiempo' => $costoTiempo,
+        'total_con_tiempo' => $totalFinal,
+        'total_productos' => $totalProductos,
+    ]);
+}
 
 
 

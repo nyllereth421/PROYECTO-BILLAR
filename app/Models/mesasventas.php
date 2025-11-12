@@ -12,12 +12,14 @@ class MesasVentas extends Model
     protected $table = 'mesasventas';
 
     protected $fillable = [
-        'ventas',
+        'idmesa',
         'fechainicio',
         'fechafin',
         'total',
-        'idmesa',
-        ''
+        'costo_tiempo',
+        'total_con_tiempo',
+        'metodo_pago',
+        
     ];
 
     
@@ -33,16 +35,13 @@ class MesasVentas extends Model
                 ->withPivot('cantidad', 'precio_unitario', 'subtotal')
                 ->withTimestamps();
 }
+
  public function mesa()
     {
         // Puede ser mesa normal o de consumo según cómo guardes idmesa
         return $this->belongsTo(Mesas::class, 'idmesa', 'idmesa');
     }
-    public function mesaconsumo()
-    {
-        // Puede ser mesa normal o de consumo según cómo guardes idmesa
-        return $this->belongsTo(MesasConsumos::class, 'idmesaconsumo', 'idmesaconsumo');
-    }
+   
 public function showFactura($id)
 {
     $venta = Ventas::find($id);

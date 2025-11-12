@@ -87,7 +87,7 @@ Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesas
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
 Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name('mesasventas.store');
 Route::get('/mesasventas/{idmesa}', [MesasventasController::class, 'show'])->name('mesasventas.show');
-Route::post('/mesasventas/{idmesa}/iniciar', [MesasventasController::class, 'iniciar'])->name('mesasventas.iniciar');
+Route::post('/mesasventas/{id}/iniciar', [MesasventasController::class, 'iniciar'])->name('mesasventas.iniciar');
 Route::post('/mesasventas/{idmesa}/finalizar', [MesasventasController::class, 'finalizar'])->name('mesasventas.finalizar');
 Route::post('/mesasventas/{idmesa}/estado', [MesasventasController::class, 'actualizarEstado'])->name('mesasventas.estado');
 Route::post('/mesasventas/{idmesa}/reiniciar', [MesasventasController::class, 'reiniciar'])->name('mesasventas.reiniciar');
@@ -97,6 +97,8 @@ Route::get('/mesasventas/{idmesa}/total', [MesasventasController::class, 'verTot
 Route::delete('ventas/{ventaId}/productos/{productoId}', [MesasventasController::class, 'eliminarProducto'])->name('mesasventas.eliminarProducto');
 Route::post('/mesasventas/finalizarVenta/{venta}', [MesasventasController::class, 'finalizarVenta'])->name('mesasventas.finalizarVenta');
 Route::post('/mesasventas/{idmesa}/cerrar', [MesasventasController::class, 'cerrarVenta'])->name('mesasventas.cerrarVenta');
+Route::post('/mesasventas/{id}/parar', [MesasventasController::class, 'parar'])->name('mesasventas.parar');
+
 
 
 // VENTAS - factura

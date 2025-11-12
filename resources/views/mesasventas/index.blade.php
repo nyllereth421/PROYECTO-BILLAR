@@ -105,34 +105,35 @@
                     @if($mesa->tipo !== 'consumo')
                         <div id="cronometro-{{ $mesa->idmesa }}" class="cronometro">00:00:00</div>
                     @endif
+                            
 
                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
                        {{-- Iniciar / Parar --}}
-@if($mesa->tipo !== 'consumo')
-    @php
-        // Obtener venta activa para esta mesa
-        $ventaActiva = $mesa->ventaActiva()->whereNull('fechafin')->first();
-    @endphp
+                            @if($mesa->tipo !== 'consumo')
+                                @php
+                                    // Obtener venta activa para esta mesa
+                                    $ventaActiva = $mesa->ventaActiva()->whereNull('fechafin')->first();
+                                @endphp
 
-    {{-- Mostrar botón Iniciar solo si la mesa está disponible --}}
-    @if($mesa->estado == 'disponible')
-        <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST" onsubmit="startTimer(event, {{ $mesa->idmesa }})">
-            @csrf
-            <button class="btn btn-success btn-sm" title="Iniciar">
-                <i class="fas fa-play"></i>
-            </button>
-        </form>
+                            {{-- Mostrar botón Iniciar solo si la mesa está disponible --}}
+                            @if($mesa->estado == 'disponible')
+                                <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST" onsubmit="startTimer(event, {{ $mesa->idmesa }})">
+                                    @csrf
+                                    <button class="btn btn-success btn-sm" title="Iniciar">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </form>
 
-    {{-- Mostrar botón Parar solo si hay tiempo iniciado --}}
-    @elseif($ventaActiva && $ventaActiva->fechainicio)
-        <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST" onsubmit="stopTimer(event, {{ $mesa->idmesa }})">
-            @csrf
-            <button class="btn btn-danger btn-sm" title="Parar">
-                <i class="fas fa-stop"></i>
-            </button>
-        </form>
-    @endif
-@endif
+                                {{-- Mostrar botón Parar solo si hay tiempo iniciado --}}
+                                @elseif($ventaActiva && $ventaActiva->fechainicio)
+                                    <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST" onsubmit="stopTimer(event, {{ $mesa->idmesa }})">
+                                        @csrf
+                                        <button class="btn btn-danger btn-sm" title="Parar">
+                                            <i class="fas fa-stop"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            @endif
 
                         {{-- Cambiar estado --}}
                         <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
@@ -284,6 +285,15 @@
                                             </span>
                                         </div>
                                     </div>
+                                    {{-- Método de pago --}}
+                                        <div class="mb-3">
+                                            <label for="metodo-pago-{{ $mesa->idmesa }}" class="form-label fw-bold">Método de Pago:</label>
+                                            <select id="metodo-pago-{{ $mesa->idmesa }}" class="form-select form-select-sm">
+                                                <option value="efectivo"{{$mesa->metodo_pago == 'efectivo' ? 'selected' : ''}}>Efectivo</option>
+                                                <option value="transferencia"{{$mesa->metodo_pago == 'transferencia' ? 'selected' : ''}}>Transferencia</option>
+                                                <option value="tarjeta"{{$mesa->metodo_pago == 'tarjeta' ? 'selected' : ''}}>Tarjeta</option>
+                                            </select>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -294,21 +304,16 @@
                         <input type="hidden" id="total-con-tiempo-{{ $mesa->idmesa }}">
                     </div>
 
+                    
+
                     {{-- Footer con acciones --}}
-                    {{-- Método de pago --}}
-                        <div class="mb-3">
-                            <label for="metodo-pago-{{ $mesa->idmesa }}" class="form-label fw-bold">Método de Pago:</label>
-                            <select id="metodo-pago-{{ $mesa->idmesa }}" class="form-select form-select-sm">
-                                <option value="efectivo" selected>Efectivo</option>
-                                <option value="transferencia">Transferencia</option>
-                                <option value="tarjeta">Tarjeta</option>
-                            </select>
-                        </div>
+                    
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Cerrar
                         </button>
                         <button type="button" class="btn btn-success" onclick="finalizarVenta({{ $mesa->idmesa }})">
+
                             <i class="fas fa-check-circle me-2"></i>Finalizar Venta
                         </button>
                     </div>
@@ -433,6 +438,44 @@
 @stop
 
 @section('js')
+<script>
+    function finalizarVenta(idmesa) {
+
+    console.log(idmesa)
+
+    const costoTiempo = document.getElementById(`modal-costo-tiempo-${idmesa}`).textContent.replace(/\./g, '');
+    const totalFinal = document.getElementById(`modal-total-final-${idmesa}`).textContent.replace(/\./g, '');
+    const metodoPago = document.getElementById(`metodo-pago-${idmesa}`).value;
+
+
+    
+
+    fetch(`/mesasventas/finalizar/${idmesa}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            costo_tiempo: costoTiempo,
+            total_con_tiempo: totalFinal,
+            metodo_pago: metodoPago
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            location.reload();
+        } else {
+            alert('Error al finalizar la venta');
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+</script>
+
+
 <script>
 const PRECIO_POR_HORA = 10000; // 💰 Precio por hora
 let timers = {};
@@ -688,32 +731,6 @@ document.addEventListener('DOMContentLoaded', function () {
     @endforeach
 });
 
-function finalizarVenta(idmesa) {
-    const totalConTiempo = document.getElementById(`total-con-tiempo-${idmesa}`).textContent.replace(/\./g, '');
-    const metodoPago = document.getElementById(`metodo-pago-${idmesa}`).value;
-
-    fetch(`/mesasventas/finalizar/${idmesa}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            costo_tiempo: totalConTiempo,
-            metodo_pago: metodoPago
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            location.reload(); // o cerrar modal y actualizar UI
-        } else {
-            alert('Error al finalizar la venta');
-        }
-    })
-    .catch(err => console.error(err));
-}
-document.getElementById(`total-con-tiempo-${idmesa}`).value = costoTiempo;
 
 
 </script>
