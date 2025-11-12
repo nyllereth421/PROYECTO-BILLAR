@@ -14,9 +14,6 @@ return new class extends Migration
     Schema::create('ventas', function (Blueprint $table) {
         $table->id(); 
         $table->datetime('fecha');
-        $table->unsignedBigInteger('idmesaconsumo');
-        $table->foreign('idmesaconsumo')
-              ->references('idmesaconsumo')->on('mesas_consumos');
         $table->decimal('total', 10, 2);
         $table->unsignedBigInteger('idusuario');
         $table->foreign('idusuario')
