@@ -15,11 +15,10 @@ class MesasventasController extends Controller
 {
     // Cargar mesas con ventaActiva y los productos asociados
     $mesas = Mesas::with(['ventaActiva.productos'])->get();
-    $mesas_consumos = MesasConsumos::with(['ventaActiva.productos'])->get();
     $productos = Productos::all();
 
     // ...
-    return view('mesasventas.index', compact('mesas','mesas_consumos','productos'));
+    return view('mesasventas.index', compact('mesas','productos'));
 }
 
     
@@ -87,53 +86,7 @@ class MesasventasController extends Controller
 }
 
 
-    public function agregarProductosConsumo(Request $request, $idmesa)
-{
-    $mesa = MesasConsumos::findOrFail($idmesa);
-
-    $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first(); 
-    if (!$venta) {
-        $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
-        if ($mesa->estado !== 'ocupada') {
-             $mesa->estado = 'ocupada';
-             $mesa->save();
-        }
-    }
-
-    // 💡 Solo tomamos los productos con cantidad > 0
-    $cantidadesInput = $request->input('cantidades', []); 
-    $hayCambios = false;
-
-    foreach ($cantidadesInput as $productoId => $cantidad) {
-        if ($cantidad > 0) {
-            $producto = Productos::findOrFail($productoId);
-
-            if ($producto->stock < $cantidad) {
-                return redirect()->back()->with('error', "Stock insuficiente para {$producto->nombre}");
-            }
-
-            $venta->productos()->attach($producto->idproducto, [
-                'cantidad' => $cantidad,
-                'precio_unitario' => $producto->precio,
-                'subtotal' => $producto->precio * $cantidad,
-            ]);
-
-            $producto->stock -= $cantidad;
-            $producto->save();
-
-            $hayCambios = true;
-        }
-    }
-
-    if ($hayCambios) {
-        $this->_actualizarTotalVenta($venta);
-    }
-
-    return redirect()->back()
-        ->with('success', 'Productos agregados correctamente a la mesa de consumo.')
-        ->with('abrirModalConsumo', $idmesa);
-}
-
+    
 
     public function iniciar($idmesa)
     {
@@ -259,37 +212,10 @@ public function eliminarProducto($ventaId, $productoId)
         $this->_actualizarTotalVenta($venta);
     }
 
-    return redirect()->back()->with('success', 'Cantidad eliminada correctamente.');
-}
+ 
 
 
-public function eliminarProductoConsumo($ventaId, $productoId)
-{
-    $venta = MesasVentas::findOrFail($ventaId);
 
-    $productoPivot = $venta->productos()->where('productos.idproducto', $productoId)->first();
-
-    if ($productoPivot) {
-        $producto = Productos::findOrFail($productoId);
-        $cantidadActual = $productoPivot->pivot->cantidad;
-
-        if ($cantidadActual > 1) {
-            // Si hay más de una unidad, resta una sola
-            $venta->productos()->updateExistingPivot($productoId, [
-                'cantidad' => $cantidadActual - 1,
-            ]);
-        } else {
-            // Si solo hay una, elimina completamente el producto
-            $venta->productos()->detach($productoId);
-        }
-
-        // Devolver una unidad al stock
-        $producto->stock += 1;
-        $producto->save();
-
-        // Actualizar el total de la venta
-        $this->_actualizarTotalVenta($venta);
-    }
 
     return redirect()->back()->with('success', 'Cantidad eliminada correctamente de la mesa de consumo.');
 }

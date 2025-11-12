@@ -91,7 +91,7 @@
 
     <div class="row">
 
-        {{-- ================= MESAS NORMALES ================= --}}
+        {{-- ================= MESAS  ================= --}}
         @foreach($mesas as $mesa)
         <div class="col-md-3 mb-3">
             <div class="card card-mesa {{ $mesa->estado == 'ocupada' ? 'border-danger' : ($mesa->estado == 'reservada' ? 'border-info' : 'border-success') }}">
@@ -102,25 +102,37 @@
                     <img src="{{ asset('img/mesas/' . ($mesa->tipo ?? 'default') . '.png') }}" alt="mesa" style="height:110px;">
                     <p class="mt-2"><strong>Estado:</strong> {{ ucfirst($mesa->estado) }}</p>
 
-                    <div id="cronometro-{{ $mesa->idmesa }}" class="cronometro">00:00:00</div>
+                    @if($mesa->tipo !== 'consumo')
+                        <div id="cronometro-{{ $mesa->idmesa }}" class="cronometro">00:00:00</div>
+                    @endif
 
                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                        {{-- Iniciar / Parar --}}
-                        @if($mesa->estado == 'disponible')
-                            <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST" onsubmit="startTimer(event, {{ $mesa->idmesa }})">
-                                @csrf
-                                <button class="btn btn-success btn-sm" title="Iniciar">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                            </form>
-                        @elseif($mesa->estado == 'ocupada')
-                            <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST" onsubmit="stopTimer(event, {{ $mesa->idmesa }})">
-                                @csrf
-                                <button class="btn btn-danger btn-sm" title="Parar">
-                                    <i class="fas fa-stop"></i>
-                                </button>
-                            </form>
-                        @endif
+                       {{-- Iniciar / Parar --}}
+@if($mesa->tipo !== 'consumo')
+    @php
+        // Obtener venta activa para esta mesa
+        $ventaActiva = $mesa->ventaActiva()->whereNull('fechafin')->first();
+    @endphp
+
+    {{-- Mostrar botón Iniciar solo si la mesa está disponible --}}
+    @if($mesa->estado == 'disponible')
+        <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST" onsubmit="startTimer(event, {{ $mesa->idmesa }})">
+            @csrf
+            <button class="btn btn-success btn-sm" title="Iniciar">
+                <i class="fas fa-play"></i>
+            </button>
+        </form>
+
+    {{-- Mostrar botón Parar solo si hay tiempo iniciado --}}
+    @elseif($ventaActiva && $ventaActiva->fechainicio)
+        <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST" onsubmit="stopTimer(event, {{ $mesa->idmesa }})">
+            @csrf
+            <button class="btn btn-danger btn-sm" title="Parar">
+                <i class="fas fa-stop"></i>
+            </button>
+        </form>
+    @endif
+@endif
 
                         {{-- Cambiar estado --}}
                         <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
@@ -136,7 +148,11 @@
                         </form>
 
                         {{-- Botón Carrito / Modal --}}
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#productosModal-{{ $mesa->idmesa }}">
+                        <button 
+                            type="button" 
+                            class="btn btn-warning btn-sm"
+                            onclick="verificarMesa({{ $mesa->idmesa }}, '{{ $mesa->tipo }}')"
+                            data-bs-target="#productosModal-{{ $mesa->idmesa }}">
                             <i class="fas fa-cart-plus"></i>
                         </button>
 
@@ -401,222 +417,8 @@
 
         @endforeach
 
-        {{-- ================= MESAS DE CONSUMO ================= --}}
-        @foreach($mesas_consumos as $mesa)
-        <div class="col-md-3 mb-3">
-            <div class="card card-mesa {{ $mesa->estado == 'ocupada' ? 'border-danger' : ($mesa->estado == 'reservada' ? 'border-info' : 'border-success') }}">
-                <div class="card-header text-center">
-                    <h4 class="card-title mb-0">Mesa Consumo #{{ $mesa->idmesaconsumo }}</h4>
-                </div>
-                <div class="card-body text-center">
-                    <img src="{{ asset('img/mesas/mesaconsumo.png') }}" alt="mesaconsumo" style="height:110px;">
-                    <p class="mt-2"><strong>Estado:</strong> {{ ucfirst($mesa->estado) }}</p>
-
-                    <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                        {{-- Factura --}}
-                        @if(!empty($mesa->ventaActiva))
-                            <a href="{{ route('ventas.factura', $mesa->ventaActiva->id) }}" class="btn btn-info btn-sm" title="Ver factura">
-                                <i class="fas fa-file-invoice"></i>
-                            </a>
-                        @endif
-
-                        {{-- Cambiar estado --}}
-                        <form action="{{ route('mesasconsumo.estado', $mesa->idmesaconsumo) }}" method="POST" class="d-flex gap-1">
-                            @csrf
-                            <select name="estado" class="form-control form-control-sm">
-                                <option value="disponible" {{ $mesa->estado=='disponible'?'selected':'' }}>Disponible</option>
-                                <option value="ocupada" {{ $mesa->estado=='ocupada'?'selected':'' }}>Ocupada</option>
-                                <option value="reservada" {{ $mesa->estado=='reservada'?'selected':'' }}>Reservada</option>
-                            </select>
-                            <button class="btn btn-primary btn-sm" title="Actualizar estado">
-                                <i class="fas fa-sync"></i>
-                            </button>
-                        </form>
-
-                        {{-- Botón Carrito --}}
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#productosModalConsumo-{{ $mesa->idmesaconsumo }}">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
-
-                        {{-- Botón para ver productos agregados --}}
-                        @if($mesa->ventaActiva && $mesa->ventaActiva->productos->count() > 0)
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#productosAgregadosModalConsumo-{{ $mesa->idmesaconsumo }}">
-                                <i class="fas fa-eye"></i> Ver
-                            </button>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Modal de productos agregados para consumo --}}
-        @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
-        <div class="modal fade" id="productosAgregadosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" 
-             aria-labelledby="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    
-                    {{-- Header --}}
-                    <div class="modal-header">
-                        <h5 class="modal-title d-flex align-items-center text-white" id="productosAgregadosConsumoLabel-{{ $mesa->idmesaconsumo }}">
-                            <i class="fas fa-utensils me-2"></i>
-                            Mesa Consumo #{{ $mesa->idmesaconsumo }} - Productos Agregados
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-
-                    {{-- Body --}}
-                    <div class="modal-body">
-                        
-                        {{-- Lista de productos --}}
-                        <div class="card mb-3 shadow-sm">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0">
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    Productos ({{ $mesa->ventaActiva->productos->count() }})
-                                </h6>
-                            </div>
-                            <ul class="list-group list-group-flush lista-productos">
-                                @foreach($mesa->ventaActiva->productos as $producto)
-                                    <li class="list-group-item">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-6">
-                                                <strong>{{ $producto->nombre }}</strong>
-                                                @if(!empty($producto->descripcion))
-                                                    <small class="text-muted d-block">{{ $producto->descripcion }}</small>
-                                                @endif
-                                            </div>
-                                            <div class="col-md-3 text-center">
-                                                <span class="badge bg-primary rounded-pill fs-6">
-                                                    Cantidad: {{ $producto->pivot->cantidad }}
-                                                </span>
-                                            </div>
-                                            <div class="col-md-3 text-end">
-                                                <div class="d-flex justify-content-end align-items-center gap-2">
-                                                    @if(!empty($producto->pivot->precio))
-                                                        <span class="text-success fw-bold">
-                                                            ${{ number_format($producto->pivot->precio * $producto->pivot->cantidad, 0, ',', '.') }}
-                                                        </span>
-                                                    @endif
-                                                    
-                                                    {{-- Botón eliminar --}}
-                                                    <form action="{{ route('mesasventas.eliminarProductoConsumo', [$mesa->ventaActiva->id, $producto->idproducto]) }}" 
-                                                          method="POST" 
-                                                          onsubmit="return confirm('¿Está seguro de eliminar {{ $producto->nombre }}?');"
-                                                          class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar producto">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
-                        {{-- Resumen de totales --}}
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    {{-- Total productos --}}
-                                    <div class="col-md-6">
-                                        <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                                            <span class="text-muted">
-                                                <i class="fas fa-box me-2"></i>Total Productos:
-                                            </span>
-                                            <span class="fw-bold text-primary fs-5">
-                                                ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Total general --}}
-                                    <div class="col-md-6">
-                                        <div class="d-flex justify-content-between align-items-center p-2 bg-success text-white rounded">
-                                            <span>
-                                                <i class="fas fa-calculator me-2"></i>Total Final:
-                                            </span>
-                                            <span class="fw-bold fs-5">
-                                                ${{ number_format($mesa->ventaActiva->total ?? 0, 0, ',', '.') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Footer --}}
-                    <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>Cerrar
-                        </button>
-                        <button type="button" class="btn btn-success" onclick="finalizarVentaConsumo({{ $mesa->idmesaconsumo }})">
-                            <i class="fas fa-check-circle me-2"></i>Finalizar Consumo
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
-
-
-        {{-- Modal de agregar productos consumo --}}
-        <div class="modal fade" id="productosModalConsumo-{{ $mesa->idmesaconsumo }}" tabindex="-1" aria-labelledby="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title" id="productosModalConsumoLabel-{{ $mesa->idmesaconsumo }}">
-                            Agregar productos a Mesa Consumo #{{ $mesa->idmesaconsumo }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{-- Buscador --}}
-                        <input type="text" class="form-control mb-3 buscador-productos" placeholder="Buscar producto...">
-                        <form action="{{ route('mesasventas.agregarProductosConsumo', $mesa->idmesaconsumo) }}" method="POST">
-                            @csrf
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover text-center align-middle">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th>Precio</th>
-                                            <th>Stock</th>
-                                            <th>Cantidad</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($productos as $producto)
-                                        <tr>
-                                            <td>{{ $producto->nombre }}</td>
-                                            <td>${{ number_format($producto->precio, 0, ',', '.') }}</td>
-                                            <td>{{ $producto->stock }}</td>
-                                            <td>
-                                                <input type="number" name="cantidades[{{ $producto->idproducto }}]" min="0" max="{{ $producto->stock }}" class="form-control text-center" value="0">
-                                            </td>
-                                            
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="text-end mt-3">
-                                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Agregar Seleccionados</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @endforeach
+       
+        
     </div>
 </div>
 @stop
@@ -826,5 +628,56 @@ function syncModalTimer(id) {
         modalEl.innerText = mainEl.innerText;
     }
 }
+// 🧩 Verificar si la mesa puede abrir el modal de productos
+function verificarMesa(id, tipo) {
+    // Si es mesa de consumo, permitir siempre
+    if (tipo === 'consumo') {
+        const modal = new bootstrap.Modal(document.getElementById('productosModal-' + id));
+        modal.show();
+        return;
+    }
+
+    // Para las demás mesas (pool, libre, tresbandas)
+    const startTime = localStorage.getItem('startTime-' + id);
+
+    if (!startTime) {
+        // Si no hay cronómetro activo
+        alert('⚠️ La mesa está disponible. Inicia el tiempo antes de agregar productos.');
+        return;
+    }
+
+    // Si el tiempo está activo, mostrar el modal normalmente
+    const modal = new bootstrap.Modal(document.getElementById('productosModal-' + id));
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    @foreach($mesas as $mesa)
+    // Tomamos el input y el contenedor de productos
+    const buscador{{ $mesa->idmesa }} = document.querySelector('.buscador-productos-{{ $mesa->idmesa }}');
+    const productosTbody{{ $mesa->idmesa }} = document.querySelectorAll('.productos-tbody tr.producto-row');
+    const resultadosCount{{ $mesa->idmesa }} = document.querySelector('.resultados-count-{{ $mesa->idmesa }}');
+
+    if(buscador{{ $mesa->idmesa }}) {
+        buscador{{ $mesa->idmesa }}.addEventListener('input', function () {
+            const texto = this.value.toLowerCase();
+            let visibles = 0;
+
+            productosTbody{{ $mesa->idmesa }}.forEach(tr => {
+                const nombre = tr.dataset.nombre;
+                if(nombre.includes(texto)) {
+                    tr.style.display = '';
+                    visibles++;
+                } else {
+                    tr.style.display = 'none';
+                }
+            });
+
+            resultadosCount{{ $mesa->idmesa }}.textContent = visibles;
+        });
+    }
+    @endforeach
+});
+
 </script>
 @stop
