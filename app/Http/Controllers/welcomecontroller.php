@@ -5,42 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Proveedores;
 
 class WelcomeController extends Controller
 {
     public function index()
-    {
-        // Fecha de hoy en formato YYYY-MM-DD y zona horaria correcta
-        $hoy = Carbon::now('America/Bogota')->format('Y-m-d');
+{$proveedores = Proveedores::all();
+    DB::statement("SET lc_time_names = 'es_ES'");
+    
+    $hoy = Carbon::now('America/Bogota')->toDateString();
 
-        // Ventas del día
-        $ingresoDia = DB::table('mesasventas')
-            ->whereDate('fechainicio', $hoy)
-            ->sum('total');
+    // 🔹 Ingreso del día
+    $ingresoDia = DB::table('mesasventas')
+        ->whereDate(DB::raw('CONVERT_TZ(created_at, "+00:00", "-05:00")'), $hoy)
+        ->sum('total') ?? 0;
 
-        // Día actual en español
-        $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-        $nombreDia = $dias[date('w')]; // 0=domingo, 1=lunes...
+    // 🔹 Top 5 productos vendidos hoy (excluyendo productos con "tiempo")
+    $productos = DB::table('productos')
+        ->select('nombre', DB::raw('SUM(cantidad) as cantidad_vendida'))
+        ->whereDate('created_at', $hoy)
+        ->where('nombre', 'NOT LIKE', '%tiempo%')
+        ->groupBy('nombre')
+        ->orderByDesc('cantidad_vendida')
+        ->limit(5)
+        ->get();
 
-        // Ventas semana actual
-        $inicioSemana = Carbon::now('America/Bogota')->startOfWeek(); // Lunes
-        $ventasSemana = [];
-        $labelsSemana = [];
-
-        for ($i = 0; $i < 7; $i++) {
-            $fecha = $inicioSemana->copy()->addDays($i);
-            $ventasSemana[] = DB::table('mesasventas')
-                ->whereDate('fechainicio', $fecha)
-                ->sum('total');
-            $labelsSemana[] = $dias[$fecha->dayOfWeek];
-        }
-
-        // Enviar datos a la vista
-        return view('welcome', compact(
-            'ingresoDia',
-            'nombreDia',
-            'ventasSemana',
-            'labelsSemana'
-        ));
-    }
+    return view('welcome', compact('ingresoDia', 'productos', 'proveedores'));
+}
 }

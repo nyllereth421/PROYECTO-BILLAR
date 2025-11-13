@@ -20,13 +20,37 @@ Route::get('/', [WelcomeController::class, 'index']);
 
 
 Route::get('/ingreso-dia', function () {
-    $hoy = Carbon::now('America/Bogota')->format('Y-m-d');
+    $hoy = Carbon::now('America/Bogota')->toDateString();
 
     $ingresoDia = DB::table('mesasventas')
-        ->whereDate('fechainicio', $hoy)
-        ->sum('total');
+        ->whereDate(DB::raw('CONVERT_TZ(created_at, "+00:00", "-05:00")'), $hoy)
+        ->sum('total') ?? 0;
 
     return response()->json(['ingresoDia' => $ingresoDia]);
+});
+
+Route::get('/ventas-semana', function () {
+    $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    $inicioSemana = Carbon::now('America/Bogota')->startOfWeek();
+
+    $labels = [];
+    $valores = [];
+
+    for ($i = 0; $i < 7; $i++) {
+        $fecha = $inicioSemana->copy()->addDays($i);
+        $labels[] = $dias[$fecha->dayOfWeek];
+        
+        $total = DB::table('mesasventas')
+            ->whereDate(DB::raw('CONVERT_TZ(created_at, "+00:00", "-05:00")'), $fecha->toDateString())
+            ->sum('total') ?? 0;
+            
+        $valores[] = $total;
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'valores' => $valores,
+    ]);
 });
 
 
