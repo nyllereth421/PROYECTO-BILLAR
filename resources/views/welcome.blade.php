@@ -15,21 +15,47 @@
     {{-- 1. Fila de Indicadores Clave (Small Boxes) --}}
     <div class="row">
 
-        {{-- INGRESO DIARIO/ACTUAL --}}
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>$450<sup style="font-size: 20px">/Hoy</sup></h3>
-                    <p>Ingresos del Día</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-dollar-sign"></i> 
-                </div>
-                <a href="#" class="small-box-footer">
-                    Ver reportes financieros <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
+        @php
+    $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    $nombreDia = $dias[date('w')];
+@endphp
+
+<div class="col-lg-3 col-6">
+    <div class="small-box bg-info">
+        <div class="inner">
+            <h3>
+                $<span id="ingresoDia">{{ number_format($ingresoDia ?? 0, 2) }}</span>
+                <sup style="font-size: 20px">/{{ $nombreDia }}</sup>
+            </h3>
+            <p>Ingresos del Día</p>
         </div>
+        <div class="icon">
+            <i class="fas fa-dollar-sign"></i> 
+        </div>
+        <a href="#" class="small-box-footer">
+            Ver reportes financieros <i class="fas fa-arrow-circle-right"></i>
+        </a>
+    </div>
+</div> 
+
+<script>
+function actualizarIngresoDia() {
+    fetch('/ingreso-dia')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ingresoDia').textContent = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.ingresoDia);
+        })
+        .catch(error => console.error('Error al actualizar ingreso diario:', error));
+}
+
+// Llamada inmediata al cargar la página
+actualizarIngresoDia();
+
+// Actualizar cada 5 segundos
+setInterval(actualizarIngresoDia, 5000);
+</script>
+ 
+
 
         {{-- MESAS ACTIVAS/TOTAL --}}
         <div class="col-lg-3 col-6">
@@ -322,5 +348,45 @@
                 }
             });
         }
+
+
+
+        <canvas id="ventasSemanaChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('ventasSemanaChart').getContext('2d');
+    const ventasSemanaChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @json($labelsSemana ?? []),
+            datasets: [{
+                label: 'Ventas de la Semana',
+                data: @json($ventasSemana ?? []),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+function actualizarIngresoDia() {
+    fetch('/ingreso-dia')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('ingresoDia').textContent = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.ingresoDia);
+        })
+        .catch(error => console.error('Error al actualizar ingreso diario:', error));
+}
+
+// Actualizar cada 5 segundos (o el tiempo que prefieras)
+setInterval(actualizarIngresoDia, 5000);
     </script>
 @stop

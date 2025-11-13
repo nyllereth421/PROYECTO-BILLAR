@@ -11,6 +11,23 @@ use App\Http\Controllers\MesasController;
 use App\Http\Controllers\MesasConsumosController;
 use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\VentasController;
+use App\Http\Controllers\WelcomeController;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+//WELOCME
+Route::get('/', [WelcomeController::class, 'index']);
+
+
+Route::get('/ingreso-dia', function () {
+    $hoy = Carbon::now('America/Bogota')->format('Y-m-d');
+
+    $ingresoDia = DB::table('mesasventas')
+        ->whereDate('fechainicio', $hoy)
+        ->sum('total');
+
+    return response()->json(['ingresoDia' => $ingresoDia]);
+});
 
 
 
