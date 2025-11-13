@@ -419,7 +419,7 @@
                                         Selecciona las cantidades deseadas
                                     </small>
                                 </div>
-                                <button type="submit" class="btn btn-lg px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;">
+                                <button type="submit" class="btn btn-lg px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white;" onclick="filtrarProductos(event)">
                                     <i class="fas fa-check me-2"></i>Agregar Seleccionados
                                 </button>
                             </div>
@@ -439,6 +439,36 @@
 
 @section('js')
 <script>
+    // 🔍 Filtrar productos con cantidad > 0 antes de enviar
+    function filtrarProductos(event) {
+        event.preventDefault();
+        
+        const form = event.target.closest('form');
+        const inputs = form.querySelectorAll('input[name^="cantidades"]');
+        let hayProductos = false;
+
+        // Primero, ocultar/deshabilitar todos los inputs con cantidad 0
+        inputs.forEach(input => {
+            const cantidad = parseInt(input.value) || 0;
+            if (cantidad > 0) {
+                hayProductos = true;
+                input.disabled = false; // Habilitar para que se envíe
+            } else {
+                input.disabled = true; // Deshabilitar para que NO se envíe
+            }
+        });
+
+        if (!hayProductos) {
+            alert('⚠️ Debes seleccionar al menos un producto con cantidad mayor a 0');
+            // Volver a habilitar los inputs para que se puedan editar
+            inputs.forEach(input => input.disabled = false);
+            return false;
+        }
+
+        // Enviar el formulario
+        form.submit();
+    }
+
     function finalizarVenta(idmesa) {
 
     console.log(idmesa)
