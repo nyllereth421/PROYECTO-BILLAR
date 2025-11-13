@@ -15,7 +15,7 @@ class MesasventasController extends Controller
 {
     // Cargar mesas con ventaActiva y los productos asociados
     $mesas = Mesas::with(['ventaActiva.productos'])->get();
-    $productos = Productos::all();
+    $productos = Productos::where('idproveedor', '!=', 5)->get();
 
     // ...
     return view('mesasventas.index', compact('mesas','productos'));
