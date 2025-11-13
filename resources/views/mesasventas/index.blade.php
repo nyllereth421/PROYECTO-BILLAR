@@ -158,7 +158,7 @@
                         </button>
 
                         {{-- Botón para ver productos agregados --}}
-                        @if($mesa->ventaActiva && $mesa->ventaActiva->productos->count() > 0)
+                        @if($mesa->ventaActiva )
                             <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#productosAgregadosModal-{{ $mesa->idmesa }}">
                                 <i class="fas fa-eye"></i> Ver
                             </button>
@@ -169,7 +169,7 @@
         </div>
 
         {{-- Modal de productos agregados (Mesa NORMAL) --}}
-        @if(!empty($mesa->ventaActiva) && $mesa->ventaActiva->productos->count() > 0)
+        @if(!empty($mesa->ventaActiva) )
         <div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1" 
              aria-labelledby="productosAgregadosLabel-{{ $mesa->idmesa }}" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">

@@ -149,7 +149,7 @@ class MesasventasController extends Controller
     $mesa->estado = 'disponible';
     $mesa->save();
 
-    return response()->json([
+ return response()->json([
         'success' => true,
         'message' => 'Venta finalizada correctamente',
         'costo_tiempo' => $costoTiempo,

@@ -27,8 +27,5 @@ class DatabaseSeeder extends Seeder
             MesasSeeder::class,
         ]);
 
-        $this->call([
-            MesasConsumosSeeder::class,
-        ]);
     }
 }

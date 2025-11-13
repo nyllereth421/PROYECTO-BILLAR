@@ -15,6 +15,33 @@ class ProductosSeeder extends Seeder
       DB::table('productos')->insert([
     // 🍺 Bebidas Alcohólicas → Proveedor: Bavaria (1)
     [
+        'nombre' => 'Tiempo pool',
+        'descripcion' => 'Tiempo pool.',
+        'precio' => 10000.00,
+        'stock' => 1,
+        'idproveedor' => 5,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+    [
+        'nombre' => 'Tiempo libre',
+        'descripcion' => 'Tiempo libre.',
+        'precio' => 11000.00,
+        'stock' => 1,
+        'idproveedor' => 5,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+    [
+        'nombre' => 'Tiempo tres bandas',
+        'descripcion' => 'Tiempo tres bandas.',
+        'precio' => 12000.00,
+        'stock' => 1,
+        'idproveedor' => 5,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ],
+    [
         'nombre' => 'Copa de aguardiente',
         'descripcion' => 'Shot de aguardiente tradicional.',
         'precio' => 3500.00,
