@@ -12,12 +12,12 @@ use App\Http\Controllers\MesasConsumosController;
 use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WelcomeController;
+
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 //WELOCME
-Route::get('/', [WelcomeController::class, 'index']);
-
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/ingreso-dia', function () {
     $hoy = Carbon::now('America/Bogota')->toDateString();
@@ -51,6 +51,25 @@ Route::get('/ventas-semana', function () {
         'labels' => $labels,
         'valores' => $valores,
     ]);
+});
+
+// Endpoint para obtener mesas ocupadas en tiempo real
+Route::get('/mesas-ocupadas', function () {
+    $total = \App\Models\Mesas::count();
+    $ocupadas = \App\Models\Mesas::where('estado', 'ocupada')
+        ->get(['idmesa', 'numeromesa', 'tipo']);
+
+    return response()->json([
+        'ocupadas' => $ocupadas->count(),
+        'total' => $total,
+        'mesas' => $ocupadas,
+    ]);
+});
+
+// Endpoint para obtener la cantidad de productos registrados
+Route::get('/productos-cantidad', function () {
+    $cantidad = \App\Models\productos::count();
+    return response()->json(['cantidad' => $cantidad]);
 });
 
 

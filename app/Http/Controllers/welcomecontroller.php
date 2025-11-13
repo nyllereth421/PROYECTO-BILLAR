@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Proveedores;
+use App\Models\mesas;
 
 class WelcomeController extends Controller
 {
     public function index()
-{$proveedores = Proveedores::all();
+{
     DB::statement("SET lc_time_names = 'es_ES'");
     
     $hoy = Carbon::now('America/Bogota')->toDateString();
@@ -30,6 +31,9 @@ class WelcomeController extends Controller
         ->limit(5)
         ->get();
 
-    return view('welcome', compact('ingresoDia', 'productos', 'proveedores'));
+ 
+
+    return view('welcome', compact('ingresoDia', 'productos', 'proveedores', ));
 }
+
 }

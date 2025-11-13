@@ -40,8 +40,9 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>4<sup style="font-size: 20px">/12</sup></h3> 
+                    <h3><span id="ocupadasCount">0</span><sup style="font-size: 20px">/<span id="mesasTotal">0</span></sup></h3>
                     <p>Mesas Ocupadas</p>
+                    <div class="mt-2"><small id="listaMesasOcupadas" class="text-white">Cargando...</small></div>
                 </div>
                 <div class="icon">
                     <i class="fas fa-hockey-puck billar-icon"></i> 
@@ -56,8 +57,8 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>35</h3>
-                    <p>Inventario</p>
+                    <h3><span id="productosCount">0</span></h3>
+                    <p>Productos Registrados</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-boxes"></i> 
@@ -356,13 +357,52 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error al actualizar ingreso diario:', error));
     }
 
+    // === FUNCIÓN PARA ACTUALIZAR MESAS OCUPADAS (TIEMPO REAL) ===
+    function actualizarMesasOcupadas() {
+        fetch('/mesas-ocupadas')
+            .then(response => response.json())
+            .then(data => {
+                const ocupadas = Number(data.ocupadas || 0);
+                const total = Number(data.total || 0);
+
+                const ocupadasEl = document.getElementById('ocupadasCount');
+                const totalEl = document.getElementById('mesasTotal');
+                const listaEl = document.getElementById('listaMesasOcupadas');
+
+                if (ocupadasEl) ocupadasEl.textContent = ocupadas;
+                if (totalEl) totalEl.textContent = total;
+
+                if (listaEl) {
+                    const mesas = (data.mesas || []).map(m => m.numeromesa);
+                    listaEl.textContent = mesas.length ? 'Mesas: ' + mesas.join(', ') : 'No hay mesas ocupadas';
+                }
+            })
+            .catch(error => console.error('Error al actualizar mesas ocupadas:', error));
+    }
+
+    // === FUNCIÓN PARA ACTUALIZAR CANTIDAD DE PRODUCTOS REGISTRADOS ===
+    function actualizarProductosRegistrados() {
+        fetch('/productos-cantidad')
+            .then(response => response.json())
+            .then(data => {
+                const cantidad = Number(data.cantidad || 0);
+                const el = document.getElementById('productosCount');
+                if (el) el.textContent = cantidad;
+            })
+            .catch(error => console.error('Error al obtener cantidad de productos:', error));
+    }
+
     // Llamadas inmediatas al cargar la página
     actualizarGrafica();
     actualizarIngresoDia();
+    actualizarMesasOcupadas();
+    actualizarProductosRegistrados();
 
-    // Actualizar cada 5 segundos
-    setInterval(actualizarGrafica, 5000);
-    setInterval(actualizarIngresoDia, 5000);
+    // Actualizar cada 10 segundos
+    setInterval(actualizarGrafica, 10000);
+    setInterval(actualizarIngresoDia, 10000);
+    setInterval(actualizarMesasOcupadas, 10000);
+    setInterval(actualizarProductosRegistrados, 10000);
 });
 </script>
 @stop
