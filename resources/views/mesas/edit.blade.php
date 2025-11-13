@@ -22,6 +22,8 @@
                 <option value="pool" {{ $mesa->tipo == 'pool' ? 'selected' : '' }}>Pool</option>
                 <option value="tresbandas" {{ $mesa->tipo == 'tresbandas' ? 'selected' : '' }}>Tres Bandas</option>
                 <option value="libre" {{ $mesa->tipo == 'libre' ? 'selected' : '' }}>Libre</option>
+                <option value="consumo" {{ $mesa->tipo == 'consumo' ? 'selected' : '' }}>Consumo</option>
+
             </select>
         </div>
 

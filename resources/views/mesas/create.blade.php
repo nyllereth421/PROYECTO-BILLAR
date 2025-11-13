@@ -21,6 +21,8 @@
                 <option value="pool">Pool</option>
                 <option value="tresbandas">Tres Bandas</option>
                 <option value="libre">Libre</option>
+                <option value="consumo">Consumo</option>
+
             </select>
         </div>
 
