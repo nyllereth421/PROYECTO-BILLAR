@@ -38,6 +38,36 @@ class MesasventasController extends Controller
 }
   
 
+    /**
+     * Obtener tarifa por hora según el tipo de mesa consultando un producto específico
+     * Mapeo: tresbandas -> producto id 1, pool -> id 2, libre -> id 3
+     */
+    private function tarifaHoraPorMesaId($idmesa)
+    {
+        $mesa = Mesas::find($idmesa);
+        if (!$mesa) {
+            return 10000; // valor por defecto si no existe la mesa
+        }
+
+        $map = [
+            'tresbandas' => 3,
+            'pool' => 1,
+            'libre' => 2,
+        ];
+
+        $tipo = $mesa->tipo ?? null;
+        $productoId = $map[$tipo] ?? null;
+
+        if ($productoId) {
+            $producto = Productos::find($productoId);
+            if ($producto && isset($producto->precio)) {
+                return $producto->precio;
+            }
+        }
+
+        return 10000; // fallback
+    }
+
 
    public function agregarProductos(Request $request, $idmesa)
 {
@@ -93,15 +123,18 @@ class MesasventasController extends Controller
         $mesa = Mesas::findOrFail($idmesa);
         
         // Solo inicia si está disponible para evitar problemas
-        if ($mesa->estado == 'disponible') {
+        if ($mesa->estado == 'disponible' || $mesa->estado == 'reservada') {
             $mesa->estado = 'ocupada';
             $mesa->save();
-
+        }
             $venta = MesasVentas::where('idmesa',$idmesa)->whereNull('fechafin')->first();
+            // error_log(print_r($venta->toJson(), true));
             if (!$venta) {
                 MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+            } else {        
+                // Reinicia la fecha de inicio si ya existe una venta
+                $venta->update(['fechainicio' => now()]);
             }
-        }
 
         return redirect()->back();
     }
@@ -114,21 +147,44 @@ class MesasventasController extends Controller
         ->whereNull('fechafin')
         ->latest()
         ->first();
+    
 
     if (!$venta) {
         return response()->json(['success' => false, 'message' => 'No hay venta activa para esta mesa']);
     }
-
+    error_log(print_r($venta->mesa->toJson(), true));
     // Calcular tiempo transcurrido
     $inicio = Carbon::parse($venta->fechainicio);
     $fin = now();
     $minutos = $inicio->diffInMinutes($fin);
+    $horas = $minutos / 60;
+    
+    // Tarifa por minuto (💰 ajusta según tu negocio) calculada según tipo de mesa
+    $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa);
+    $map = [
+            'tresbandas' => 3,
+            'pool' => 1,
+            'libre' => 2,
+        ];
 
-    // Tarifa por minuto (💰 ajusta según tu negocio)
-    $tarifaHora = 10000;
+    // Obtener el id del producto según el tipo de mesa
+    $tipo = $venta->mesa->tipo ?? null;
+    $idProductoTiempo = $map[$tipo] ?? null;
+    // asegurar que existe el producto
+    $productoTiempo = $idProductoTiempo ? Productos::find($idProductoTiempo) : null;
+    if (!$productoTiempo) {
+        // manejar error: no hay producto para este tipo de mesa
+        return redirect()->back()->with('error', 'No se encontró el producto de tiempo para esta mesa.');
+    }
     $tarifaMinuto = $tarifaHora / 60;
     $costoTiempo = round($minutos * $tarifaMinuto, 2);
-
+    //guardo el tiempo como un producto más
+    $venta->productos()->attach($idProductoTiempo, [
+                'cantidad' => $horas,
+                'precio_unitario' => $tarifaHora,
+                'subtotal' => $costoTiempo,
+            ]);    
+    $this->_actualizarTotalVenta($venta);
     // Calcular total de productos (desde la tabla pivote)
     $totalProductos = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
 
@@ -137,25 +193,19 @@ class MesasventasController extends Controller
 
     // Guardar todo en la base de datos
     $venta->update([
-        'fechafin' => $fin,
-        'costo_tiempo' => $costoTiempo,
-        'total_con_tiempo' => $totalFinal,
+        'fechainicio' => null,
         'total' => $totalProductos,
         'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
     ]);
+    
 
-    // Liberar la mesa
+    /* Liberar la mesa
     $mesa = Mesas::findOrFail($idmesa);
     $mesa->estado = 'disponible';
-    $mesa->save();
+    $mesa->save();*/
+   
+    return redirect()->back();
 
- return response()->json([
-        'success' => true,
-        'message' => 'Venta finalizada correctamente',
-        'costo_tiempo' => $costoTiempo,
-        'total_productos' => $totalProductos,
-        'total_final' => $totalFinal,
-    ]);
 }
 
 
@@ -176,7 +226,7 @@ class MesasventasController extends Controller
         $inicio = Carbon::parse($venta->fechainicio);
         $fin = Carbon::parse($venta->fechafin);
         $minutes = $inicio->diffInMinutes($fin);
-        $tarifaHora = 10000;
+        $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa);
         $tarifaMinuto = $tarifaHora / 60;
         $cargoTiempo = round($minutes * $tarifaMinuto, 2);
 
@@ -261,7 +311,7 @@ public function finalizarConsumo($idmesa)
         $fin = Carbon::parse($venta->fechafin);
         $minutes = $inicio->diffInMinutes($fin);
 
-        $tarifaHora = 10000; // 💰 Tarifa por hora
+        $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa); // 💰 Tarifa por hora según tipo de mesa
         $tarifaMinuto = $tarifaHora / 60;
         $costoTiempo = round($minutes * $tarifaMinuto, 2);
 
@@ -273,8 +323,6 @@ public function finalizarConsumo($idmesa)
 
         // Guardar todos los valores
         $venta->update([
-            'costo_tiempo' => $costoTiempo,
-            'total_con_tiempo' => $totalFinal,
             'total' => $productos_total,
         ]);
     }
@@ -299,8 +347,8 @@ public function finalizarVenta(Request $request, $idmesa)
     $fin = now();
     $minutos = $inicio->diffInMinutes($fin);
 
-    // Cálculo del costo de tiempo
-    $tarifaHora = 10000;
+    // Cálculo del costo de tiempo según tipo de mesa
+    $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa);
     $tarifaMinuto = $tarifaHora / 60;
     $costoTiempo = round($minutos * $tarifaMinuto, 2);
 
@@ -315,8 +363,6 @@ public function finalizarVenta(Request $request, $idmesa)
     // Actualizar venta
     $venta->update([
         'fechafin' => $fin,
-        'costo_tiempo' => $costoTiempo,
-        'total_con_tiempo' => $totalFinal,
         'total' => $totalProductos,
         'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
     ]);
@@ -328,8 +374,6 @@ public function finalizarVenta(Request $request, $idmesa)
 
     return response()->json([
         'success' => true,
-        'costo_tiempo' => $costoTiempo,
-        'total_con_tiempo' => $totalFinal,
         'total_productos' => $totalProductos,
     ]);
 }

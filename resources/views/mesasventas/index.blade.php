@@ -109,14 +109,14 @@
 
                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
                        {{-- Iniciar / Parar --}}
-                            @if($mesa->tipo !== 'consumo')
+                            
                                 @php
                                     // Obtener venta activa para esta mesa
                                     $ventaActiva = $mesa->ventaActiva()->whereNull('fechafin')->first();
                                 @endphp
 
                             {{-- Mostrar botón Iniciar solo si la mesa está disponible --}}
-                            @if($mesa->estado == 'disponible')
+                            @if( $mesa->tipo !== 'consumo' && ( $ventaActiva === null || !$ventaActiva->fechainicio))
                                 <form action="{{ route('mesasventas.iniciar', $mesa->idmesa) }}" method="POST" onsubmit="startTimer(event, {{ $mesa->idmesa }})">
                                     @csrf
                                     <button class="btn btn-success btn-sm" title="Iniciar">
@@ -125,7 +125,7 @@
                                 </form>
 
                                 {{-- Mostrar botón Parar solo si hay tiempo iniciado --}}
-                                @elseif($ventaActiva && $ventaActiva->fechainicio)
+                                @elseif($ventaActiva && $ventaActiva->fechainicio && $mesa->tipo !== 'consumo')
                                     <form action="{{ route('mesasventas.finalizar', $mesa->idmesa) }}" method="POST" onsubmit="stopTimer(event, {{ $mesa->idmesa }})">
                                         @csrf
                                         <button class="btn btn-danger btn-sm" title="Parar">
@@ -133,26 +133,29 @@
                                         </button>
                                     </form>
                                 @endif
-                            @endif
+                        
 
                         {{-- Cambiar estado --}}
-                        <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
-                            @csrf
-                            <select name="estado" class="form-control form-control-sm">
-                                <option value="disponible" {{ $mesa->estado=='disponible'?'selected':'' }}>Disponible</option>
-                                <option value="ocupada" {{ $mesa->estado=='ocupada'?'selected':'' }}>Ocupada</option>
-                                <option value="reservada" {{ $mesa->estado=='reservada'?'selected':'' }}>Reservada</option>
-                            </select>
-                            <button class="btn btn-primary btn-sm" title="Actualizar estado">
-                                <i class="fas fa-sync"></i>
-                            </button>
-                        </form>
-
+                        
+                            <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
+                                @csrf
+                                <select name="estado" class="form-control form-control-sm">
+                                    <option value="disponible" {{ $mesa->estado=='disponible'?'selected':'' }}>Disponible</option>
+                                    <option value="ocupada" {{ $mesa->estado=='ocupada'?'selected':'' }}>Ocupada</option>
+                                    <option value="reservada" {{ $mesa->estado=='reservada'?'selected':'' }}>Reservada</option>
+                                </select>
+                                @if($mesa->estado != 'ocupada')
+                                <button class="btn btn-primary btn-sm" title="Actualizar estado">
+                                    <i class="fas fa-sync"></i>
+                                </button>
+                                @endif 
+                            </form>
+                         
                         {{-- Botón Carrito / Modal --}}
                         <button 
                             type="button" 
                             class="btn btn-warning btn-sm"
-                            onclick="verificarMesa({{ $mesa->idmesa }}, '{{ $mesa->tipo }}')"
+                            onclick="verificarMesa({{ $mesa->idmesa }}, '{{ $mesa->tipo }}', '{{ $mesa->estado }}')"
                             data-bs-target="#productosModal-{{ $mesa->idmesa }}">
                             <i class="fas fa-cart-plus"></i>
                         </button>
@@ -249,7 +252,7 @@
                             <div class="card-body">
                                 <div class="row g-3">
                                     {{-- Total productos --}}
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" style="display: none;">
                                         <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
                                             <span class="text-muted">
                                                 <i class="fas fa-box me-2"></i>Total Productos:
@@ -487,8 +490,6 @@
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            costo_tiempo: costoTiempo,
-            total_con_tiempo: totalFinal,
             metodo_pago: metodoPago
         })
     })
@@ -711,9 +712,9 @@ function syncModalTimer(id) {
     }
 }
 // 🧩 Verificar si la mesa puede abrir el modal de productos
-function verificarMesa(id, tipo) {
+function verificarMesa(id, tipo, estado) {
     // Si es mesa de consumo, permitir siempre
-    if (tipo === 'consumo') {
+    if (tipo === 'consumo' || estado === 'ocupada') {
         const modal = new bootstrap.Modal(document.getElementById('productosModal-' + id));
         modal.show();
         return;

@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('mesasventas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ventas')->nullable();
-            $table->foreign('ventas')
-                  ->references('id')->on('ventas');
-            $table->dateTime('fechainicio')->default(now());
+            $table->dateTime('fechainicio')->nullable();
             $table->dateTime('fechafin')->nullable();  
             $table->decimal('total', 10, 2)->default(0);
             $table->unsignedBigInteger('idmesa');
             $table->foreign('idmesa')
                   ->references('idmesa')->on('mesas');   
             $table->timestamps();
+            $table->enum('metodo_pago', ['efectivo', 'transferencia', 'tarjeta'])->default('efectivo');
+
         });
     }
 

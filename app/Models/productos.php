@@ -24,12 +24,7 @@ class productos extends Model
     {
         return $this->belongsTo(Proveedores::class, 'idproveedor', 'idproveedor');
     }
- public function ventas()
-{
-    return $this->belongsToMany(MesasVentas::class, 'mesasventas_productos', 'idproducto', 'idmesaventa')
-                ->withPivot('cantidad', 'precio_unitario', 'subtotal')
-                ->withTimestamps();
-}
+
 public function ventasPivot()
     {
         return $this->belongsToMany(MesasVentas::class, 'mesasventas_productos', 'idproducto', 'idmesaventa')

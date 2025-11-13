@@ -29,7 +29,7 @@ return new class extends Migration
               ->onDelete('cascade');
 
         // 🔢 Cantidad del producto en esa venta
-        $table->integer('cantidad')->default(1);
+        $table->decimal('cantidad', 5,2);
 
         // 💲 Precio unitario (opcional, para cálculos)
         $table->decimal('precio_unitario', 10, 2)->nullable();
