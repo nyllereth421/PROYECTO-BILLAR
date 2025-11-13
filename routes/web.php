@@ -12,6 +12,7 @@ use App\Http\Controllers\MesasConsumosController;
 use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\informescontroller;
 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -153,6 +154,15 @@ Route::post('/mesasventas/{id}/parar', [MesasventasController::class, 'parar'])-
 Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
 Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
 Route::get('/mesas/vertotal/{id}', [MesasVentasController::class, 'verTotalVenta'])->name('mesas.verTotalVenta');
+
+// ---------------------- INFORMES ----------------------
+Route::get('/informes', [informescontroller::class, 'index'])->name('informes.index');
+Route::get('/api/informes/ventas-periodo', [informescontroller::class, 'ventasPorPeriodo'])->name('api.informes.ventas-periodo');
+Route::get('/api/informes/productos-vendidos', [informescontroller::class, 'productosMasVendidos'])->name('api.informes.productos-vendidos');
+Route::get('/api/informes/ingresos-metodo', [informescontroller::class, 'ingresosPorMetodoPago'])->name('api.informes.ingresos-metodo');
+Route::get('/api/informes/ocupacion-mesas', [informescontroller::class, 'ocupacionMesas'])->name('api.informes.ocupacion-mesas');
+Route::get('/api/informes/resumen', [informescontroller::class, 'resumenGeneral'])->name('api.informes.resumen');
+Route::get('/api/informes/comparacion-meses', [informescontroller::class, 'comparacionMeses'])->name('api.informes.comparacion-meses');
 
 
 

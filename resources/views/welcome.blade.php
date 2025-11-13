@@ -30,7 +30,7 @@
                 <div class="icon">
                     <i class="fas fa-dollar-sign"></i> 
                 </div>
-                <a href="#" class="small-box-footer">
+                <a href="{{ route('informes.index')}}" class="small-box-footer">
                     Ver reportes financieros <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
