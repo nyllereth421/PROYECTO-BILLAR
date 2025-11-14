@@ -268,13 +268,13 @@ public function eliminarProducto($ventaId, $idMesaVenta_producto)
     $productoPivot = $venta->productos()->wherePivot('id', $idMesaVenta_producto)->first();
 
     if ($productoPivot) {
+        $producto = Productos::findOrFail($productoPivot->pivot->idproducto);
 
         $cantidadActual = $productoPivot->pivot->cantidad;
 
-        if ($cantidadActual > 1) {
+        if ($cantidadActual > 1 && $producto->idproveedor != 5) {
             // Resta una unidad y actualiza subtotal
             $nuevaCantidad = $cantidadActual - 1;
-
             DB::table('mesasventas_productos')
                 ->where('id', $idMesaVenta_producto) // aquí usas tu $idMesaVenta_producto
                 ->update([
@@ -290,7 +290,6 @@ public function eliminarProducto($ventaId, $idMesaVenta_producto)
                 ->delete();
         }
 
-        $producto = Productos::findOrFail($productoPivot->pivot->idproducto);
         // Devuelve 1 unidad al stock del producto
         $producto->stock += 1;
         //resta la cantidad vendida a diferencia de los tiempos de mesas
