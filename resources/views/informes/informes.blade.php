@@ -3,9 +3,18 @@
 @section('title', 'Informes y Reportes')
 
 @section('content_header')
-    <div class="container-fluid text-center">
-        <h1 class="text-dark"><i class="fas fa-file-pdf mr-2"></i> Informes y Reportes</h1>
-        <p class="text-muted">Analiza ventas, productos y ocupación de mesas.</p>
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-between">
+            <div class="col">
+                <h1 class="text-dark"><i class="fas fa-file-pdf mr-2"></i> Informes y Reportes</h1>
+                <p class="text-muted">Analiza ventas, productos y ocupación de mesas.</p>
+            </div>
+            <div class="col-auto">
+                <a href="{{ route('welcome') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i> Volver a Inicio
+                </a>
+            </div>
+        </div>
     </div>
 @stop
 

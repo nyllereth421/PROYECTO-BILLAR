@@ -328,11 +328,11 @@ return [
         ],
         [
             'text' => 'inicio',
-            'url'  => 'welcome',
+            'route'  => 'welcome',
             'icon' => 'fas fa-fw fa-home',
         ],
         [
-            'text' => 'jugadores',
+            'text' => 'usuarios',
             'url' => 'admin/users',
             'icon' => 'fas fa-fw fa-users',
         ],
@@ -400,7 +400,7 @@ return [
         [
             'text' => 'informes',
             'icon_color' => 'cyan',
-            'url' => '#',
+            'route' => 'informes.index',
             'icon' => 'fas fa-chart-bar', 
             'icon_color' => 'cyan',
         ],
