@@ -52,7 +52,6 @@
                             <form action="{{ route('mesas.destroy', $mesa->idmesa) }}" method="POST" 
                                   onsubmit="return confirm('¿Estás seguro de eliminar esta mesa?');" class="mx-1">
                                 @csrf
-                                @method('DELETE')
                                 <button class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </button>
