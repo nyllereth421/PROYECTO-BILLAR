@@ -332,70 +332,21 @@ return [
             'icon' => 'fas fa-fw fa-home',
         ],
         [
+            'text' => 'Gestion de Mesas',
+            'route' => 'mesasventas.index',
+            'icon' => 'fas fa-table',
+        ],
+        [
             'text' => 'usuarios',
             'url' => 'admin/users',
             'icon' => 'fas fa-fw fa-users',
         ],
-
-                [
-            'text' => ' Gestion de Mesas ',
-            'icon' => 'fas fa-table',
-            'submenu' => [
-                [
-                    'text' => 'Ver Mesas',
-                    'route' => 'mesasventas.index',
-                ],
-                
-            ]
-        ],
-        
         [
             'text' => 'Inventario',
             'route' => 'inventario.index',
-            'icon'  => 'fas fa-warehouse',
-            'submenu' => [
-                [
-                    'text' => 'Inventario Mesas',
-                    'route' => 'mesas.index',
-                    
-                ],
-                [
-                    'text' => 'Inventario Productos',
-                    'route' => 'productos.index',
-                    
-                ],
-                [
-                    'text' => 'Inventario proveedores',
-                    'route' => 'proveedores.index',
-                ]
-            ]
+            'icon' => 'fas fa-warehouse',
         ],
-        
-        [
-            'text' => 'torneos',
-            'url' => 'admin/torneos',
-            'icon' => 'fas fa-trophy',
-            'submenu' => [
-                [
-                    'text' => 'crear torneo',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'individual',
-                            'url' => '#',
-                            'icon' => 'fas fa-user'
-                        ],
-                        [
-                            'text' => 'equipos',
-                            'url' => '#',
-                            'icon' => 'fas fa-users',
-                            
-                        ],
-                    ],
-                ],
-                
-            ],
-        ],
+               
         ['header' => 'reportes'],
         [
             'text' => 'informes',
