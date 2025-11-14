@@ -3,7 +3,7 @@
 @section('title', 'Historial de Ventas de Mesas')
 
 @section('content_header')
-<h1><i class="fas fa-history"></i> Historial de Ventas de Mesas</h1>
+<h1><i class="fas fa-history"></i> Ventas</h1>
 @stop
 
 @section('content')
@@ -128,13 +128,13 @@
                                             <span class="badge badge-info">{{ $venta->mesa->tipo ?? 'N/A' }}</span>
                                         </div>
                                         <div class="small text-muted">
-                                            Inicio: @if($venta->fechainicio){{ \Carbon\Carbon::parse($venta->fechainicio)->format('d/m/Y H:i') }}@else - @endif
+                                            Inicio: @if($venta->created_at){{ \Carbon\Carbon::parse($venta->created_at)->format('d/m/Y H:i') }}@else - @endif
                                             &nbsp;•&nbsp;
                                             Fin: @if($venta->fechafin){{ \Carbon\Carbon::parse($venta->fechafin)->format('d/m/Y H:i') }}@else - @endif
                                         </div>
                                     </div>
                                     <div class="text-end">
-                                        <div class="total-highlight mb-2">${{ number_format($venta->total_con_tiempo ?? $venta->total, 2, ',', '.') }}</div>
+                                        <div class="total-success mb-2">${{ number_format($venta->total_con_tiempo ?? $venta->total, 2, ',', '.') }}</div>
                                         <div>
                                             @if($venta->fechafin)
                                                 <span class="badge badge-estado badge-completada"><i class="fas fa-check-circle"></i> Completada</span>
@@ -249,8 +249,8 @@
                                             <div class="col-12">
                                                 <div class="detail-label"><i class="fas fa-calendar-plus me-1"></i> Fecha de Inicio:</div>
                                                 <div class="detail-value">
-                                                    @if($venta->fechainicio)
-                                                        {{ \Carbon\Carbon::parse($venta->fechainicio)->format('d/m/Y H:i:s') }}
+                                                    @if($venta->created_at)
+                                                        {{ \Carbon\Carbon::parse($venta->created_at)->format('d/m/Y H:i:s') }}
                                                     @else
                                                         <span class="text-muted">-</span>
                                                     @endif
@@ -275,16 +275,10 @@
                                                 <div class="detail-label">Total Productos:</div>
                                                 <div class="detail-value text-primary">${{ number_format($venta->total, 2, ',', '.') }}</div>
                                             </div>
-                                            <div class="col-6">
-                                                <div class="detail-label">Costo Tiempo:</div>
-                                                <div class="detail-value text-info">${{ number_format($venta->costo_tiempo ?? 0, 2, ',', '.') }}</div>
-                                            </div>
+                                            
                                         </div>
                                         <div class="row detail-row">
-                                            <div class="col-12">
-                                                <div class="detail-label">Total con Tiempo:</div>
-                                                <div class="detail-value fs-4 text-success">${{ number_format($venta->total_con_tiempo ?? $venta->total, 2, ',', '.') }}</div>
-                                            </div>
+                                            
                                         </div>
                                         <div class="row detail-row">
                                             <div class="col-12">
@@ -319,11 +313,8 @@
                     @endforeach
                 </div>
             </div>
-                    orderable: false
-                }
-            ]
-        });
-    });
+                   
+                
 </script>
 
 @stop

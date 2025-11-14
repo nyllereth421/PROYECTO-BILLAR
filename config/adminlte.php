@@ -326,11 +326,19 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        ['header' => 'Registros'],
+        [
+            'text' => 'usuarios',
+            'url' => 'admin/users',
+            'icon' => 'fas fa-fw fa-users',
+        ],
+        ['header' => 'Pagina PPrincipal'],
         [
             'text' => 'inicio',
             'route'  => 'welcome',
             'icon' => 'fas fa-fw fa-home',
         ],
+        ['header' => 'Gestion'],
         [
             'text' => 'Gestion de Mesas',
             'route' => 'mesasventas.index',
@@ -341,11 +349,8 @@ return [
             'route' => 'mesasventas.historial',
             'icon' => 'fas fa-money-bill-wave',
         ],
-        [
-            'text' => 'usuarios',
-            'url' => 'admin/users',
-            'icon' => 'fas fa-fw fa-users',
-        ],
+        
+        ['header' => 'Almacen'],
         [
             'text' => 'Inventario',
             'route' => 'inventario.index',
@@ -360,17 +365,7 @@ return [
             'icon' => 'fas fa-chart-bar',
             'icon_color' => 'cyan',
         ],
-        ['header' => 'ajustes'],
-        [
-            'text' => 'tema ',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-paint-brush',
-        ],
-        [
-            'text' => 'configuraciones',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-cogs',
-        ],
+       
 
 
     ],
