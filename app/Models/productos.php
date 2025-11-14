@@ -18,6 +18,7 @@ class productos extends Model
         'precio',
         'stock',
         'idproveedor',
+        'cantidad_vendida'
     ];
 
     public function proveedor()
