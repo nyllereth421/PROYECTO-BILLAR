@@ -118,8 +118,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Billar Nexus Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 800,
-            'height' => 800,
+            'width' => 400,
+            'height' => 400,
         ],
     ],
 
@@ -300,7 +300,7 @@ return [
     */
 
     'menu' => [
-        
+
         // Navbar items:
         [
             'type' => 'navbar-search',
@@ -346,13 +346,13 @@ return [
             'route' => 'inventario.index',
             'icon' => 'fas fa-warehouse',
         ],
-               
+
         ['header' => 'reportes'],
         [
             'text' => 'informes',
             'icon_color' => 'cyan',
             'route' => 'informes.index',
-            'icon' => 'fas fa-chart-bar', 
+            'icon' => 'fas fa-chart-bar',
             'icon_color' => 'cyan',
         ],
         ['header' => 'ajustes'],
@@ -366,8 +366,8 @@ return [
             'url' => 'admin/settings',
             'icon' => 'fas fa-cogs',
         ],
-        
-        
+
+
     ],
 
     /*

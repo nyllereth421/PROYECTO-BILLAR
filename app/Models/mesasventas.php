@@ -19,20 +19,16 @@ class MesasVentas extends Model
         'costo_tiempo',
         'total_con_tiempo',
         'metodo_pago',
-        
+
     ];
 
-    
 
-    // Relación: cada mesa venta pertenece a una venta
-    public function venta()
-    {
-        return $this->belongsTo(Ventas::class, 'ventas', 'id');
-    }
+
+
  public function productos()
 {
     return $this->belongsToMany(Productos::class, 'mesasventas_productos', 'idmesaventa', 'idproducto')
-                ->withPivot('cantidad', 'precio_unitario', 'subtotal')
+                ->withPivot('id','cantidad', 'precio_unitario', 'subtotal')
                 ->withTimestamps();
 }
 
@@ -41,7 +37,7 @@ class MesasVentas extends Model
         // Puede ser mesa normal o de consumo según cómo guardes idmesa
         return $this->belongsTo(Mesas::class, 'idmesa', 'idmesa');
     }
-   
+
 public function showFactura($id)
 {
     $venta = Ventas::find($id);

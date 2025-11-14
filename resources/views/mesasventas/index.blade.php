@@ -12,29 +12,29 @@
 
 <style>
 /* Estilos generales */
-.modal-header { 
+.modal-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white; 
-    border-bottom: none; 
-} 
-.modal-header .btn-close { filter: brightness(0) invert(1); } 
-.modal-body { padding: 1.5rem; background-color: #f8f9fa; } 
-.cronometro { 
-    font-weight: bold; 
-    color: #444; 
-    background: #f3f3f3; 
-    padding: 6px 12px; 
-    border-radius: 8px; 
-    margin-bottom: 8px; 
-    display: inline-block; 
+    color: white;
+    border-bottom: none;
 }
-.card-mesa { 
-    border-width: 3px; 
-    transition: all 0.3s ease; 
+.modal-header .btn-close { filter: brightness(0) invert(1); }
+.modal-body { padding: 1.5rem; background-color: #f8f9fa; }
+.cronometro {
+    font-weight: bold;
+    color: #444;
+    background: #f3f3f3;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: inline-block;
 }
-.card-mesa:hover { 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-    transform: translateY(-2px); 
+.card-mesa {
+    border-width: 3px;
+    transition: all 0.3s ease;
+}
+.card-mesa:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
 }
 
 /* Estilos para el modal de agregar productos */
@@ -87,7 +87,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    
+
 
     <div class="row">
 
@@ -105,11 +105,11 @@
                     @if($mesa->tipo !== 'consumo')
                         <div id="cronometro-{{ $mesa->idmesa }}" class="cronometro">00:00:00</div>
                     @endif
-                            
+
 
                     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
                        {{-- Iniciar / Parar --}}
-                            
+
                                 @php
                                     // Obtener venta activa para esta mesa
                                     $ventaActiva = $mesa->ventaActiva()->whereNull('fechafin')->first();
@@ -133,10 +133,10 @@
                                         </button>
                                     </form>
                                 @endif
-                        
+
 
                         {{-- Cambiar estado --}}
-                        
+
                             <form action="{{ route('mesasventas.estado', $mesa->idmesa) }}" method="POST" class="d-flex gap-1">
                                 @csrf
                                 <select name="estado" class="form-control form-control-sm">
@@ -148,12 +148,12 @@
                                 <button class="btn btn-primary btn-sm" title="Actualizar estado">
                                     <i class="fas fa-sync"></i>
                                 </button>
-                                @endif 
+                                @endif
                             </form>
-                         
+
                         {{-- Botón Carrito / Modal --}}
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             class="btn btn-warning btn-sm"
                             onclick="verificarMesa({{ $mesa->idmesa }}, '{{ $mesa->tipo }}', '{{ $mesa->estado }}')"
                             data-bs-target="#productosModal-{{ $mesa->idmesa }}">
@@ -173,7 +173,7 @@
 
         {{-- Modal de productos agregados (Mesa NORMAL) --}}
         @if(!empty($mesa->ventaActiva) )
-        <div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1" 
+        <div class="modal fade" id="productosAgregadosModal-{{ $mesa->idmesa }}" tabindex="-1"
              aria-labelledby="productosAgregadosLabel-{{ $mesa->idmesa }}" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
@@ -227,10 +227,10 @@
                                                             ${{ number_format($producto->pivot->precio * $producto->pivot->cantidad, 0, ',', '.') }}
                                                         </span>
                                                     @endif
-                                                    
+
                                                     {{-- Botón eliminar con confirmación --}}
-                                                    <form action="{{ route('mesasventas.eliminarProducto', [$mesa->ventaActiva->id, $producto->idproducto]) }}" 
-                                                          method="POST" 
+                                                    <form action="{{ route('mesasventas.eliminarProducto', [$mesa->ventaActiva->id, $producto->pivot->id]) }}"
+                                                          method="POST"
                                                           onsubmit="return confirm('¿Está seguro de eliminar {{ $producto->nombre }}?');"
                                                           class="d-inline">
                                                         @csrf
@@ -302,15 +302,15 @@
                         </div>
 
                         {{-- Inputs hidden para cálculos --}}
-                        <input type="hidden" id="total-productos-{{ $mesa->idmesa }}" 
+                        <input type="hidden" id="total-productos-{{ $mesa->idmesa }}"
                                data-total="{{ $mesa->ventaActiva->total ?? 0 }}">
                         <input type="hidden" id="total-con-tiempo-{{ $mesa->idmesa }}">
                     </div>
 
-                    
+
 
                     {{-- Footer con acciones --}}
-                    
+
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             <i class="fas fa-times me-2"></i>Cerrar
@@ -342,8 +342,8 @@
                                 <span class="input-group-text bg-white border-end-0">
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
-                                <input type="text" 
-                                       class="form-control border-start-0 buscador-productos-{{ $mesa->idmesa }}" 
+                                <input type="text"
+                                       class="form-control border-start-0 buscador-productos-{{ $mesa->idmesa }}"
                                        placeholder="Buscar producto por nombre..."
                                        style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                             </div>
@@ -358,7 +358,7 @@
                                 @php
                                     $chunks = $productos->chunk(10);
                                 @endphp
-                                
+
                                 @foreach($chunks as $index => $chunk)
                                 <div class="productos-grupo mb-4" data-grupo="{{ $index }}">
                                     <div class="d-flex align-items-center mb-3">
@@ -367,7 +367,7 @@
                                         </span>
                                         <hr class="flex-grow-1 ms-3">
                                     </div>
-                                    
+
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle">
                                             <thead style="background-color: #e9ecef; position: sticky; top: 0; z-index: 10;">
@@ -380,7 +380,7 @@
                                             </thead>
                                             <tbody class="productos-tbody">
                                                 @foreach($chunk as $producto)
-                                                <tr class="producto-row bg-white" 
+                                                <tr class="producto-row bg-white"
                                                     data-nombre="{{ strtolower($producto->nombre) }}"
                                                     style="transition: all 0.3s ease;">
                                                     <td class="fw-medium">
@@ -398,10 +398,10 @@
                                                         </span>
                                                     </td>
                                                     <td class="text-center">
-                                                        <input type="number" 
-                                                               name="cantidades[{{ $producto->idproducto }}]" 
-                                                               min="0" 
-                                                               max="{{ $producto->stock }}" 
+                                                        <input type="number"
+                                                               name="cantidades[{{ $producto->idproducto }}]"
+                                                               min="0"
+                                                               max="{{ $producto->stock }}"
                                                                class="form-control form-control-sm text-center cantidad-input"
                                                                value="0"
                                                                style="border: 2px solid #dee2e6; border-radius: 8px;">
@@ -414,7 +414,7 @@
                                 </div>
                                 @endforeach
                             </div>
-                            
+
                             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                                 <div>
                                     <small class="text-muted">
@@ -434,8 +434,8 @@
 
         @endforeach
 
-       
-        
+
+
     </div>
 </div>
 @stop
@@ -445,7 +445,7 @@
     // 🔍 Filtrar productos con cantidad > 0 antes de enviar
     function filtrarProductos(event) {
         event.preventDefault();
-        
+
         const form = event.target.closest('form');
         const inputs = form.querySelectorAll('input[name^="cantidades"]');
         let hayProductos = false;
@@ -481,9 +481,9 @@
     const metodoPago = document.getElementById(`metodo-pago-${idmesa}`).value;
 
 
-    
 
-    fetch(`/mesasventas/finalizar/${idmesa}`, {
+
+    fetch(`/mesasventas/finalizarVenta/${idmesa}`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -498,10 +498,16 @@
         if(data.success) {
             location.reload();
         } else {
-            alert('Error al finalizar la venta');
+            // Si data.message existe y no está vacío, lo mostramos;
+            // si no, usamos el mensaje por defecto.
+            const mensaje = data.message && data.message.trim() !== ''
+                ? data.message
+                : 'Error al finalizar la venta';
+
+            alert(mensaje);
         }
     })
-    .catch(err => console.error(err));
+    .catch(err => console.error('Error en la petición:', err));
 }
 
 </script>
@@ -569,7 +575,7 @@ function updateTimer(id) {
 
     // Sincronizar y calcular totales en el modal si está abierto
     syncModalTimer(id);
-    calculateAndDisplayModalTotals(id); 
+    calculateAndDisplayModalTotals(id);
     calculateAndDisplayCardTotals(id); // Mantiene la actualización en el card (oculto en tu HTML original)
 }
 
@@ -603,7 +609,7 @@ function calculateAndDisplayModalTotals(id) {
     const modalTotalProductosEl = document.getElementById('modal-total-productos-' + id);
     const modalCostoTiempoEl = document.getElementById('modal-costo-tiempo-' + id);
     const modalTotalFinalEl = document.getElementById('modal-total-final-' + id);
-    
+
     // Asegurarse de que los elementos existan
     if (!modalCronometroEl || !modalTotalProductosEl || !modalCostoTiempoEl || !modalTotalFinalEl) {
         return;
@@ -611,7 +617,7 @@ function calculateAndDisplayModalTotals(id) {
 
     const totalProductosStr = modalTotalProductosEl.textContent.replace(/[^0-9,-]+/g, "").replace(",", ".");
     const totalProductos = parseFloat(totalProductosStr) || 0;
-    
+
     const tiempo = modalCronometroEl.textContent.split(':');
     if (tiempo.length !== 3) return;
 
@@ -625,7 +631,7 @@ function calculateAndDisplayModalTotals(id) {
 
     // Formatear y mostrar los valores
     const formatter = new Intl.NumberFormat('es-CO');
-    
+
     modalCostoTiempoEl.textContent = formatter.format(Math.round(costoTiempo));
     modalTotalFinalEl.textContent = formatter.format(Math.round(totalFinal));
 }
@@ -689,13 +695,13 @@ $(document).ready(function() {
         e.preventDefault();
         let url = $(this).attr('href');
         let target = $(this).closest('.modal-content').find('table').parent().parent().parent().parent().attr('id'); // ID del modal
-        
+
         // Cargar el contenido de la paginación dentro del modal
         $.get(url, function(data) {
             // Reemplazar solo el contenido del modal-body
             let newModalBody = $(data).find('#' + target + ' .modal-body').html();
             $('#' + target + ' .modal-body').html(newModalBody);
-            
+
             // Mantener el modal abierto
             let lastModal = localStorage.getItem('lastModalOpen');
             if (lastModal) $(lastModal).modal('show');

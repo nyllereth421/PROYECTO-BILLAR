@@ -29,7 +29,7 @@ class productos extends Model
 public function ventasPivot()
     {
         return $this->belongsToMany(MesasVentas::class, 'mesasventas_productos', 'idproducto', 'idmesaventa')
-                    ->withPivot(['cantidad','precio_unitario','subtotal'])
+                    ->withPivot(['id','cantidad','precio_unitario','subtotal'])
                     ->withTimestamps();
     }
 

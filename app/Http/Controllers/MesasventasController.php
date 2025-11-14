@@ -7,6 +7,7 @@ use App\Models\MesasConsumos;
 use App\Models\Productos;
 use App\Models\MesasVentas;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MesasventasController extends Controller
 {
@@ -21,22 +22,22 @@ class MesasventasController extends Controller
     return view('mesasventas.index', compact('mesas','productos'));
 }
 
-    
+
     // Esto asegura que el total se actualice al agregar productos.
-    
+
     private function _actualizarTotalVenta(MesasVentas $venta)
 {
     // Vuelve a cargar la relación productos para tener los datos más recientes
-    $venta->load('productos'); 
-    
+    $venta->load('productos');
+
     // Suma todos los subtotales (cantidad * precio_unitario) de la tabla pivote.
     $productos_total = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
-    
+
     // Asignar el total solo de consumo (el tiempo se agrega al finalizar)
-    $venta->total = round($productos_total, 2); 
+    $venta->total = round($productos_total, 2);
     $venta->save();
 }
-  
+
 
     /**
      * Obtener tarifa por hora según el tipo de mesa consultando un producto específico
@@ -75,14 +76,14 @@ class MesasventasController extends Controller
 
     $venta = MesasVentas::where('idmesa', $idmesa)->whereNull('fechafin')->first();
     if (!$venta) {
-        $venta = MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
+        $venta = MesasVentas::create(['idmesa'=>$idmesa,'total'=>0]);
         if ($mesa->estado !== 'ocupada') {
              $mesa->estado = 'ocupada';
              $mesa->save();
         }
     }
 
-    $cantidadesInput = $request->input('cantidades', []); 
+    $cantidadesInput = $request->input('cantidades', []);
     $hayCambios = false;
 
     foreach ($cantidadesInput as $productoId => $cantidad) {
@@ -100,6 +101,8 @@ class MesasventasController extends Controller
             ]);
 
             $producto->stock -= $cantidad;
+            $producto->cantidad_vendida += $cantidad;
+
             $producto->save();
 
             $hayCambios = true;
@@ -116,12 +119,12 @@ class MesasventasController extends Controller
 }
 
 
-    
+
 
     public function iniciar($idmesa)
     {
         $mesa = Mesas::findOrFail($idmesa);
-        
+
         // Solo inicia si está disponible para evitar problemas
         if ($mesa->estado == 'disponible' || $mesa->estado == 'reservada') {
             $mesa->estado = 'ocupada';
@@ -131,7 +134,7 @@ class MesasventasController extends Controller
             // error_log(print_r($venta->toJson(), true));
             if (!$venta) {
                 MesasVentas::create(['idmesa'=>$idmesa,'fechainicio'=>now(),'total'=>0]);
-            } else {        
+            } else {
                 // Reinicia la fecha de inicio si ya existe una venta
                 $venta->update(['fechainicio' => now()]);
             }
@@ -140,14 +143,14 @@ class MesasventasController extends Controller
     }
 
     public function finalizar(Request $request, $idmesa)
-    
+
 {
     // Buscar la venta activa de esa mesa
     $venta = MesasVentas::where('idmesa', $idmesa)
         ->whereNull('fechafin')
         ->latest()
         ->first();
-    
+
 
     if (!$venta) {
         return response()->json(['success' => false, 'message' => 'No hay venta activa para esta mesa']);
@@ -158,7 +161,7 @@ class MesasventasController extends Controller
     $fin = now();
     $minutos = $inicio->diffInMinutes($fin);
     $horas = $minutos / 60;
-    
+
     // Tarifa por minuto (💰 ajusta según tu negocio) calculada según tipo de mesa
     $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa);
     $map = [
@@ -183,7 +186,7 @@ class MesasventasController extends Controller
                 'cantidad' => $horas,
                 'precio_unitario' => $tarifaHora,
                 'subtotal' => $costoTiempo,
-            ]);    
+            ]);
     $this->_actualizarTotalVenta($venta);
     // Calcular total de productos (desde la tabla pivote)
     $totalProductos = $venta->productos->sum(fn($p) => $p->pivot->subtotal);
@@ -197,13 +200,13 @@ class MesasventasController extends Controller
         'total' => $totalProductos,
         'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
     ]);
-    
+
 
     /* Liberar la mesa
     $mesa = Mesas::findOrFail($idmesa);
     $mesa->estado = 'disponible';
     $mesa->save();*/
-   
+
     return redirect()->back();
 
 }
@@ -240,7 +243,7 @@ class MesasventasController extends Controller
     return redirect()->back();
 }
 
-    
+
     public function actualizarEstado(Request $request, $idmesa)
 {
     $mesa = Mesas::findOrFail($idmesa);
@@ -257,32 +260,43 @@ class MesasventasController extends Controller
 
     return redirect()->back()->with('success', 'Estado de la mesa de consumo actualizado correctamente.');
 }
-public function eliminarProducto($ventaId, $productoId)
+public function eliminarProducto($ventaId, $idMesaVenta_producto)
 {
     $venta = MesasVentas::findOrFail($ventaId);
 
     // Buscar el producto en la venta
-    $productoPivot = $venta->productos()->where('productos.idproducto', $productoId)->first();
+    $productoPivot = $venta->productos()->wherePivot('id', $idMesaVenta_producto)->first();
 
     if ($productoPivot) {
-        $producto = Productos::findOrFail($productoId);
 
         $cantidadActual = $productoPivot->pivot->cantidad;
 
         if ($cantidadActual > 1) {
             // Resta una unidad y actualiza subtotal
             $nuevaCantidad = $cantidadActual - 1;
-            $venta->productos()->updateExistingPivot($productoId, [
-                'cantidad' => $nuevaCantidad,
-                'subtotal' => $nuevaCantidad * $producto->precio
-            ]);
+
+            DB::table('mesasventas_productos')
+                ->where('id', $idMesaVenta_producto) // aquí usas tu $idMesaVenta_producto
+                ->update([
+                    'cantidad' => $nuevaCantidad,
+                    'subtotal' => $nuevaCantidad * $productoPivot->pivot->precio_unitario,
+                    'updated_at' => now(),
+                ]);
+
         } else {
             // Elimina completamente el producto
-            $venta->productos()->detach($productoId);
+            DB::table('mesasventas_productos')
+                ->where('id', $idMesaVenta_producto)
+                ->delete();
         }
 
+        $producto = Productos::findOrFail($productoPivot->pivot->idproducto);
         // Devuelve 1 unidad al stock del producto
         $producto->stock += 1;
+        //resta la cantidad vendida a diferencia de los tiempos de mesas
+        if ($producto->idproveedor != 5) {
+            $producto->cantidad_vendida -= 1;
+        }
         $producto->save();
 
         // Recalcular el total
@@ -341,29 +355,14 @@ public function finalizarVenta(Request $request, $idmesa)
     if (!$venta) {
         return response()->json(['success' => false, 'message' => 'No hay venta activa para esta mesa']);
     }
+    if ($venta->fechainicio != null) {
+        return response()->json(['success' => false, 'message' => 'Para finalizar la venta primero deten el tiempo']);
+    }
 
-    // Calcular tiempo
-    $inicio = \Carbon\Carbon::parse($venta->fechainicio);
-    $fin = now();
-    $minutos = $inicio->diffInMinutes($fin);
-
-    // Cálculo del costo de tiempo según tipo de mesa
-    $tarifaHora = $this->tarifaHoraPorMesaId($venta->idmesa);
-    $tarifaMinuto = $tarifaHora / 60;
-    $costoTiempo = round($minutos * $tarifaMinuto, 2);
-
-    // Total productos
-    $totalProductos = $venta->productos->sum(function ($p) {
-        return $p->pivot->subtotal;
-    });
-
-    // Total final
-    $totalFinal = $totalProductos + $costoTiempo;
 
     // Actualizar venta
     $venta->update([
-        'fechafin' => $fin,
-        'total' => $totalProductos,
+        'fechafin' => now(),
         'metodo_pago' => $request->input('metodo_pago', 'efectivo'),
     ]);
 
@@ -374,7 +373,6 @@ public function finalizarVenta(Request $request, $idmesa)
 
     return response()->json([
         'success' => true,
-        'total_productos' => $totalProductos,
     ]);
 }
 
