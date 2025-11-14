@@ -133,6 +133,7 @@ Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->nam
 
 // MESAS VENTAS
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
+Route::get('/mesasventas/historial', [MesasventasController::class, 'historial'])->name('mesasventas.historial');
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
 Route::post('/mesasventas/store', [MesasventasController::class, 'store'])->name('mesasventas.store');
 Route::get('/mesasventas/{idmesa}', [MesasventasController::class, 'show'])->name('mesasventas.show');

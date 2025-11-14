@@ -86,6 +86,8 @@
         </div>
     </div>
 
+    
+
     {{-- 2. Fila de Gráfico y Top Productos (CORREGIDA) --}}
     <div class="row">
         {{-- CARD para Gráfico de Ventas --}}

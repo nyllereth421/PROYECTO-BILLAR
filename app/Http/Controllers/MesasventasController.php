@@ -375,7 +375,20 @@ public function finalizarVenta(Request $request, $idmesa)
     ]);
 }
 
+    /**
+     * Mostrar el historial de todas las ventas de mesas
+     */
+    public function historial()
+    {
+        // Obtener todas las ventas ordenadas por la más reciente
+        $ventas = MesasVentas::with(['mesa', 'productos'])->orderByDesc('id')->get();
 
+        // Calcular estadísticas
+        $ingresoTotal = $ventas->sum('total');
+        $ventasCompletadas = $ventas->whereNotNull('fechafin')->count();
+        $ventasActivas = $ventas->whereNull('fechafin')->count();
 
+        return view('mesasventas.historial', compact('ventas', 'ingresoTotal', 'ventasCompletadas', 'ventasActivas'));
+    }
 
 }

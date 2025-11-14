@@ -442,7 +442,7 @@
 
 @section('js')
 <script>
-    // 🔍 Filtrar productos con cantidad > 0 antes de enviar
+    //  Filtrar productos con cantidad > 0 antes de enviar
     function filtrarProductos(event) {
         event.preventDefault();
 
@@ -462,7 +462,7 @@
         });
 
         if (!hayProductos) {
-            alert('⚠️ Debes seleccionar al menos un producto con cantidad mayor a 0');
+            alert(' Debes seleccionar al menos un producto con cantidad mayor a 0');
             // Volver a habilitar los inputs para que se puedan editar
             inputs.forEach(input => input.disabled = false);
             return false;
