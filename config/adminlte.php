@@ -326,13 +326,8 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        ['header' => 'Registros'],
-        [
-            'text' => 'usuarios',
-            'url' => 'admin/users',
-            'icon' => 'fas fa-fw fa-users',
-        ],
-        ['header' => 'Pagina PPrincipal'],
+        
+        ['header' => 'Pagina Principal'],
         [
             'text' => 'inicio',
             'route'  => 'welcome',
@@ -364,6 +359,12 @@ return [
             'route' => 'informes.index',
             'icon' => 'fas fa-chart-bar',
             'icon_color' => 'cyan',
+        ],
+        ['header' => 'Registros'],
+        [
+            'text' => 'usuarios',
+            'url' => 'admin/users',
+            'icon' => 'fas fa-fw fa-users',
         ],
        
 
