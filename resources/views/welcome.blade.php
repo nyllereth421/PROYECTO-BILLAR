@@ -16,7 +16,7 @@
     <div class="row">
         @php
             $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-            $nombreDia = $dias[date('w')]; 
+            $nombreDia = $dias[date('w')];
         @endphp
 
         <div class="col-lg-3 col-6">
@@ -31,7 +31,7 @@
                     <p>Ingresos del Día</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-dollar-sign"></i> 
+                    <i class="fas fa-dollar-sign"></i>
                 </div>
                 <a href="{{ route('informes.index')}}" class="small-box-footer">
                     Ver reportes financieros <i class="fas fa-arrow-circle-right"></i>
@@ -45,10 +45,10 @@
                 <div class="inner">
                     <h3><span id="ocupadasCount">0</span><sup style="font-size: 20px">/<span id="mesasTotal">0</span></sup></h3>
                     <p>Mesas Ocupadas</p>
-                    <div class="mt-2"><small id="listaMesasOcupadas" class="text-white">Cargando...</small></div> 
+                    <div class="mt-2"><small id="listaMesasOcupadas" class="text-white">Cargando...</small></div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-hockey-puck billar-icon"></i> 
+                    <i class="fas fa-hockey-puck billar-icon"></i>
                 </div>
                 <a href="{{ route('mesasventas.index')}}" class="small-box-footer">
                     Gestión de mesas <i class="fas fa-arrow-circle-right"></i>
@@ -62,10 +62,10 @@
                 <div class="inner">
                     <h3><span id="productosCount">0</span></h3>
                     <p>Productos Registrados</p>
-                    <div class="mt-2"><small id="productosInfo" class="text-dark">Cargando...</small></div> 
+                    <div class="mt-2"><small id="productosInfo" class="text-dark">Cargando...</small></div>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-boxes"></i> 
+                    <i class="fas fa-boxes"></i>
                 </div>
                 <a href="{{ route('inventario.index')}}" class="small-box-footer">
                     Gestión de Inventario <i class="fas fa-arrow-circle-right"></i>
@@ -73,22 +73,7 @@
             </div>
         </div>
 
-        {{-- EMPLEADOS --}}
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-primary"> 
-                <div class="inner">
-                    <h3>7</h3> 
-                    <p>Personal Activo</p>
-                    <div class="mt-2"><small class="text-white">Último acceso: Ayer</small></div> 
-                </div>
-                <div class="icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <a href="{{route ('empleados.index') }}" class="small-box-footer">
-                    Ver empleados <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
+
     </div>
     {{-- FIN de la Fila 1 --}}
 
@@ -144,9 +129,9 @@
         </div>
     </div>
     {{-- FIN de la Fila 2 --}}
-    
-    
-    
+
+
+
 </div>
 @stop
 
@@ -166,11 +151,11 @@ box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-sh
 .small-box.bg-warning { background-color: #ffc107 !important; color: #333 !important; }
  .small-box.bg-primary { background-color: #007bff !important; }
 
-.small-box .icon { 
+.small-box .icon {
 font-size: 80px;
 color: rgba(0,0,0,0.15) !important;
  }
- 
+
 /* Asegurar que las cards tengan la misma altura (Importante para la Fila 2) */
 .row > [class*='col-'] .card {
  height: 100%; }
@@ -186,7 +171,7 @@ width: 100% !important;
 .card-body {
 position: relative;
 }
-    
+
     /* Estilos del Calendario */
     #miniCalendar table {
         table-layout: fixed;
@@ -284,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         document.getElementById('mesActualTitulo').textContent = `${monthNames[month]} ${year}`;
-        
+
         const body = document.getElementById('calendarBody');
         body.innerHTML = '';
         const events = getAndCleanEvents();
@@ -302,11 +287,11 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 0; i < 6; i++) { // Máximo 6 semanas
             let row = body.insertRow();
             let rowFilled = false;
-            
+
             for (let j = 0; j < 7; j++) { // 7 días de la semana (Lun a Dom)
                 let cell = row.insertCell();
                 cellCount++;
-                
+
                 if (cellCount <= startOffset || day > daysInMonth) {
                     // Celdas vacías antes del primer día o después del último
                     cell.textContent = '';
@@ -314,14 +299,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Días del mes
                     const currentDay = day;
                     cell.textContent = currentDay;
-                    
+
                     const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
-                    
+
                     // Marcar día actual
                     if (currentDay === todayDay) {
                         cell.classList.add('current-day');
                     }
-                    
+
                     // Marcar evento
                     if (events[dateKey]) {
                         cell.innerHTML += `<span class="event-dot"></span>`;
@@ -344,10 +329,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const date = new Date(dateKey + 'T00:00:00'); // Asegura zona horaria correcta
         const dayOfMonth = date.getDate();
         const eventText = prompt(
-            `Evento para el día ${dayOfMonth}:\n\nIngrese el evento o déjelo vacío para borrar:`, 
+            `Evento para el día ${dayOfMonth}:\n\nIngrese el evento o déjelo vacío para borrar:`,
             currentEvent || ''
         );
-        
+
         if (eventText !== null) {
             saveEvent(dateKey, eventText.trim());
         }
@@ -365,10 +350,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 const canvas = document.getElementById('ventasSemanaChart');
-                if (!canvas) return; 
+                if (!canvas) return;
 
                 const ctx = canvas.getContext('2d');
-                
+
                 if (ventasChartInstance) {
                     ventasChartInstance.destroy();
                 }
@@ -468,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // === FUNCIÓN PARA ACTUALIZAR CANTIDAD DE PRODUCTOS REGISTRADOS ===
     function actualizarProductosRegistrados() {
-        fetch('/productos-cantidad') 
+        fetch('/productos-cantidad')
             .then(response => response.json())
             .then(data => {
                 const cantidad = Number(data.cantidad || 0);

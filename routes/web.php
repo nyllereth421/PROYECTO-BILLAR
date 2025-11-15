@@ -13,12 +13,20 @@ use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\informescontroller;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+require __DIR__.'/auth.php';
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::get('/', function () {
+    return redirect()->route('login');
+})->name('login');
+
 //WELOCME
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::get('/ingreso-dia', function () {
     $hoy = Carbon::now('America/Bogota')->toDateString();
@@ -40,11 +48,11 @@ Route::get('/ventas-semana', function () {
     for ($i = 0; $i < 7; $i++) {
         $fecha = $inicioSemana->copy()->addDays($i);
         $labels[] = $dias[$fecha->dayOfWeek];
-        
+
         $total = DB::table('mesasventas')
             ->whereDate(DB::raw('CONVERT_TZ(created_at, "+00:00", "-05:00")'), $fecha->toDateString())
             ->sum('total') ?? 0;
-            
+
         $valores[] = $total;
     }
 
@@ -84,16 +92,8 @@ Route::post('/productos/store', [ProductosController::class, 'store'])->name('pr
 Route::get('/productos/{idproducto}/edit', [ProductosController::class, 'edit'])->name('productos.edit');
 Route::post('/productos/{idproducto}/update', [ProductosController::class, 'update'])->name('productos.update');
 Route::post('/productos/{idproducto}/destroy', [ProductosController::class, 'destroy'])->name('productos.destroy');
-Route::get('/', [ProductosController::class, 'mostrarEnInicio'])->name('welcome');
+//Route::get('/', [ProductosController::class, 'mostrarEnInicio'])->name('welcome');
 
-
-// ---------------------- MÉTODOS DE PAGO ----------------------
-Route::get('/metodopago/index', [MetodopagosController::class, 'index'])->name('metodopago.index');
-Route::get('/metodopago/create', [MetodopagosController::class, 'create'])->name('metodopago.create');
-Route::post('/metodopago/store', [MetodopagosController::class, 'store'])->name('metodopago.store');
-Route::get('/metodopago/{idmetodopago}/edit', [MetodopagosController::class, 'edit'])->name('metodopago.edit');
-Route::post('/metodopago/{idmetodopago}/update', [MetodopagosController::class, 'update'])->name('metodopago.update');
-Route::post('/metodopago/{idmetodopago}/destroy', [MetodopagosController::class, 'destroy'])->name('metodopago.destroy');
 
 // ---------------------- INVENTARIO ----------------------
 Route::get('/inventario/index', [InventarioController::class, 'index'])->name('inventario.index');
@@ -112,14 +112,6 @@ Route::get('/proveedores/{idproveedor}/edit', [ProveedoresController::class, 'ed
 Route::post('/proveedores/{idproveedor}/update', [ProveedoresController::class, 'update'])->name('proveedores.update');
 Route::post('/proveedores/{idproveedor}/destroy', [ProveedoresController::class, 'destroy'])->name('proveedores.destroy');
 
-
-// ---------------------- EMPLEADOS ----------------------
-Route::get('/empleados/index', [EmpleadosController::class, 'index'])->name('empleados.index');
-Route::get('/empleados/create', [EmpleadosController::class, 'create'])->name('empleados.create');
-Route::post('/empleados/store', [EmpleadosController::class, 'store'])->name('empleados.store');
-Route::get('/empleados/{numerodocumento}/edit', [EmpleadosController::class, 'edit'])->name('empleados.edit');
-Route::post('/empleados/{numerodocumento}/update', [EmpleadosController::class, 'update'])->name('empleados.update');
-Route::post('/empleados/{numerodocumento}/destroy', [EmpleadosController::class, 'destroy'])->name('empleados.destroy');
 
 
 // ---------------------- MESAS NORMALES ----------------------
@@ -151,11 +143,6 @@ Route::post('/mesasventas/{id}/parar', [MesasventasController::class, 'parar'])-
 
 
 
-// VENTAS - factura
-Route::post('/ventas/store', [VentasController::class, 'store'])->name('ventas.store');
-Route::get('/ventas/{id}/factura', [VentasController::class, 'showFactura'])->name('ventas.factura');
-Route::get('/mesas/vertotal/{id}', [MesasVentasController::class, 'verTotalVenta'])->name('mesas.verTotalVenta');
-
 // ---------------------- INFORMES ----------------------
 Route::get('/informes', [informescontroller::class, 'index'])->name('informes.index');
 Route::get('/api/informes/ventas-periodo', [informescontroller::class, 'ventasPorPeriodo'])->name('api.informes.ventas-periodo');
@@ -166,6 +153,9 @@ Route::get('/api/informes/resumen', [informescontroller::class, 'resumenGeneral'
 Route::get('/api/informes/comparacion-meses', [informescontroller::class, 'comparacionMeses'])->name('api.informes.comparacion-meses');
 
 
+Route::fallback(function () {
+    return redirect()->route('login');
+});
 
 
 

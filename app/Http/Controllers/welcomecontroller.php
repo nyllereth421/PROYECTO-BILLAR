@@ -11,9 +11,10 @@ use App\Models\mesas;
 class WelcomeController extends Controller
 {
     public function index()
-{
+    {
+
     DB::statement("SET lc_time_names = 'es_ES'");
-    
+
     $hoy = Carbon::now('America/Bogota')->toDateString();
 
     // 🔹 Ingreso del día
@@ -23,7 +24,7 @@ class WelcomeController extends Controller
 
     // 🔹 Top 5 productos vendidos hoy (excluyendo productos con "tiempo")
     $productos = DB::table('productos')
-        ->select('nombre', DB::raw('SUM(cantidad) as cantidad_vendida'))
+        ->select('nombre', DB::raw('SUM(cantidad_vendida) as cantidad_vendida'))
         ->whereDate('created_at', $hoy)
         ->where('nombre', 'NOT LIKE', '%tiempo%')
         ->groupBy('nombre')
@@ -31,9 +32,9 @@ class WelcomeController extends Controller
         ->limit(5)
         ->get();
 
- 
 
-    return view('welcome', compact('ingresoDia', 'productos', 'proveedores', ));
+
+    return view('welcome', compact('ingresoDia', 'productos', ));
 }
 
 }
