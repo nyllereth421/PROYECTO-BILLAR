@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\producto;
 use App\Models\mesas;
 use App\Models\productos;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Proveedores;
+
+
 
 class InventarioController extends Controller
 {
@@ -15,7 +20,14 @@ class InventarioController extends Controller
     {
         $productos = productos::all();
         $mesas = mesas::all();
-        return view('inventario.index', compact('productos','mesas'));
+        $productosTiempo = DB::table('productos')
+        ->select('nombre', 'stock') // o la columna que quieras mostrar en la gráfica
+        ->where('nombre', 'like', '%tiempo%')
+        ->get();
+
+        $proveedoresActivos = Proveedores::count();
+        
+        return view('inventario.index', compact('productos','mesas','productosTiempo','proveedoresActivos'));
     }
 
    
