@@ -3,17 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductosController;
-use App\Http\Controllers\MetodopagosController;
 use App\Http\Controllers\ProveedoresController;
-use App\Http\Controllers\EmpleadosController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\MesasController;
-use App\Http\Controllers\MesasConsumosController;
 use App\Http\Controllers\MesasventasController;
-use App\Http\Controllers\VentasController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\informescontroller;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
 
 
 use Illuminate\Support\Facades\DB;
@@ -80,11 +77,6 @@ Route::get('/productos-cantidad', function () {
     $cantidad = \App\Models\productos::count();
     return response()->json(['cantidad' => $cantidad]);
 });
-
-
-
-
-
 // ---------------------- PRODUCTOS ----------------------
 Route::get('/productos/index', [ProductosController::class, 'index'])->name('productos.index');
 Route::get('/productos/create', [ProductosController::class, 'create'])->name('productos.create');
@@ -92,9 +84,6 @@ Route::post('/productos/store', [ProductosController::class, 'store'])->name('pr
 Route::get('/productos/{idproducto}/edit', [ProductosController::class, 'edit'])->name('productos.edit');
 Route::post('/productos/{idproducto}/update', [ProductosController::class, 'update'])->name('productos.update');
 Route::post('/productos/{idproducto}/destroy', [ProductosController::class, 'destroy'])->name('productos.destroy');
-//Route::get('/', [ProductosController::class, 'mostrarEnInicio'])->name('welcome');
-
-
 // ---------------------- INVENTARIO ----------------------
 Route::get('/inventario/index', [InventarioController::class, 'index'])->name('inventario.index');
 Route::get('/inventario/create', [InventarioController::class, 'create'])->name('inventario.create');
@@ -102,8 +91,6 @@ Route::post('/inventario/store', [InventarioController::class, 'store'])->name('
 Route::get('/inventario/{id}/edit', [InventarioController::class, 'edit'])->name('inventario.edit');
 Route::post('/inventario/{id}/update', [InventarioController::class, 'update'])->name('inventario.update');
 Route::post('/inventario/{id}/destroy', [InventarioController::class, 'destroy'])->name('inventario.destroy');
-
-
 // ---------------------- PROVEEDORES ----------------------
 Route::get('/proveedores/index', [ProveedoresController::class, 'index'])->name('proveedores.index');
 Route::get('/proveedores/create', [ProveedoresController::class, 'create'])->name('proveedores.create');
@@ -111,9 +98,6 @@ Route::post('/proveedores/store', [ProveedoresController::class, 'store'])->name
 Route::get('/proveedores/{idproveedor}/edit', [ProveedoresController::class, 'edit'])->name('proveedores.edit');
 Route::post('/proveedores/{idproveedor}/update', [ProveedoresController::class, 'update'])->name('proveedores.update');
 Route::post('/proveedores/{idproveedor}/destroy', [ProveedoresController::class, 'destroy'])->name('proveedores.destroy');
-
-
-
 // ---------------------- MESAS NORMALES ----------------------
 Route::get('/mesas/index', [MesasController::class, 'index'])->name('mesas.index');
 Route::get('/mesas/create', [MesasController::class, 'create'])->name('mesas.create');
@@ -121,9 +105,7 @@ Route::post('/mesas/store', [MesasController::class, 'store'])->name('mesas.stor
 Route::get('/mesas/{idmesa}/edit', [MesasController::class, 'edit'])->name('mesas.edit');
 Route::post('/mesas/{idmesa}/update', [MesasController::class, 'update'])->name('mesas.update');
 Route::post('/mesas/{idmesa}/destroy', [MesasController::class, 'destroy'])->name('mesas.destroy');
-
-
-// MESAS VENTAS
+// ---------------------- MESAS VENTAS ----------------------
 Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
 Route::get('/mesasventas/historial', [MesasventasController::class, 'historial'])->name('mesasventas.historial');
 Route::get('/mesasventas/create', [MesasventasController::class, 'create'])->name('mesasventas.create');
@@ -140,9 +122,6 @@ Route::delete('ventas/{ventaId}/productos/{productoId}', [MesasventasController:
 Route::post('/mesasventas/finalizarVenta/{venta}', [MesasventasController::class, 'finalizarVenta'])->name('mesasventas.finalizarVenta');
 Route::post('/mesasventas/{idmesa}/cerrar', [MesasventasController::class, 'cerrarVenta'])->name('mesasventas.cerrarVenta');
 Route::post('/mesasventas/{id}/parar', [MesasventasController::class, 'parar'])->name('mesasventas.parar');
-
-
-
 // ---------------------- INFORMES ----------------------
 Route::get('/informes', [informescontroller::class, 'index'])->name('informes.index');
 Route::get('/api/informes/ventas-periodo', [informescontroller::class, 'ventasPorPeriodo'])->name('api.informes.ventas-periodo');
@@ -152,10 +131,7 @@ Route::get('/api/informes/ocupacion-mesas', [informescontroller::class, 'ocupaci
 Route::get('/api/informes/resumen', [informescontroller::class, 'resumenGeneral'])->name('api.informes.resumen');
 Route::get('/api/informes/comparacion-meses', [informescontroller::class, 'comparacionMeses'])->name('api.informes.comparacion-meses');
 
-
-Route::fallback(function () {
-    return redirect()->route('login');
-});
+Route::fallback(function () {return redirect()->route('login');});
 
 
 

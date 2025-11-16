@@ -19,7 +19,7 @@
             $nombreDia = $dias[date('w')];
         @endphp
 
-        <div class="col-lg-3 col-6">
+        <div class="col-lg-4 col-6">
             {{-- INGRESO DEL DÍA --}}
             <div class="small-box bg-info">
                 <div class="inner">
@@ -40,7 +40,7 @@
         </div>
 
         {{-- MESAS ACTIVAS/TOTAL --}}
-        <div class="col-lg-3 col-6">
+        <div class="col-lg-4 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3><span id="ocupadasCount">0</span><sup style="font-size: 20px">/<span id="mesasTotal">0</span></sup></h3>
@@ -57,7 +57,7 @@
         </div>
 
         {{-- PRODUCTOS REGISTRADOS --}}
-        <div class="col-lg-3 col-6">
+        <div class="col-lg-4 col-">
             <div class="small-box bg-warning">
                 <div class="inner">
                     <h3><span id="productosCount">0</span></h3>
