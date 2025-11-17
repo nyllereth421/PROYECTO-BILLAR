@@ -10,7 +10,7 @@
                 <p class="text-muted">Analiza ventas, productos y ocupación de mesas.</p>
             </div>
             <div class="col-auto">
-                <a href="{{ route('welcome') }}" class="btn btn-secondary">
+                <a href="@route('welcome')" class="btn btn-secondary">
                     <i class="fas fa-arrow-left mr-2"></i> Volver a Inicio
                 </a>
             </div>
@@ -38,12 +38,16 @@
                             <div class="form-group">
                                 <label for="tipo-informe">Tipo de Informe</label>
                                 <select id="tipo-informe" class="form-control">
-                                    <option value="resumen">Resumen General</option>
+                                    <option value="resumen">Resumen General de Ventas</option>
                                     <option value="ventas">Ventas por Período</option>
                                     <option value="productos">Productos Más Vendidos</option>
                                     <option value="metodos">Ingresos por Método de Pago</option>
                                     <option value="mesas">Ocupación de Mesas</option>
-                                    <option value="comparacion">Comparación de Meses</option>
+                                    <option value="comparacion">Comparación de Meses (Ventas)</option>
+                                    <option value="resumen-compras">Resumen General de Compras</option>
+                                    <option value="compras">Compras por Período</option>
+                                    <option value="productos-comprados">Productos Comprados</option>
+                                    <option value="compras-proveedor">Compras por Proveedor</option>
                                 </select>
                             </div>
                         </div>
@@ -89,16 +93,33 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
+                                <label for="proveedor-filtro">Proveedor (Compras)</label>
+                                <select id="proveedor-filtro" class="form-control">
+                                    <option value="">Todos</option>
+                                    @foreach(\App\Models\Proveedores::all() as $proveedor)
+                                        <option value="{{ $proveedor->idproveedor }}">{{ $proveedor->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 <label for="limite-productos">Límite (Productos)</label>
                                 <input type="number" id="limite-productos" class="form-control" value="10" min="1" max="50">
                             </div>
                         </div>
 
-                        <div class="col-md-6 d-flex align-items-end">
+                        <div class="col-md-3 d-flex align-items-end">
                             <button id="btn-aplicar-filtros" class="btn btn-primary btn-block">
                                 <i class="fas fa-search mr-2"></i> Aplicar Filtros
                             </button>
-                            <button id="btn-limpiar-filtros" class="btn btn-secondary btn-block ml-2">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <button id="btn-limpiar-filtros" class="btn btn-secondary">
                                 <i class="fas fa-redo mr-2"></i> Limpiar
                             </button>
                         </div>
@@ -366,6 +387,146 @@
             </div>
         </div>
     </div>
+
+    {{-- RESUMEN COMPRAS --}}
+    <div id="seccion-resumen-compras" class="row" style="display:none;">
+        <div class="col-md-3">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h3>$<span id="total-compras">0</span></h3>
+                    <p>Total de Compras</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3><span id="cantidad-compras">0</span></h3>
+                    <p>Cantidad de Compras</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>$<span id="promedio-compra">0</span></h3>
+                    <p>Promedio/Compra</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3><span id="total-productos-comprados">0</span></h3>
+                    <p>Productos Comprados</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- COMPRAS POR PERÍODO --}}
+    <div id="seccion-compras" class="row" style="display:none;">
+        <div class="col-md-12">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-chart-line mr-1"></i> Compras por Período</h3>
+                </div>
+                <div class="card-body" style="height: 400px;">
+                    <canvas id="chart-compras"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-table mr-1"></i> Detalle de Compras</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Total de Compras</th>
+                                <th>Cantidad de Compras</th>
+                                <th>Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-compras">
+                            <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- PRODUCTOS COMPRADOS --}}
+    <div id="seccion-productos-comprados" class="row" style="display:none;">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-fire mr-1"></i> Top Productos Comprados</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad Comprada</th>
+                                <th>Total Invertido</th>
+                                <th>Precio Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-productos-comprados">
+                            <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- COMPRAS POR PROVEEDOR --}}
+    <div id="seccion-compras-proveedor" class="row" style="display:none;">
+        <div class="col-md-12">
+            <div class="card card-outline card-danger">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-users mr-1"></i> Compras por Proveedor</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Proveedor</th>
+                                <th>Cantidad de Compras</th>
+                                <th>Total Gastado</th>
+                                <th>Promedio/Compra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-compras-proveedor">
+                            <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @stop
 
@@ -388,6 +549,7 @@
     let chartVentas = null;
     let chartMetodos = null;
     let chartComparacion = null;
+    let chartCompras = null;
 
     // Elementos DOM
     const tipoInforme = document.getElementById('tipo-informe');
@@ -395,6 +557,7 @@
     const fechaFin = document.getElementById('fecha-fin');
     const tipoPeriodo = document.getElementById('tipo-periodo');
     const metodoPago = document.getElementById('metodo-pago');
+    const proveedorFiltro = document.getElementById('proveedor-filtro');
     const limiteProductos = document.getElementById('limite-productos');
     const btnAplicar = document.getElementById('btn-aplicar-filtros');
     const btnLimpiar = document.getElementById('btn-limpiar-filtros');
@@ -409,6 +572,10 @@
     const seccionMetodos = document.getElementById('seccion-metodos');
     const seccionMesas = document.getElementById('seccion-mesas');
     const seccionComparacion = document.getElementById('seccion-comparacion');
+    const seccionResumenCompras = document.getElementById('seccion-resumen-compras');
+    const seccionCompras = document.getElementById('seccion-compras');
+    const seccionProductosComprados = document.getElementById('seccion-productos-comprados');
+    const seccionComprasProveedor = document.getElementById('seccion-compras-proveedor');
 
     // Listeners
     btnAplicar.addEventListener('click', aplicarFiltros);
@@ -423,6 +590,10 @@
         seccionMetodos.style.display = 'none';
         seccionMesas.style.display = 'none';
         seccionComparacion.style.display = 'none';
+        seccionResumenCompras.style.display = 'none';
+        seccionCompras.style.display = 'none';
+        seccionProductosComprados.style.display = 'none';
+        seccionComprasProveedor.style.display = 'none';
     }
 
     function mostrarOpcionesFiltros() {
@@ -558,7 +729,9 @@
             fecha_inicio: fechaInicio.value,
             fecha_fin: fechaFin.value,
             tipo_periodo: tipoPeriodo.value,
+            tipo: tipoPeriodo.value,
             metodo_pago: metodoPago.value,
+            idproveedor: proveedorFiltro.value,
             limite: limiteProductos.value,
         });
 
@@ -581,6 +754,18 @@
             case 'comparacion':
                 rowSeleccionMeses.style.display = 'grid';
                 llenarSelectorMeses();
+                break;
+            case 'resumen-compras':
+                cargarResumenCompras(params);
+                break;
+            case 'compras':
+                cargarCompras(params);
+                break;
+            case 'productos-comprados':
+                cargarProductosComprados(params);
+                break;
+            case 'compras-proveedor':
+                cargarComprasProveedor(params);
                 break;
         }
     }
@@ -736,8 +921,108 @@
         fechaFin.value = new Date().toISOString().split('T')[0];
         tipoPeriodo.value = 'dia';
         metodoPago.value = '';
+        proveedorFiltro.value = '';
         limiteProductos.value = '10';
         ocultarTodasSecciones();
+    }
+
+    // Funciones para Compras
+    function cargarResumenCompras(params) {
+        fetch(`/api/informes/resumen-compras?${params}`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('total-compras').textContent = Number(data.total_compras).toLocaleString('es-CO', {maximumFractionDigits: 2});
+                document.getElementById('cantidad-compras').textContent = data.cantidad_compras;
+                document.getElementById('promedio-compra').textContent = Number(data.promedio_compra).toLocaleString('es-CO', {maximumFractionDigits: 2});
+                document.getElementById('total-productos-comprados').textContent = data.total_productos_comprados;
+                seccionResumenCompras.style.display = 'grid';
+            });
+    }
+
+    function cargarCompras(params) {
+        fetch(`/api/informes/compras-periodo?${params}`)
+            .then(r => r.json())
+            .then(data => {
+                // Actualizar tabla
+                const tbody = document.getElementById('tbody-compras');
+                tbody.innerHTML = data.labels.map((label, i) => `
+                    <tr>
+                        <td>${label}</td>
+                        <td>$${Number(data.valores[i]).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                        <td>${data.cantidades[i]}</td>
+                        <td>$${(data.valores[i] / data.cantidades[i] || 0).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('');
+
+                // Actualizar gráfica
+                const ctx = document.getElementById('chart-compras').getContext('2d');
+                if (chartCompras) chartCompras.destroy();
+                chartCompras = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Compras ($)',
+                            data: data.valores,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.3)',
+                            borderWidth: 2,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true, position: 'top' },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: v => '$' + Number(v).toLocaleString('es-CO'),
+                                }
+                            }
+                        }
+                    }
+                });
+
+                seccionCompras.style.display = 'grid';
+            });
+    }
+
+    function cargarProductosComprados(params) {
+        fetch(`/api/informes/productos-comprados?${params}`)
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('tbody-productos-comprados');
+                tbody.innerHTML = data.productos.map(p => `
+                    <tr>
+                        <td>${p.nombre}</td>
+                        <td>${p.cantidad_comprada}</td>
+                        <td>$${Number(p.total_comprado).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                        <td>$${Number(p.precio_promedio).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('');
+                seccionProductosComprados.style.display = 'grid';
+            });
+    }
+
+    function cargarComprasProveedor(params) {
+        fetch(`/api/informes/compras-proveedor?${params}`)
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('tbody-compras-proveedor');
+                tbody.innerHTML = data.proveedores.map(p => `
+                    <tr>
+                        <td><strong>${p.nombre}</strong></td>
+                        <td>${p.cantidad_compras}</td>
+                        <td>$${Number(p.total_gastado).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                        <td>$${Number(p.promedio_compra).toLocaleString('es-CO', {maximumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('');
+                seccionComprasProveedor.style.display = 'grid';
+            });
     }
 
     // Cargar resumen al iniciar

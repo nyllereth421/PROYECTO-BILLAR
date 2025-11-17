@@ -8,8 +8,11 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\MesasController;
 use App\Http\Controllers\MesasventasController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\informescontroller;
+use App\Http\Controllers\InformesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ComprasController;
+use App\Http\Controllers\CompraDetallesController;
+
 
 
 
@@ -123,15 +126,41 @@ Route::post('/mesasventas/finalizarVenta/{venta}', [MesasventasController::class
 Route::post('/mesasventas/{idmesa}/cerrar', [MesasventasController::class, 'cerrarVenta'])->name('mesasventas.cerrarVenta');
 Route::post('/mesasventas/{id}/parar', [MesasventasController::class, 'parar'])->name('mesasventas.parar');
 // ---------------------- INFORMES ----------------------
-Route::get('/informes', [informescontroller::class, 'index'])->name('informes.index');
-Route::get('/api/informes/ventas-periodo', [informescontroller::class, 'ventasPorPeriodo'])->name('api.informes.ventas-periodo');
-Route::get('/api/informes/productos-vendidos', [informescontroller::class, 'productosMasVendidos'])->name('api.informes.productos-vendidos');
-Route::get('/api/informes/ingresos-metodo', [informescontroller::class, 'ingresosPorMetodoPago'])->name('api.informes.ingresos-metodo');
-Route::get('/api/informes/ocupacion-mesas', [informescontroller::class, 'ocupacionMesas'])->name('api.informes.ocupacion-mesas');
-Route::get('/api/informes/resumen', [informescontroller::class, 'resumenGeneral'])->name('api.informes.resumen');
-Route::get('/api/informes/comparacion-meses', [informescontroller::class, 'comparacionMeses'])->name('api.informes.comparacion-meses');
+Route::get('/informes', [InformesController::class, 'index'])->name('informes.index');
+Route::get('/api/informes/ventas-periodo', [InformesController::class, 'ventasPorPeriodo'])->name('api.informes.ventas-periodo');
+Route::get('/api/informes/productos-vendidos', [InformesController::class, 'productosMasVendidos'])->name('api.informes.productos-vendidos');
+Route::get('/api/informes/ingresos-metodo', [InformesController::class, 'ingresosPorMetodoPago'])->name('api.informes.ingresos-metodo');
+Route::get('/api/informes/ocupacion-mesas', [InformesController::class, 'ocupacionMesas'])->name('api.informes.ocupacion-mesas');
+Route::get('/api/informes/resumen', [InformesController::class, 'resumenGeneral'])->name('api.informes.resumen');
+Route::get('/api/informes/comparacion-meses', [InformesController::class, 'comparacionMeses'])->name('api.informes.comparacion-meses');
+// Rutas para compras
+Route::get('/api/informes/compras-periodo', [InformesController::class, 'comprasPorPeriodo'])->name('api.informes.compras-periodo');
+Route::get('/api/informes/productos-comprados', [InformesController::class, 'productosComprados'])->name('api.informes.productos-comprados');
+Route::get('/api/informes/compras-proveedor', [InformesController::class, 'comprasPorProveedor'])->name('api.informes.compras-proveedor');
+Route::get('/api/informes/resumen-compras', [InformesController::class, 'resumenCompras'])->name('api.informes.resumen-compras');
 
 Route::fallback(function () {return redirect()->route('login');});
+// ---------------------- COMPRAS ----------------------
+Route::get('/compras', [ComprasController::class, 'index'])->name('compras.index');
+Route::get('/compras/create', [ComprasController::class, 'create'])->name('compras.create');
+Route::post('/compras/store', [ComprasController::class, 'store'])->name('compras.store');
+Route::get('/compras/{compra}', [ComprasController::class, 'show'])->name('compras.show');
+Route::get('/compras/{compra}/edit', [ComprasController::class, 'edit'])->name('compras.edit');
+Route::put('/compras/{compra}', [ComprasController::class, 'update'])->name('compras.update');
+Route::delete('/compras/{compra}', [ComprasController::class, 'destroy'])->name('compras.destroy');
+
+// AJAX productos por proveedor
+Route::get('/compras/productos/{id}', [ComprasController::class, 'getProductosProveedor'])->name('compras.productos');
+
+// ---------------------- COMPRA DETALLES ----------------------
+Route::get('/compra-detalles', [CompraDetallesController::class, 'index'])->name('compra_detalles.index');
+Route::get('/compra-detalles/create', [CompraDetallesController::class, 'create'])->name('compra_detalles.create');
+Route::post('/compra-detalles/store', [CompraDetallesController::class, 'store'])->name('compra_detalles.store');
+Route::get('/compra-detalles/{compra_detalles}', [CompraDetallesController::class, 'show'])->name('compra_detalles.show');
+Route::get('/compra-detalles/{compra_detalles}/edit', [CompraDetallesController::class, 'edit'])->name('compra_detalles.edit');
+Route::put('/compra-detalles/{compra_detalles}', [CompraDetallesController::class, 'update'])->name('compra_detalles.update');
+Route::delete('/compra-detalles/{compra_detalles}', [CompraDetallesController::class, 'destroy'])->name('compra_detalles.destroy');
+
 
 
 

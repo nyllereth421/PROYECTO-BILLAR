@@ -344,6 +344,11 @@ return [
             'route' => 'mesasventas.historial',
             'icon' => 'fas fa-money-bill-wave',
         ],
+        [
+            'text' => 'compras',
+            'route' => 'compras.index',
+            'icon' => 'fas fa-shopping-cart',
+        ],
         
         ['header' => 'Almacen'],
         [

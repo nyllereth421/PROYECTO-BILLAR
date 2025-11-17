@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MesasVentas;
-use App\Models\productos;
+use App\Models\Productos;
 use App\Models\Mesas;
+use App\Models\Compra;
+use App\Models\CompraDetalle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class informescontroller extends Controller
+class InformesController extends Controller
 {
     /**
      * Mostrar la vista de informes con filtros
@@ -37,22 +39,23 @@ class informescontroller extends Controller
         }
 
         if ($tipo === 'dia') {
-            $datos = $query->selectRaw('DATE(fechafin) as fecha, SUM(total) as total, COUNT(*) as cantidad')
+            $datos = $query->selectRaw("DATE(fechafin) as fecha, SUM(total) as total, COUNT(*) as cantidad")
                 ->groupBy(DB::raw('DATE(fechafin)'))
                 ->orderBy('fecha')
                 ->get();
             
             $labels = $datos->pluck('fecha')->map(fn($f) => Carbon::parse($f)->format('d/m'))->toArray();
         } elseif ($tipo === 'semana') {
-            $datos = $query->selectRaw('YEARWEEK(fechafin) as semana, SUM(total) as total, COUNT(*) as cantidad')
-                ->groupBy(DB::raw('YEARWEEK(fechafin)'))
+            // SQLite: usar strftime para agrupar por semana
+            $datos = $query->selectRaw("strftime('%Y-W%W', fechafin) as semana, SUM(total) as total, COUNT(*) as cantidad")
+                ->groupBy(DB::raw("strftime('%Y-W%W', fechafin)"))
                 ->orderBy('semana')
                 ->get();
             
             $labels = $datos->pluck('semana')->map(fn($s) => "Sem $s")->toArray();
         } else { // mes
-            $datos = $query->selectRaw('DATE_TRUNC(\'month\', fechafin) as mes, SUM(total) as total, COUNT(*) as cantidad')
-                ->groupByRaw('DATE_TRUNC(\'month\', fechafin)')
+            $datos = $query->selectRaw("strftime('%Y-%m', fechafin) as mes, SUM(total) as total, COUNT(*) as cantidad")
+                ->groupBy(DB::raw("strftime('%Y-%m', fechafin)"))
                 ->orderBy('mes')
                 ->get();
             
@@ -168,7 +171,7 @@ class informescontroller extends Controller
             ->whereNotNull('fechafin')
             ->count();
 
-        $productosTotales = productos::count();
+        $productosTotales = Productos::count();
         $mesasTotales = Mesas::count();
 
         return response()->json([
@@ -220,6 +223,142 @@ class informescontroller extends Controller
         return response()->json([
             'datos' => $datos,
             'total_general' => array_sum(array_column($datos, 'total_ventas')),
+        ]);
+    }
+
+    /**
+     * Obtener resumen de compras (JSON)
+     */
+    public function comprasPorPeriodo(Request $request)
+    {
+        $tipo = $request->get('tipo', 'dia'); // dia, semana, mes
+        $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->get('fecha_inicio')) : Carbon::now()->startOfMonth();
+        $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->get('fecha_fin'))->endOfDay() : Carbon::now();
+        $idproveedor = $request->get('idproveedor');
+
+        $query = Compra::whereBetween('fecha_compra', [$fechaInicio, $fechaFin]);
+
+        if ($idproveedor) {
+            $query->where('idproveedor', $idproveedor);
+        }
+
+        if ($tipo === 'dia') {
+            $datos = $query->selectRaw('DATE(fecha_compra) as fecha, SUM(total) as total, COUNT(*) as cantidad')
+                ->groupBy(DB::raw('DATE(fecha_compra)'))
+                ->orderBy('fecha')
+                ->get();
+            
+            $labels = $datos->pluck('fecha')->map(fn($f) => Carbon::parse($f)->format('d/m'))->toArray();
+        } elseif ($tipo === 'semana') {
+            $datos = $query->selectRaw("strftime('%Y-W%W', fecha_compra) as semana, SUM(total) as total, COUNT(*) as cantidad")
+                ->groupBy(DB::raw("strftime('%Y-W%W', fecha_compra)"))
+                ->orderBy('semana')
+                ->get();
+            
+            $labels = $datos->pluck('semana')->map(fn($s) => "Sem $s")->toArray();
+        } else { // mes
+            $datos = $query->selectRaw("strftime('%Y-%m', fecha_compra) as mes, SUM(total) as total, COUNT(*) as cantidad")
+                ->groupBy(DB::raw("strftime('%Y-%m', fecha_compra)"))
+                ->orderBy('mes')
+                ->get();
+            
+            $labels = $datos->pluck('mes')->map(fn($m) => Carbon::parse($m)->format('M/Y'))->toArray();
+        }
+
+        $valores = $datos->pluck('total')->map(fn($v) => (float)$v)->toArray();
+        $cantidades = $datos->pluck('cantidad')->toArray();
+        $total = array_sum($valores);
+
+        return response()->json([
+            'labels' => $labels,
+            'valores' => $valores,
+            'cantidades' => $cantidades,
+            'total' => round($total, 2),
+            'promedio' => count($valores) > 0 ? round($total / count($valores), 2) : 0,
+        ]);
+    }
+
+    /**
+     * Obtener productos comprados (JSON)
+     */
+    public function productosComprados(Request $request)
+    {
+        $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->get('fecha_inicio')) : Carbon::now()->startOfMonth();
+        $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->get('fecha_fin'))->endOfDay() : Carbon::now();
+        $idproveedor = $request->get('idproveedor');
+        $limite = $request->get('limite', 10);
+
+        $query = DB::table('compra_detalles')
+            ->join('productos', 'compra_detalles.idproducto', '=', 'productos.idproducto')
+            ->join('compras', 'compra_detalles.idcompra', '=', 'compras.id')
+            ->whereBetween('compras.fecha_compra', [$fechaInicio, $fechaFin]);
+
+        if ($idproveedor) {
+            $query->where('compras.idproveedor', $idproveedor);
+        }
+
+        $productos = $query->selectRaw('productos.nombre, SUM(compra_detalles.cantidad) as cantidad_comprada, SUM(compra_detalles.subtotal) as total_comprado, AVG(compra_detalles.precio_compra) as precio_promedio')
+            ->groupBy('productos.nombre', 'productos.idproducto')
+            ->orderByDesc('cantidad_comprada')
+            ->limit($limite)
+            ->get();
+
+        return response()->json([
+            'productos' => $productos,
+            'total' => $productos->count(),
+        ]);
+    }
+
+    /**
+     * Obtener compras por proveedor (JSON)
+     */
+    public function comprasPorProveedor(Request $request)
+    {
+        $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->get('fecha_inicio')) : Carbon::now()->startOfMonth();
+        $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->get('fecha_fin'))->endOfDay() : Carbon::now();
+
+        $proveedores = DB::table('compras')
+            ->join('proveedores', 'compras.idproveedor', '=', 'proveedores.idproveedor')
+            ->whereBetween('compras.fecha_compra', [$fechaInicio, $fechaFin])
+            ->selectRaw('proveedores.nombre, COUNT(*) as cantidad_compras, SUM(compras.total) as total_gastado, AVG(compras.total) as promedio_compra')
+            ->groupBy('proveedores.nombre', 'proveedores.idproveedor')
+            ->orderByDesc('total_gastado')
+            ->get();
+
+        $totalGastado = $proveedores->sum('total_gastado');
+
+        return response()->json([
+            'proveedores' => $proveedores,
+            'total_gastado' => round($totalGastado, 2),
+            'cantidad_proveedores' => $proveedores->count(),
+        ]);
+    }
+
+    /**
+     * Obtener resumen de compras (JSON)
+     */
+    public function resumenCompras(Request $request)
+    {
+        $fechaInicio = $request->get('fecha_inicio') ? Carbon::parse($request->get('fecha_inicio')) : Carbon::now()->startOfMonth();
+        $fechaFin = $request->get('fecha_fin') ? Carbon::parse($request->get('fecha_fin'))->endOfDay() : Carbon::now();
+
+        $totalCompras = Compra::whereBetween('fecha_compra', [$fechaInicio, $fechaFin])->sum('total');
+        $cantidadCompras = Compra::whereBetween('fecha_compra', [$fechaInicio, $fechaFin])->count();
+        $cantidadProveedores = Compra::whereBetween('fecha_compra', [$fechaInicio, $fechaFin])
+            ->distinct('idproveedor')
+            ->count('idproveedor');
+        
+        $totalProductos = DB::table('compra_detalles')
+            ->join('compras', 'compra_detalles.idcompra', '=', 'compras.id')
+            ->whereBetween('compras.fecha_compra', [$fechaInicio, $fechaFin])
+            ->sum('compra_detalles.cantidad');
+
+        return response()->json([
+            'total_compras' => round($totalCompras, 2),
+            'cantidad_compras' => $cantidadCompras,
+            'promedio_compra' => $cantidadCompras > 0 ? round($totalCompras / $cantidadCompras, 2) : 0,
+            'cantidad_proveedores' => $cantidadProveedores,
+            'total_productos_comprados' => $totalProductos,
         ]);
     }
 }

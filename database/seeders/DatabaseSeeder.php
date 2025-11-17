@@ -20,12 +20,15 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call([
-        ProductosSeeder::class,
+            ProductosSeeder::class,
         ]); 
 
         $this->call([
             MesasSeeder::class,
         ]);
 
+        $this->call([
+            ComprasSeeder::class,
+        ]);
     }
 }
