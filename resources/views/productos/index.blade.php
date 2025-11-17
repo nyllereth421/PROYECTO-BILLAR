@@ -70,7 +70,7 @@
                         <tr class="text-center">
                             <th style="width: 5%">ID</th>
                             <th style="width: 30%">Nombre</th>
-                            <th style="width: 15%">Precio</th>
+                            <th style="width: 15%">Precio Venta</th>
                             <th style="width: 20%">Stock Disponible</th>
                             <th style="width: 15%">Cantidad Vendida</th>
                             <th style="width: 15%">Acciones</th>
@@ -80,8 +80,8 @@
                         @foreach($productos as $producto)
                             <tr>
                                 <td class="text-center">{{ $producto->idproducto }}</td>
-                                <td>{{ $producto->nombre }}</td> 
-                                <td class="text-end">${{ number_format($producto->precio, 2) }}</td>
+                                <td class="text-center">{{ $producto->nombre }}</td>
+                                <td class="text-center">${{ number_format($producto->precio, 2) }}</td>
                                 <td class="text-center">
                                     @if($producto->stock < 10)
                                         <span class="badge bg-warning text-dark p-2">
@@ -99,7 +99,7 @@
                                     <a href="{{ route('productos.edit', $producto->idproducto) }}" class="btn btn-xs btn-default text-primary mx-1 shadow" title="Editar">
                                         <i class="fa fa-lg fa-fw fa-pen"></i>
                                     </a>
-                                    
+
                                     <button class="btn btn-xs btn-default text-danger mx-1 shadow" onclick="alert('❌ Este producto NO se puede eliminar');" title="Eliminar">
                                         <i class="fa fa-lg fa-fw fa-trash"></i>
                                     </button>
@@ -134,7 +134,7 @@
         }, 5000); // 5 segundos
     }
     // ----------------------------------------------------
-    
+
     // Filtro en tiempo real
     document.getElementById('buscarProducto').addEventListener('keyup', function() {
         let filtro = this.value.toLowerCase().trim();
@@ -143,10 +143,10 @@
         filas.forEach(fila => {
             let id = fila.children[0].textContent.toLowerCase();
             let nombre = fila.children[1].textContent.toLowerCase();
-            let precio = fila.children[2].textContent.toLowerCase().replace('$', '').replace(',', ''); 
+            let precio = fila.children[2].textContent.toLowerCase().replace('$', '').replace(',', '');
 
             let coincide = id.includes(filtro) || nombre.includes(filtro) || precio.includes(filtro);
-            
+
             fila.style.display = coincide ? '' : 'none';
         });
     });

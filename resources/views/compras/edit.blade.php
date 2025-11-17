@@ -52,7 +52,7 @@
 
                         <div class="form-group">
                             <label>Fecha de Compra</label>
-                            <input type="text" class="form-control" value="{{ $compra->fecha_compra->format('d/m/Y H:i') }}" disabled>
+                            <input type="text" class="form-control" value="{{ $compra->fecha_compra ? \Carbon\Carbon::parse($compra->fecha_compra)->format('d/m/Y H:i') : '' }}" disabled>
                         </div>
 
                         <div class="form-group">
@@ -116,7 +116,7 @@
                         <div class="mb-3 pb-3 border-bottom">
                             <h6 class="mb-1"><strong>{{ $detalle->producto->nombre }}</strong></h6>
                             <small class="text-muted">
-                                {{ $detalle->cantidad }} x ${{ number_format($detalle->precio_compra, 2, ',', '.') }} = 
+                                {{ $detalle->cantidad }} x ${{ number_format($detalle->precio_compra, 2, ',', '.') }} =
                                 <strong>${{ number_format($detalle->subtotal, 2, ',', '.') }}</strong>
                             </small>
                         </div>
