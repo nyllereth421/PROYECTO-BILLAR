@@ -66,8 +66,27 @@
             </div>
             @endif
 
+            <!-- Selector de Método de Login -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-300 mb-3">
+                    Método de ingreso
+                </label>
+                <div class="flex gap-2">
+                    <button type="button" id="tab-email" class="login-method-tab flex-1 px-4 py-2 rounded-lg font-medium transition-all
+                        bg-orange-600 text-white"
+                            data-method="email">
+                        📧 Correo
+                    </button>
+                    <button type="button" id="tab-document" class="login-method-tab flex-1 px-4 py-2 rounded-lg font-medium transition-all
+                        bg-gray-700 text-gray-300 hover:bg-gray-600"
+                            data-method="numerodocumento">
+                        🆔 Documento
+                    </button>
+                </div>
+            </div>
+
             <!-- Usuario (email) -->
-            <div class="mb-4">
+            <div id="email-field" class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
                     Correo electrónico
                 </label>
@@ -76,6 +95,18 @@
                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                        placeholder="ej: usuario@correo.com" required autofocus>
+            </div>
+
+            <!-- Usuario (número de documento) -->
+            <div id="document-field" class="mb-4 hidden">
+                <label for="numerodocumento" class="block text-sm font-medium text-gray-300 mb-2">
+                    Número de documento
+                </label>
+                <input type="text" id="numerodocumento" name="numerodocumento"
+                       value="{{ old('numerodocumento') }}"
+                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                           focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                       placeholder="ej: 1234567890">
             </div>
 
             <!-- Contraseña -->
@@ -123,6 +154,46 @@
 </div>
 
 <script>
+    // Manejo de selector de método de login
+    const emailField = document.getElementById('email-field');
+    const documentField = document.getElementById('document-field');
+    const emailInput = document.getElementById('email');
+    const documentInput = document.getElementById('numerodocumento');
+    const emailTab = document.getElementById('tab-email');
+    const documentTab = document.getElementById('tab-document');
+    const loginMethodTabs = document.querySelectorAll('.login-method-tab');
+
+    loginMethodTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const method = this.dataset.method;
+            
+            // Remover estilos activos de todos los tabs
+            loginMethodTabs.forEach(t => {
+                t.classList.remove('bg-orange-600', 'text-white');
+                t.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+            });
+            
+            // Activar el tab clickeado
+            this.classList.add('bg-orange-600', 'text-white');
+            this.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
+            
+            // Mostrar/ocultar campos
+            if (method === 'email') {
+                emailField.classList.remove('hidden');
+                documentField.classList.add('hidden');
+                emailInput.removeAttribute('disabled');
+                documentInput.setAttribute('disabled', 'disabled');
+                emailInput.focus();
+            } else {
+                emailField.classList.add('hidden');
+                documentField.classList.remove('hidden');
+                emailInput.setAttribute('disabled', 'disabled');
+                documentInput.removeAttribute('disabled');
+                documentInput.focus();
+            }
+        });
+    });
+
     // Opcional: solo para efecto visual de loader (sin validar usuario en JS)
     const loginForm = document.getElementById('login-form');
     const loginButton = document.getElementById('login-button');

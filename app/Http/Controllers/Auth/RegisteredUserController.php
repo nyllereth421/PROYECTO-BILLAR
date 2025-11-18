@@ -33,8 +33,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'numerodocumento' => ['required', 'string', 'max:255'], // ajusta tipo/reglas
-
+            'numerodocumento' => ['required', 'string', 'max:255'],
+            'tipo' => ['required', 'in:admin,empleado'], // Validar que sea un rol válido
         ]);
 
         $user = User::create([
@@ -42,6 +42,8 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'numerodocumento' => $request->numerodocumento,
+            'tipo' => $request->tipo, // Guardar el rol
+            'estado' => 'activo', // Por defecto, nuevo usuario activo
         ]);
 
         event(new Registered($user));

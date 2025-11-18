@@ -124,10 +124,11 @@
                                             name="tipodocumento"
                                             required>
                                         <option value="">Selecciona un tipo</option>
-                                        <option value="CC" @if(old('tipodocumento') === 'CC') selected @endif>Cédula de Ciudadanía</option>
-                                        <option value="CE" @if(old('tipodocumento') === 'CE') selected @endif>Cédula de Extranjería</option>
-                                        <option value="PA" @if(old('tipodocumento') === 'PA') selected @endif>Pasaporte</option>
-                                        <option value="NIT" @if(old('tipodocumento') === 'NIT') selected @endif>NIT</option>
+                                        <option value="cc" @if(old('tipodocumento') === 'cc') selected @endif>Cédula de Ciudadanía</option>
+                                        <option value="ce" @if(old('tipodocumento') === 'ce') selected @endif>Cédula de Extranjería</option>
+                                        <option value="pa" @if(old('tipodocumento') === 'pa') selected @endif>Pasaporte</option>
+                                        <option value="nit" @if(old('tipodocumento') === 'nit') selected @endif>NIT</option>
+                                        <option value="ti" @if(old('tipodocumento') === 'ti') selected @endif>Tarjeta de Identidad</option>
                                     </select>
                                     @error('tipodocumento')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -143,7 +144,6 @@
                                             required>
                                         <option value="">Selecciona un tipo</option>
                                         <option value="admin" @if(old('tipo') === 'admin') selected @endif>Administrador</option>
-                                        <option value="gerente" @if(old('tipo') === 'gerente') selected @endif>Gerente</option>
                                         <option value="empleado" @if(old('tipo') === 'empleado') selected @endif>Empleado</option>
                                     </select>
                                     @error('tipo')

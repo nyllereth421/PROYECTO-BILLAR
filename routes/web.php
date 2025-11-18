@@ -32,7 +32,7 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('l
 // ========================================
 // RUTAS PARA USUARIOS AUTENTICADOS Y ACTIVOS
 // ========================================
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth', 'active', 'check-user-active'])->group(function () {
 
     // ========================================
     // PERFIL Y AVATAR (Acceso para todos)
@@ -48,7 +48,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ========================================
     // RUTAS SOLO PARA EMPLEADOS Y ADMINS
     // ========================================
-    Route::middleware('role:empleado,admin')->group(function () {
+    Route::middleware(['role:empleado,admin', 'employee'])->group(function () {
         // MESAS VENTAS (Empleados y Admins)
         Route::get('/mesasventas', [MesasventasController::class, 'index'])->name('mesasventas.index');
         Route::get('/mesasventas/historial', [MesasventasController::class, 'historial'])->name('mesasventas.historial');
@@ -190,6 +190,11 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::put('/usuarios/{user}', [UsersController::class, 'update'])->name('users.update');
         Route::delete('/usuarios/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
         Route::post('/usuarios/{user}/toggle-status', [UsersController::class, 'toggleStatus'])->name('users.toggleStatus');
+        // Nuevas rutas para cambiar tipo y estado
+        Route::post('/users/{user}/update-tipo', [UsersController::class, 'updateTipo'])->name('users.update-tipo');
+        Route::post('/users/{user}/update-estado', [UsersController::class, 'updateEstado'])->name('users.update-estado');
+        // Vista de gestión de usuarios
+        Route::get('/admin/usuarios-management', [UsersController::class, 'adminManagement'])->name('admin.users-management')->middleware('admin');
         Route::get('/api/usuarios', [UsersController::class, 'getUsers'])->name('api.users');
         Route::post('/usuarios/sincronizar-sedevar', [UsersController::class, 'syncFromSedevar'])->name('users.syncFromSedevar');
 
