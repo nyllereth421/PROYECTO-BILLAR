@@ -36,12 +36,23 @@ class MesasSeeder extends Seeder
             ];
         }
 
-        // 2 Mesas pool
+        // 2 Mesas de pool
         for ($i = 1; $i <= 2; $i++) {
             $mesas[] = [
                 'estado' => 'disponible',
                 'tipo' => 'pool',
                 'numeromesa' => 'P-' . $i,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // 9 Mesas de consumo
+        for ($i = 1; $i <= 9; $i++) {
+            $mesas[] = [
+                'estado' => 'disponible',
+                'tipo' => 'consumo',
+                'numeromesa' => 'C-' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

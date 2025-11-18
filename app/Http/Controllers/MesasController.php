@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\mesas;
-use App\Models\mesasConsumos;
 use Illuminate\Http\Request;
 
 class MesasController extends Controller
@@ -14,9 +13,8 @@ class MesasController extends Controller
 public function index()
 {
     $mesas = mesas::all();
-    $mesas_consumos = mesasConsumos::all();
 
-    return view('mesas.index', compact('mesas', 'mesas_consumos'));
+    return view('mesas.index', compact('mesas'));
 }
 
 

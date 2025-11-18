@@ -1,6 +1,12 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
+        <!-- numerodocumento -->
+        <div>
+            <x-input-label for="numerodocumento" :value="__('Número de documento')" />
+            <x-text-input id="numerodocumento" class="block mt-1 w-full" type="number" name="numerodocumento" :value="old('numerodocumento')" required autofocus autocomplete="numerodocumento" />
+            <x-input-error :messages="$errors->get('numerodocumento')" class="mt-2" />
+        </div>
 
         <!-- Name -->
         <div>

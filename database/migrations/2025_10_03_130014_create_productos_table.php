@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('precio', 8, 2);
             $table->integer('stock');
             $table->unsignedBigInteger('idproveedor');
+            $table->integer('cantidad_vendida')->default(0);
             $table->foreign('idproveedor')->references('idproveedor')->on('proveedores');
             $table->timestamps();
         });

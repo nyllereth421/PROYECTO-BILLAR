@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 
-class productos extends Model
+class Productos extends Model
 {
 
     protected $table = 'productos';
@@ -18,22 +18,23 @@ class productos extends Model
         'precio',
         'stock',
         'idproveedor',
+        'cantidad_vendida'
     ];
 
     public function proveedor()
     {
         return $this->belongsTo(Proveedores::class, 'idproveedor', 'idproveedor');
     }
-  public function mesasVentas()
-{
-    return $this->belongsToMany(MesasVentas::class, 'mesasventas_productos', 'idproducto', 'idmesaventa')
-                ->withPivot('cantidad', 'precio_unitario', 'subtotal')
-                ->withTimestamps();
-}
-public function ventasPivot()
+
+    public function compraDetalles()
+    {
+        return $this->hasMany(CompraDetalle::class, 'idproducto', 'idproducto');
+    }
+
+    public function ventasPivot()
     {
         return $this->belongsToMany(MesasVentas::class, 'mesasventas_productos', 'idproducto', 'idmesaventa')
-                    ->withPivot(['cantidad','precio_unitario','subtotal'])
+                    ->withPivot(['id','cantidad','precio_unitario','subtotal'])
                     ->withTimestamps();
     }
 

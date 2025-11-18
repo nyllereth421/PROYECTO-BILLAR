@@ -13,7 +13,11 @@ class ProveedoresController extends Controller
     public function index()
     {
         $proveedores = proveedores::all();
-        return view('proveedores.index', compact('proveedores'));
+         $totalStock = \DB::table('productos')->sum('stock');
+
+    // lista de proveedores
+    $proveedores = Proveedores::all();
+        return view('proveedores.index', compact('proveedores','totalStock'));
     }
 
     /**
