@@ -228,14 +228,25 @@
                                                         </span>
                                                     @endif
 
-                                                    {{-- Botón eliminar con confirmación --}}
+                                                    {{-- Input y Botón eliminar inline --}}
                                                     <form action="{{ route('mesasventas.eliminarProducto', [$mesa->ventaActiva->id, $producto->pivot->id]) }}"
                                                           method="POST"
-                                                          onsubmit="return confirm('¿Está seguro de eliminar {{ $producto->nombre }}?');"
-                                                          class="d-inline">
+                                                          class="d-flex align-items-center gap-1">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar producto">
+                                                        <input type="number" 
+                                                               name="cantidad_eliminar"
+                                                               min="1" 
+                                                               max="{{ $producto->pivot->cantidad }}"
+                                                               value="1"
+                                                               class="form-control form-control-sm"
+                                                               style="width: 60px;"
+                                                               title="Cantidad a eliminar"
+                                                               placeholder="Cant.">
+                                                        <button type="submit" 
+                                                                class="btn btn-sm btn-outline-danger"
+                                                                title="Eliminar cantidad"
+                                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta cantidad?');">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </button>
                                                     </form>
@@ -438,10 +449,30 @@
 
     </div>
 </div>
+
 @stop
 
 @section('js')
 <script>
+    // Validación en tiempo real para inputs de cantidad a eliminar
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputsEliminar = document.querySelectorAll('input[name="cantidad_eliminar"]');
+        
+        inputsEliminar.forEach(input => {
+            input.addEventListener('input', function() {
+                const max = parseInt(this.max) || 1;
+                let valor = parseInt(this.value) || 0;
+                
+                if (valor > max) {
+                    this.value = max;
+                }
+                if (valor < 1) {
+                    this.value = 1;
+                }
+            });
+        });
+    });
+
     //  Filtrar productos con cantidad > 0 antes de enviar
     function filtrarProductos(event) {
         event.preventDefault();

@@ -18,10 +18,15 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 require __DIR__ . '/auth.php';
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('welcome');
+    }
     return redirect()->route('login');
-})->name('login');
+})->name('home');
+
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
 //esta linea hace que todas las rutas para funcionar tengan login
 Route::middleware('auth')->group(function () {

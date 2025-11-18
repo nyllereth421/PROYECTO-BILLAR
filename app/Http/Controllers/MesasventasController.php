@@ -260,49 +260,63 @@ class MesasventasController extends Controller
 
     return redirect()->back()->with('success', 'Estado de la mesa de consumo actualizado correctamente.');
 }
-public function eliminarProducto($ventaId, $idMesaVenta_producto)
+public function eliminarProducto(Request $request, $ventaId, $idMesaVenta_producto)
 {
     $venta = MesasVentas::findOrFail($ventaId);
 
     // Buscar el producto en la venta
     $productoPivot = $venta->productos()->wherePivot('id', $idMesaVenta_producto)->first();
 
-    if ($productoPivot) {
-        $producto = Productos::findOrFail($productoPivot->pivot->idproducto);
-
-        $cantidadActual = $productoPivot->pivot->cantidad;
-
-        if ($cantidadActual > 1 && $producto->idproveedor != 5) {
-            // Resta una unidad y actualiza subtotal
-            $nuevaCantidad = $cantidadActual - 1;
-            DB::table('mesasventas_productos')
-                ->where('id', $idMesaVenta_producto) // aquí usas tu $idMesaVenta_producto
-                ->update([
-                    'cantidad' => $nuevaCantidad,
-                    'subtotal' => $nuevaCantidad * $productoPivot->pivot->precio_unitario,
-                    'updated_at' => now(),
-                ]);
-
-        } else {
-            // Elimina completamente el producto
-            DB::table('mesasventas_productos')
-                ->where('id', $idMesaVenta_producto)
-                ->delete();
-        }
-
-        // Devuelve 1 unidad al stock del producto
-        $producto->stock += 1;
-        //resta la cantidad vendida a diferencia de los tiempos de mesas
-        if ($producto->idproveedor != 5) {
-            $producto->cantidad_vendida -= 1;
-        }
-        $producto->save();
-
-        // Recalcular el total
-        $this->_actualizarTotalVenta($venta);
+    if (!$productoPivot) {
+        return redirect()->back()->with('error', 'Producto no encontrado en esta venta.');
     }
 
-    return redirect()->back()->with('success', 'Cantidad eliminada correctamente de la mesa de consumo.');
+    // Obtener cantidad a eliminar del request
+    $cantidadAEliminar = intval($request->input('cantidad_eliminar', 1));
+    $cantidadActual = $productoPivot->pivot->cantidad;
+
+    // Validar que no sea cero o negativo
+    if ($cantidadAEliminar <= 0) {
+        return redirect()->back()->with('error', 'La cantidad debe ser mayor a 0.');
+    }
+
+    // Validar que no se elimine más de lo que existe
+    if ($cantidadAEliminar > $cantidadActual) {
+        return redirect()->back()->with('error', "No puedes eliminar {$cantidadAEliminar} unidades. Solo hay {$cantidadActual} agregadas.");
+    }
+
+    $producto = Productos::findOrFail($productoPivot->pivot->idproducto);
+
+    if ($cantidadAEliminar < $cantidadActual) {
+        // Resta la cantidad especificada y actualiza subtotal
+        $nuevaCantidad = $cantidadActual - $cantidadAEliminar;
+        DB::table('mesasventas_productos')
+            ->where('id', $idMesaVenta_producto)
+            ->update([
+                'cantidad' => $nuevaCantidad,
+                'subtotal' => $nuevaCantidad * $productoPivot->pivot->precio_unitario,
+                'updated_at' => now(),
+            ]);
+    } else {
+        // Elimina completamente el producto (si la cantidad a eliminar es igual a la actual)
+        DB::table('mesasventas_productos')
+            ->where('id', $idMesaVenta_producto)
+            ->delete();
+    }
+
+    // Devuelve la cantidad eliminada al stock del producto
+    $producto->stock += $cantidadAEliminar;
+    
+    // Resta la cantidad vendida a diferencia de los tiempos de mesas
+    if ($producto->idproveedor != 5) {
+        $producto->cantidad_vendida -= $cantidadAEliminar;
+    }
+    $producto->save();
+
+    // Recalcular el total
+    $this->_actualizarTotalVenta($venta);
+
+    return redirect()->back()->with('success', "Se eliminaron {$cantidadAEliminar} unidad(es) correctamente.");
 }
 
 public function finalizarConsumo($idmesa)
