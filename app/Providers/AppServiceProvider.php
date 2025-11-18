@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Gates para controlar acceso basado en roles
+        Gate::define('view-dashboard', function ($user) {
+            return $user->tipo === 'admin';
+        });
+
+        Gate::define('view-mesas-ventas', function ($user) {
+            return in_array($user->tipo, ['admin', 'empleado']);
+        });
+
+        Gate::define('is-admin', function ($user) {
+            return $user->tipo === 'admin';
+        });
     }
 }

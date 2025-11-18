@@ -136,11 +136,11 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-primary',
-    'usermenu_image' => false,
-    'usermenu_desc' => false,
-    'usermenu_profile_url' => false,
+    'usermenu_image' => true,
+    'usermenu_desc' => true,
+    'usermenu_profile_url' => '/perfil',
 
     /*
     |--------------------------------------------------------------------------
@@ -367,9 +367,14 @@ return [
         ],
         ['header' => 'Registros'],
         [
-            'text' => 'usuarios',
-            'url' => 'admin/users',
+            'text' => 'Usuarios',
+            'route' => 'users.index',
             'icon' => 'fas fa-fw fa-users',
+        ],
+        [
+            'text' => 'Mi Perfil',
+            'route' => 'profile.show',
+            'icon' => 'fas fa-fw fa-user',
         ],
        
 
