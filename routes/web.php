@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventario/{id}/edit', [InventarioController::class, 'edit'])->name('inventario.edit');
     Route::post('/inventario/{id}/update', [InventarioController::class, 'update'])->name('inventario.update');
     Route::post('/inventario/{id}/destroy', [InventarioController::class, 'destroy'])->name('inventario.destroy');
+    Route::get('/api/inventario/top5-productos', [InventarioController::class, 'getTop5Productos'])->name('api.inventario.top5');
 // ---------------------- PROVEEDORES ----------------------
     Route::get('/proveedores/index', [ProveedoresController::class, 'index'])->name('proveedores.index');
     Route::get('/proveedores/create', [ProveedoresController::class, 'create'])->name('proveedores.create');
@@ -168,6 +169,7 @@ Route::middleware('auth')->group(function () {
 Route::fallback(function () {
     return redirect()->route('login');
 });
+
 
 
 
