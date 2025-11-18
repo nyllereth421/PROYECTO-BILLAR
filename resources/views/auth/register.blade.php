@@ -65,115 +65,127 @@
             </div>
             @endif
 
-            <div class="space-y-4">
-                <!-- Número de documento -->
-                <div>
-                    <label for="numerodocumento" class="block text-sm font-medium text-gray-300 mb-2">
-                        🆔 Número de documento
-                    </label>
-                    <input 
-                        type="number" 
-                        id="numerodocumento" 
-                        name="numerodocumento" 
-                        value="{{ old('numerodocumento') }}"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="ej: 1234567890"
-                        required 
-                        autofocus
-                    />
-                </div>
-
-                <!-- Name -->
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
-                        👤 Nombre completo
-                    </label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name') }}"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="ej: Juan Pérez"
-                        required
-                    />
-                </div>
-
-                <!-- Email Address -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-                        📧 Correo electrónico
-                    </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value="{{ old('email') }}"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="ej: usuario@correo.com"
-                        required
-                    />
-                </div>
-
-                <!-- Rol / Tipo de Usuario -->
-                <div>
-                    <label for="tipo" class="block text-sm font-medium text-gray-300 mb-2">
-                        🎯 Rol / Tipo de Usuario
-                    </label>
-                    <select 
-                        id="tipo" 
-                        name="tipo" 
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        required
-                    >
-                        <option value="">-- Selecciona un rol --</option>
-                        <option value="empleado" {{ old('tipo') == 'empleado' ? 'selected' : '' }}>Empleado</option>
-                        <option value="admin" {{ old('tipo') == 'admin' ? 'selected' : '' }}>Administrador</option>
-                    </select>
+            <!-- Formulario en dos columnas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- COLUMNA IZQUIERDA: Información Personal -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-orange-400 mb-3">📋 Información Personal</h3>
                     
-                    <!-- Info box -->
-                    <div class="mt-3 p-3 bg-gray-700/50 border border-gray-600 rounded-lg">
-                        <div class="text-xs text-gray-300 space-y-1">
-                            <p><span class="font-semibold text-orange-400">Empleado:</span> Acceso solo a Mesas y Ventas</p>
-                            <p><span class="font-semibold text-orange-400">Admin:</span> Acceso total al sistema</p>
-                        </div>
+                    <!-- Número de documento -->
+                    <div>
+                        <label for="numerodocumento" class="block text-sm font-medium text-gray-300 mb-2">
+                            🆔 Número de documento
+                        </label>
+                        <input 
+                            type="number" 
+                            id="numerodocumento" 
+                            name="numerodocumento" 
+                            value="{{ old('numerodocumento') }}"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="ej: 1234567890"
+                            required 
+                            autofocus
+                        />
+                    </div>
+
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
+                            👤 Nombre completo
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            value="{{ old('name') }}"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="ej: Juan Pérez"
+                            required
+                        />
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+                            📧 Correo electrónico
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            value="{{ old('email') }}"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="ej: usuario@correo.com"
+                            required
+                        />
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
-                        🔒 Contraseña
-                    </label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="Mínimo 8 caracteres"
-                        required
-                    />
-                </div>
+                <!-- COLUMNA DERECHA: Rol y Seguridad -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-orange-400 mb-3">🔐 Rol y Seguridad</h3>
 
-                <!-- Confirm Password -->
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-2">
-                        🔒 Confirmar contraseña
-                    </label>
-                    <input 
-                        type="password" 
-                        id="password_confirmation" 
-                        name="password_confirmation"
-                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                            focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="Repite tu contraseña"
-                        required
-                    />
+                    <!-- Rol / Tipo de Usuario -->
+                    <div>
+                        <label for="tipo" class="block text-sm font-medium text-gray-300 mb-2">
+                            🎯 Rol / Tipo de Usuario
+                        </label>
+                        <select 
+                            id="tipo" 
+                            name="tipo" 
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            required
+                        >
+                            <option value="">-- Selecciona un rol --</option>
+                            <option value="empleado" {{ old('tipo') == 'empleado' ? 'selected' : '' }}>Empleado</option>
+                            <option value="admin" {{ old('tipo') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                        </select>
+                        
+                        <!-- Info box -->
+                        <div class="mt-2 p-2 bg-gray-700/50 border border-gray-600 rounded-lg">
+                            <div class="text-xs text-gray-300 space-y-1">
+                                <p><span class="font-semibold text-orange-400">Empleado:</span> Acceso solo a Mesas y Ventas</p>
+                                <p><span class="font-semibold text-orange-400">Admin:</span> Acceso total al sistema</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                            🔒 Contraseña
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="Mínimo 8 caracteres"
+                            required
+                        />
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-2">
+                            🔒 Confirmar contraseña
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password_confirmation" 
+                            name="password_confirmation"
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
+                                focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="Repite tu contraseña"
+                            required
+                        />
+                    </div>
                 </div>
             </div>
 
