@@ -11,6 +11,10 @@ class CheckRole
 {
     /**
      * Handle an incoming request.
+     * 
+     * Este middleware verifica que el usuario autenticado tenga el rol requerido.
+     * - admin: Acceso a todas las rutas
+     * - empleado: Acceso restringido solo a mesasventas.index
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      * @param  string  ...$roles
@@ -24,10 +28,22 @@ class CheckRole
 
         $user = Auth::user();
 
+        // Verificar si el usuario está inactivo
+        if ($user->estado === 'inactivo') {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->with('error', 'Tu cuenta está inactiva. Contacta al administrador.');
+        }
+
+        // Si es admin, permitir acceso a todo
+        if ($user->tipo === 'admin') {
+            return $next($request);
+        }
+
         // Verificar si el rol del usuario está en la lista permitida
         if (!in_array($user->tipo, $roles)) {
-            // Si es empleado y no tiene permiso, mostrar acceso denegado
-            return response()->view('errors.403', [], 403);
+            return response()->view('errors.403', ['message' => 'No tienes permiso para acceder a este recurso.'], 403);
         }
 
         return $next($request);

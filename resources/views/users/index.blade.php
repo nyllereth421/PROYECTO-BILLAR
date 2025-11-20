@@ -123,10 +123,6 @@
                                             <span class="badge badge-danger">
                                                 <i class="fas fa-crown mr-1"></i> Administrador
                                             </span>
-                                        @elseif($user->tipo === 'gerente')
-                                            <span class="badge badge-warning">
-                                                <i class="fas fa-star mr-1"></i> Gerente
-                                            </span>
                                         @else
                                             <span class="badge badge-secondary">
                                                 <i class="fas fa-briefcase mr-1"></i> Empleado

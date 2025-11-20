@@ -38,8 +38,8 @@ class UsersController extends Controller
             'apellidos' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'numerodocumento' => ['required', 'string', 'max:255', 'unique:users,numerodocumento'],
-            'tipodocumento' => ['required', 'string'],
-            'tipo' => ['required', 'string', 'in:admin,empleado,gerente'],
+            'tipodocumento' => ['required', 'string', 'in:cc,ce,pa,nit,ti'],
+            'tipo' => ['required', 'string', 'in:admin,empleado'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -86,8 +86,9 @@ class UsersController extends Controller
             'apellidos' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'numerodocumento' => ['required', 'string', 'max:255', 'unique:users,numerodocumento,' . $user->id],
-            'tipodocumento' => ['required', 'string'],
-            'tipo' => ['required', 'string', 'in:admin,empleado,gerente'],
+            'tipodocumento' => ['required', 'string', 'in:cc,ce,pa,nit,ti'],
+            'tipo' => ['required', 'string', 'in:admin,empleado'],
+            'estado' => ['required', 'string', 'in:activo,inactivo'],
         ]);
 
         $user->update([
@@ -97,6 +98,7 @@ class UsersController extends Controller
             'numerodocumento' => $request->numerodocumento,
             'tipodocumento' => $request->tipodocumento,
             'tipo' => $request->tipo,
+            'estado' => $request->estado,
         ]);
 
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
@@ -122,6 +124,64 @@ class UsersController extends Controller
         ]);
 
         return redirect()->route('users.index')->with('success', 'Estado del usuario actualizado.');
+    }
+
+    /**
+     * Update user tipo (role) - admin only
+     */
+    public function updateTipo(Request $request, User $user)
+    {
+        // No permitir cambiar el tipo de otro admin
+        if ($user->tipo === 'admin' && $user->id !== auth()->id()) {
+            return redirect()->route('users.index')
+                ->with('error', 'No puedes cambiar el tipo de otro administrador.');
+        }
+
+        $request->validate([
+            'tipo' => ['required', 'in:admin,empleado'],
+        ]);
+
+        $user->update([
+            'tipo' => $request->tipo,
+        ]);
+
+        return redirect()->route('users.index')
+            ->with('success', "Tipo de usuario actualizado a {$request->tipo}.");
+    }
+
+    /**
+     * Update user estado (active/inactive) - admin only
+     */
+    public function updateEstado(Request $request, User $user)
+    {
+        // No permitir desactivar al único admin
+        if ($user->id === auth()->id() && $request->estado === 'inactivo') {
+            return redirect()->route('users.index')
+                ->with('error', 'No puedes desactivar tu propia cuenta.');
+        }
+
+        $request->validate([
+            'estado' => ['required', 'in:activo,inactivo'],
+        ]);
+
+        $user->update([
+            'estado' => $request->estado,
+        ]);
+
+        return redirect()->route('users.index')
+            ->with('success', "Estado de usuario actualizado a {$request->estado}.");
+    }
+
+    /**
+     * Display admin users management view.
+     */
+    public function adminManagement()
+    {
+        $users = User::paginate(15);
+
+        return view('admin.users-management', [
+            'users' => $users,
+        ]);
     }
 
     /**

@@ -121,10 +121,11 @@
                                             name="tipodocumento"
                                             required>
                                         <option value="">Selecciona un tipo</option>
-                                        <option value="CC" @if(old('tipodocumento', $user->tipodocumento) === 'CC') selected @endif>Cédula de Ciudadanía</option>
-                                        <option value="CE" @if(old('tipodocumento', $user->tipodocumento) === 'CE') selected @endif>Cédula de Extranjería</option>
-                                        <option value="PA" @if(old('tipodocumento', $user->tipodocumento) === 'PA') selected @endif>Pasaporte</option>
-                                        <option value="NIT" @if(old('tipodocumento', $user->tipodocumento) === 'NIT') selected @endif>NIT</option>
+                                        <option value="cc" @if(old('tipodocumento', $user->tipodocumento) === 'cc') selected @endif>Cédula de Ciudadanía</option>
+                                        <option value="ce" @if(old('tipodocumento', $user->tipodocumento) === 'ce') selected @endif>Cédula de Extranjería</option>
+                                        <option value="pa" @if(old('tipodocumento', $user->tipodocumento) === 'pa') selected @endif>Pasaporte</option>
+                                        <option value="nit" @if(old('tipodocumento', $user->tipodocumento) === 'nit') selected @endif>NIT</option>
+                                        <option value="ti" @if(old('tipodocumento', $user->tipodocumento) === 'ti') selected @endif>Tarjeta de Identidad</option>
                                     </select>
                                     @error('tipodocumento')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -140,10 +141,32 @@
                                             required>
                                         <option value="">Selecciona un tipo</option>
                                         <option value="admin" @if(old('tipo', $user->tipo) === 'admin') selected @endif>Administrador</option>
-                                        <option value="gerente" @if(old('tipo', $user->tipo) === 'gerente') selected @endif>Gerente</option>
                                         <option value="empleado" @if(old('tipo', $user->tipo) === 'empleado') selected @endif>Empleado</option>
                                     </select>
                                     @error('tipo')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="estado"><i class="fas fa-toggle-on mr-2 text-success"></i> <strong>Estado del Usuario</strong> *</label>
+                                    <select class="form-control @error('estado') is-invalid @enderror" 
+                                            id="estado" 
+                                            name="estado"
+                                            required>
+                                        <option value="">Selecciona un estado</option>
+                                        <option value="activo" @if(old('estado', $user->estado) === 'activo') selected @endif>
+                                            <i class="fas fa-check-circle"></i> Activo
+                                        </option>
+                                        <option value="inactivo" @if(old('estado', $user->estado) === 'inactivo') selected @endif>
+                                            <i class="fas fa-times-circle"></i> Inactivo
+                                        </option>
+                                    </select>
+                                    @error('estado')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
