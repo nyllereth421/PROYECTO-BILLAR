@@ -29,10 +29,10 @@ class ProfileController extends Controller
     public function updateProfile(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'apellidos' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
+            'apellidos' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
-            'numerodocumento' => ['required', 'string', 'max:255'],
+            'numerodocumento' => ['required', 'numeric', 'digits_between:1,20'],
             'tipodocumento' => ['required', 'string'],
         ]);
 
