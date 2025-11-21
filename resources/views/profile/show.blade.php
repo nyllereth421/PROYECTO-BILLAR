@@ -279,30 +279,32 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                    <label for="name" class="font-weight-bold">Nombre</label>
-                                    <input type="text" 
-                                           id="name" 
-                                           name="name" 
-                                           class="form-control" 
-                                           value="{{ old('name', auth()->user()->name) }}" 
-                                           required
-                                           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="apellidos" class="font-weight-bold">Apellidos</label>
-                                    <input type="text" 
-                                           id="apellidos" 
-                                           name="apellidos" 
-                                           class="form-control" 
-                                           value="{{ old('apellidos', auth()->user()->apellidos) }}" 
-                                           required
-                                           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-                                </div>
+                                <label for="name"><i class="fas fa-user mr-2 text-primary"></i> <strong>Nombre</strong> *</label>
+                                <input type="text" 
+                                       class="form-control @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name', auth()->user()->name) }}"
+                                       required>
+                                @error('name')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
-                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="apellidos"><i class="fas fa-user mr-2 text-primary"></i> <strong>Apellidos</strong> *</label>
+                                <input type="text" 
+                                       class="form-control @error('apellidos') is-invalid @enderror" 
+                                       id="apellidos" 
+                                       name="apellidos" 
+                                       value="{{ old('apellidos', auth()->user()->apellidos) }}"
+                                       required>
+                                @error('apellidos')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -322,17 +324,21 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="tipodocumento"><i class="fas fa-id-card mr-2 text-warning"></i> <strong>Tipo de Documento</strong> *</label>
+                                <label for="tipodocumento">
+                                    <i class="fas fa-id-card mr-2 text-warning"></i> 
+                                    <strong>Tipo de Documento</strong>
+                                </label>
+
                                 <select class="form-control @error('tipodocumento') is-invalid @enderror" 
                                         id="tipodocumento" 
-                                        name="tipodocumento"
-                                        required>
-                                    <option value="">Selecciona un tipo</option>
+                                        name="tipodocumento">
+                                    <option value="">Selecciona un tipo (opcional)</option>
                                     <option value="CC" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'CC') selected @endif>Cédula de Ciudadanía</option>
                                     <option value="CE" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'CE') selected @endif>Cédula de Extranjería</option>
                                     <option value="PA" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'PA') selected @endif>Pasaporte</option>
                                     <option value="NIT" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'NIT') selected @endif>NIT</option>
                                 </select>
+
                                 @error('tipodocumento')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -368,7 +374,15 @@
             </form>
         </div>
     </div>
+    
 </div>
+@if ($errors->any())
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        $('#editarPerfilModal').modal('show');
+    });
+</script>
+@endif
 
 <!-- ===== MODAL: CAMBIAR CONTRASEÑA ===== -->
 <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" role="dialog" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">

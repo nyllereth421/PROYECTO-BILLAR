@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -28,23 +29,56 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
-            'apellidos' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
-            'numerodocumento' => ['required', 'numeric', 'digits_between:1,20'],
-            'tipodocumento' => ['required', 'string'],
-        ]);
+        $user = $request->user();
 
-        $request->user()->update([
-            'name' => $request->name,
-            'apellidos' => $request->apellidos,
-            'email' => $request->email,
-            'numerodocumento' => $request->numerodocumento,
-            'tipodocumento' => $request->tipodocumento,
-        ]);
+        $validatedData = $request->validate([
+    'name' => [
+        'required',
+        'string',
+        'max:100',
+        'regex:/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/'
+    ],
+    'apellidos' => [
+        'required',
+        'string',
+        'max:255',
+        'regex:/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/'
+    ],
+    'email' => [
+        'required',
+        'string',
+        'email',
+        'max:255',
+        Rule::unique('users')->ignore($user->id)
+    ],
+    'numerodocumento' => [
+        'required',
+        'regex:/^[0-9]+$/',
+        'max:20',
+        Rule::unique('users')->ignore($user->id)
+    ],
+    'tipodocumento' => [
+        'nullable',  // ⛔ YA NO ES REQUIRED
+        'string',
+        'in:CC,CE,PA,NIT'
+    ],
+]);
 
-        return redirect()->route('profile.show')->with('success', 'Perfil actualizado correctamente.');
+// Si no enviaron un tipo de documento, conservar el que había
+if (!$request->filled('tipodocumento')) {
+    $validatedData['tipodocumento'] = $user->tipodocumento;
+}
+
+$user->update($validatedData);
+
+
+        if (empty($validatedData['tipodocumento'])) {
+            $validatedData['tipodocumento'] = $user->tipodocumento;
+        }
+
+        $user->update($validatedData);
+
+        return redirect()->route('profile.show')->with('success', 'Perfil actualizado con éxito.');
     }
 
     /**
