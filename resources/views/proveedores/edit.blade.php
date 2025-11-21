@@ -99,14 +99,15 @@
                                         <i class="fas fa-user-tie"></i>
                                     </span>
                                 </div>
-                                <input type="text" 
+                                <<input type="text" 
                                        name="nombre" 
                                        id="nombre" 
                                        class="form-control @error('nombre') is-invalid @enderror" 
                                        placeholder="Ej: Distribuidora ABC S.A." 
                                        value="{{ old('nombre', $proveedor->nombre) }}" 
                                        required
-                                       autofocus>
+                                       autofocus
+                                       oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                                 @error('nombre') 
                                     <div class="invalid-feedback">
                                         <i class="fas fa-exclamation-circle"></i> {{ $message }}

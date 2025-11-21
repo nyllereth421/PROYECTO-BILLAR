@@ -126,8 +126,9 @@
                                            placeholder="Ej: Distribuidora ABC S.A.S" 
                                            value="{{ old('nombre') }}" 
                                            required
-                                           maxlength="100">
-                                    @error('nombre') 
+                                           maxlength="100"
+                                           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                                    @error('nombre')  
                                         <div class="invalid-feedback">
                                             <i class="fas fa-exclamation-circle"></i> {{ $message }}
                                         </div> 
