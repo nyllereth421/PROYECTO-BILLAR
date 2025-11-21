@@ -279,32 +279,30 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="name"><i class="fas fa-user mr-2 text-primary"></i> <strong>Nombre</strong> *</label>
-                                <input type="text" 
-                                       class="form-control @error('name') is-invalid @enderror" 
-                                       id="name" 
-                                       name="name" 
-                                       value="{{ old('name', auth()->user()->name) }}"
-                                       required>
-                                @error('name')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                                    <label for="name" class="font-weight-bold">Nombre</label>
+                                    <input type="text" 
+                                           id="name" 
+                                           name="name" 
+                                           class="form-control" 
+                                           value="{{ old('name', auth()->user()->name) }}" 
+                                           required
+                                           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="apellidos" class="font-weight-bold">Apellidos</label>
+                                    <input type="text" 
+                                           id="apellidos" 
+                                           name="apellidos" 
+                                           class="form-control" 
+                                           value="{{ old('apellidos', auth()->user()->apellidos) }}" 
+                                           required
+                                           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="apellidos"><i class="fas fa-user mr-2 text-primary"></i> <strong>Apellidos</strong> *</label>
-                                <input type="text" 
-                                       class="form-control @error('apellidos') is-invalid @enderror" 
-                                       id="apellidos" 
-                                       name="apellidos" 
-                                       value="{{ old('apellidos', auth()->user()->apellidos) }}"
-                                       required>
-                                @error('apellidos')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                        
                     </div>
 
                     <div class="row">
