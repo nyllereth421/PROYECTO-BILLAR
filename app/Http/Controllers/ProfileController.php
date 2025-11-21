@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -28,23 +29,23 @@ class ProfileController extends Controller
      */
     public function updateProfile(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
-            'apellidos' => ['required', 'string', 'regex:/^[a-zA-Z\s]+$/', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
-            'numerodocumento' => ['required', 'numeric', 'digits_between:1,20'],
-            'tipodocumento' => ['required', 'string'],
+        $user = $request->user();
+
+        $validatedData = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'apellidos' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'numerodocumento' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/', Rule::unique('users')->ignore($user->id)],
+            'tipodocumento' => ['nullable', 'string', 'in:CC,CE,PA,NIT'],
         ]);
 
-        $request->user()->update([
-            'name' => $request->name,
-            'apellidos' => $request->apellidos,
-            'email' => $request->email,
-            'numerodocumento' => $request->numerodocumento,
-            'tipodocumento' => $request->tipodocumento,
-        ]);
+        if (empty($validatedData['tipodocumento'])) {
+            $validatedData['tipodocumento'] = $user->tipodocumento;
+        }
 
-        return redirect()->route('profile.show')->with('success', 'Perfil actualizado correctamente.');
+        $user->update($validatedData);
+
+        return redirect()->route('profile.show')->with('success', 'Perfil actualizado con éxito.');
     }
 
     /**
