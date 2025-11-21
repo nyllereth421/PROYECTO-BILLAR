@@ -324,17 +324,21 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="tipodocumento"><i class="fas fa-id-card mr-2 text-warning"></i> <strong>Tipo de Documento</strong> *</label>
+                                <label for="tipodocumento">
+                                    <i class="fas fa-id-card mr-2 text-warning"></i> 
+                                    <strong>Tipo de Documento</strong>
+                                </label>
+
                                 <select class="form-control @error('tipodocumento') is-invalid @enderror" 
                                         id="tipodocumento" 
-                                        name="tipodocumento"
-                                        required>
-                                    <option value="">Selecciona un tipo</option>
+                                        name="tipodocumento">
+                                    <option value="">Selecciona un tipo (opcional)</option>
                                     <option value="CC" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'CC') selected @endif>Cédula de Ciudadanía</option>
                                     <option value="CE" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'CE') selected @endif>Cédula de Extranjería</option>
                                     <option value="PA" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'PA') selected @endif>Pasaporte</option>
                                     <option value="NIT" @if(old('tipodocumento', auth()->user()->tipodocumento) === 'NIT') selected @endif>NIT</option>
                                 </select>
+
                                 @error('tipodocumento')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -370,7 +374,15 @@
             </form>
         </div>
     </div>
+    
 </div>
+@if ($errors->any())
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        $('#editarPerfilModal').modal('show');
+    });
+</script>
+@endif
 
 <!-- ===== MODAL: CAMBIAR CONTRASEÑA ===== -->
 <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" role="dialog" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">

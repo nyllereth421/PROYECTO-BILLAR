@@ -32,12 +32,45 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validatedData = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-            'apellidos' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'numerodocumento' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/', Rule::unique('users')->ignore($user->id)],
-            'tipodocumento' => ['nullable', 'string', 'in:CC,CE,PA,NIT'],
-        ]);
+    'name' => [
+        'required',
+        'string',
+        'max:100',
+        'regex:/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/'
+    ],
+    'apellidos' => [
+        'required',
+        'string',
+        'max:255',
+        'regex:/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]+$/'
+    ],
+    'email' => [
+        'required',
+        'string',
+        'email',
+        'max:255',
+        Rule::unique('users')->ignore($user->id)
+    ],
+    'numerodocumento' => [
+        'required',
+        'regex:/^[0-9]+$/',
+        'max:20',
+        Rule::unique('users')->ignore($user->id)
+    ],
+    'tipodocumento' => [
+        'nullable',  // ⛔ YA NO ES REQUIRED
+        'string',
+        'in:CC,CE,PA,NIT'
+    ],
+]);
+
+// Si no enviaron un tipo de documento, conservar el que había
+if (!$request->filled('tipodocumento')) {
+    $validatedData['tipodocumento'] = $user->tipodocumento;
+}
+
+$user->update($validatedData);
+
 
         if (empty($validatedData['tipodocumento'])) {
             $validatedData['tipodocumento'] = $user->tipodocumento;
