@@ -27,9 +27,36 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['nullable', 'string', 'email'],
+            'numerodocumento' => ['nullable', 'string'],
             'password' => ['required', 'string'],
         ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.email' => 'El correo debe ser un email válido.',
+            'password.required' => 'La contraseña es requerida.',
+        ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Validar que al menos uno de los dos campos esté presente
+        if (!$this->input('email') && !$this->input('numerodocumento')) {
+            throw ValidationException::withMessages([
+                'email' => 'Debes ingresar un correo o número de documento.',
+            ]);
+        }
     }
 
     /**
@@ -41,11 +68,33 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Determinar el método de autenticación (email o numerodocumento)
+        $credentials = ['password' => $this->input('password')];
+        
+        if ($this->input('email')) {
+            $credentials['email'] = $this->input('email');
+            $loginField = 'email';
+        } else {
+            $credentials['numerodocumento'] = $this->input('numerodocumento');
+            $loginField = 'numerodocumento';
+        }
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                $loginField => trans('auth.failed'),
+            ]);
+        }
+
+        // Verificar si el usuario está activo
+        $user = Auth::user();
+        if ($user && $user->estado === 'inactivo') {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                $loginField => 'Tu cuenta está inactiva. Contacta al administrador para activarla.',
             ]);
         }
 
@@ -80,6 +129,8 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        // Usar email o numerodocumento como base para el throttle key
+        $identifier = $this->input('email') ?? $this->input('numerodocumento');
+        return Str::transliterate(Str::lower($identifier).'|'.$this->ip());
     }
 }

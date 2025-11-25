@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\proveedores;
 use Illuminate\Http\Request;
 
+
 class ProveedoresController extends Controller
 {
     /**
@@ -13,7 +14,11 @@ class ProveedoresController extends Controller
     public function index()
     {
         $proveedores = proveedores::all();
-        return view('proveedores.index', compact('proveedores'));
+         $totalStock = \DB::table('productos')->sum('stock');
+
+    // lista de proveedores
+    $proveedores = Proveedores::all();
+        return view('proveedores.index', compact('proveedores','totalStock'));
     }
 
     /**
@@ -29,7 +34,14 @@ class ProveedoresController extends Controller
      */
     public function store(Request $request)
     {
-        proveedores::create($request->all());
+        $validatedData = $request->validate([
+            'idproveedor' => 'required|unique:proveedores,idproveedor|numeric',
+            'nombre' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:100',
+            'contacto' => 'required|numeric|digits_between:7,15',
+            'direccion' => 'required|string|max:255',
+        ]);
+
+        proveedores::create($validatedData);
         return redirect()->route('proveedores.index')->with('success', 'Proveedor creado correctamente.');
     }
 
@@ -57,19 +69,15 @@ class ProveedoresController extends Controller
     public function update(Request $request, $idproveedor)
     {
         $proveedor = proveedores::findOrFail($idproveedor);
-        $proveedor->update($request->all());
+        
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:100',
+            'contacto' => 'required|numeric|digits_between:7,15',
+            'direccion' => 'required|string|max:255',
+        ]);
+
+        $proveedor->update($validatedData);
 
         return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $proveedor = proveedores::findOrFail($id);
-        $proveedor->delete();
-
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado correctamente.');
     }
 }

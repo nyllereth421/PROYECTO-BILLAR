@@ -118,8 +118,8 @@ return [
             'path' => 'vendor/adminlte/dist/img/logonexus.png',
             'alt' => 'Billar Nexus Preloader Image',
             'effect' => 'animation__shake',
-            'width' => 800,
-            'height' => 800,
+            'width' => 400,
+            'height' => 400,
         ],
     ],
 
@@ -136,11 +136,11 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-primary',
-    'usermenu_image' => false,
-    'usermenu_desc' => false,
-    'usermenu_profile_url' => false,
+    'usermenu_image' => true,
+    'usermenu_desc' => true,
+    'usermenu_profile_url' => '/perfil',
 
     /*
     |--------------------------------------------------------------------------
@@ -258,7 +258,7 @@ return [
     */
 
     'use_route_url' => false,
-    'dashboard_url' => 'home',
+    'dashboard_url' => '',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -300,7 +300,7 @@ return [
     */
 
     'menu' => [
-        
+
         // Navbar items:
         [
             'type' => 'navbar-search',
@@ -326,97 +326,59 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
+        
+        ['header' => 'Pagina Principal'],
         [
             'text' => 'inicio',
-            'url'  => 'welcome',
+            'route'  => 'welcome',
             'icon' => 'fas fa-fw fa-home',
         ],
+        ['header' => 'Gestion'],
         [
-            'text' => 'jugadores',
-            'url' => 'admin/users',
-            'icon' => 'fas fa-fw fa-users',
-        ],
-
-                [
-            'text' => ' Gestion de Mesas ',
+            'text' => 'Gestion de Mesas',
+            'route' => 'mesasventas.index',
             'icon' => 'fas fa-table',
-            'submenu' => [
-                [
-                    'text' => 'Ver Mesas',
-                    'route' => 'mesasventas.index',
-                ],
-                
-            ]
+        ],
+        [
+            'text' => 'Ventas',
+            'route' => 'mesasventas.historial',
+            'icon' => 'fas fa-money-bill-wave',
+        ],
+        [
+            'text' => 'compras',
+            'route' => 'compras.index',
+            'icon' => 'fas fa-shopping-cart',
         ],
         
+        ['header' => 'Almacen'],
         [
             'text' => 'Inventario',
             'route' => 'inventario.index',
-            'icon'  => 'fas fa-warehouse',
-            'submenu' => [
-                [
-                    'text' => 'Inventario Mesas',
-                    'route' => 'mesas.index',
-                    
-                ],
-                [
-                    'text' => 'Inventario Productos',
-                    'route' => 'productos.index',
-                    
-                ],
-                [
-                    'text' => 'Inventario proveedores',
-                    'route' => 'proveedores.index',
-                ]
-            ]
+            'icon' => 'fas fa-warehouse',
         ],
-        
-        [
-            'text' => 'torneos',
-            'url' => 'admin/torneos',
-            'icon' => 'fas fa-trophy',
-            'submenu' => [
-                [
-                    'text' => 'crear torneo',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'individual',
-                            'url' => '#',
-                            'icon' => 'fas fa-user'
-                        ],
-                        [
-                            'text' => 'equipos',
-                            'url' => '#',
-                            'icon' => 'fas fa-users',
-                            
-                        ],
-                    ],
-                ],
-                
-            ],
-        ],
+
         ['header' => 'reportes'],
         [
             'text' => 'informes',
             'icon_color' => 'cyan',
-            'url' => '#',
-            'icon' => 'fas fa-chart-bar', 
+            'route' => 'informes.index',
+            'icon' => 'fas fa-chart-bar',
             'icon_color' => 'cyan',
         ],
-        ['header' => 'ajustes'],
+        ['header' => 'Registros'],
         [
-            'text' => 'tema ',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-paint-brush',
+            'text' => 'Usuarios',
+            'route' => 'users.index',
+            'icon' => 'fas fa-fw fa-users',
         ],
         [
-            'text' => 'configuraciones',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-cogs',
+            'text' => 'Mi Perfil',
+            'route' => 'profile.show',
+            'icon' => 'fas fa-fw fa-user',
         ],
-        
-        
+       
+
+
     ],
 
     /*

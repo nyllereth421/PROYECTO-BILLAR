@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mesas', function (Blueprint $table) {
             $table->id('idmesa');
             $table->enum('estado', ['disponible', 'ocupada', 'reservada'])->default('disponible');
-            $table->enum('tipo', ['pool', 'tresbandas', 'libre']);
+            $table->enum('tipo', ['pool', 'tresbandas', 'libre','consumo']);
             $table->string('numeromesa'); // Número o identificador de la mesa
             $table->timestamps();
         });

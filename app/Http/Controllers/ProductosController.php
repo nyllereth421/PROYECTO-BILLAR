@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Productos;
+use App\Models\Proveedores;
 use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
 
 class ProductosController extends Controller
 {
@@ -13,10 +13,8 @@ class ProductosController extends Controller
      */
     public function index(Request $request)
     {
-        // Texto de búsqueda
         $buscar = $request->input('buscar', null);
 
-        // Construcción de la consulta
         $query = Productos::with('proveedor');
 
         if ($buscar) {
@@ -27,13 +25,11 @@ class ProductosController extends Controller
             });
         }
 
-        // Se listan todos los productos ordenados alfabéticamente
         $productos = $query->orderBy('nombre', 'asc')->get();
 
-        // Verificar si hay productos con poco stock
-        $productosBajoStock = $productos->where('cantidad', '<', 10)->count();
+        $productosBajoStock = $productos->where('stock', '<', 10)->count();
 
-        if ($productosBajoStock < 10) {
+        if ($productosBajoStock > 0) {
             session()->flash('alerta_stock', '¡Atención! Algunos productos tienen menos de 10 unidades disponibles.');
         }
 
@@ -45,7 +41,8 @@ class ProductosController extends Controller
      */
     public function create()
     {
-        return view('productos.create');
+        $proveedores = Proveedores::orderBy('nombre', 'asc')->get();
+        return view('productos.create', compact('proveedores'));
     }
 
     /**
@@ -53,13 +50,15 @@ class ProductosController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:100',
+            'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:1000',
-            'cantidad' => 'required|integer|min:10',
+            'stock' => 'required|integer|min:0',
+            'idproveedor' => 'required|exists:proveedores,idproveedor',
         ]);
 
-        Productos::create($request->all());
+        Productos::create($validated);
 
         return redirect()->route('productos.index')->with('success', 'Producto agregado correctamente.');
     }
@@ -70,7 +69,8 @@ class ProductosController extends Controller
     public function edit($id)
     {
         $producto = Productos::findOrFail($id);
-        return view('productos.edit', compact('producto'));
+        $proveedores = Proveedores::orderBy('nombre', 'asc')->get();
+        return view('productos.edit', compact('producto', 'proveedores'));
     }
 
     /**
@@ -80,42 +80,37 @@ class ProductosController extends Controller
     {
         $producto = Productos::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:100',
+            'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:1000',
-            'cantidad' => 'required|integer|min:10',
+            'stock' => 'required|integer|min:0',
+            'idproveedor' => 'required|exists:proveedores,idproveedor',
         ]);
 
-        $producto->update($request->all());
+        $producto->update($validated);
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
-     * Elimina un producto, validando si tiene relaciones activas.
+     * No se permite eliminar productos para evitar daños a ventas.
      */
     public function destroy($id)
-    
-{
-    return redirect()->route('productos.index')
-        ->with('error', '❌ No está permitido eliminar productos.');
-}
+    {
+        return redirect()->route('productos.index')
+            ->with('error', '❌ No está permitido eliminar productos.');
+    }
 
-    /**
-     * Muestra los 5 productos más vendidos (para el dashboard o welcome).
-     */
     public function topProductos()
     {
         $topProductos = Productos::orderByDesc('cantidad_vendida')->take(5)->get();
         return view('welcome', compact('topProductos'));
     }
-      public function mostrarEnInicio()
-{
-    // Consulta los 5 productos más vendidos o solo todos los productos
-    $productos = Productos::take(5)->get();
 
-
-    // Pasar los datos a la vista welcome
-    return view('welcome', compact('productos'));
-}
+    public function mostrarEnInicio()
+    {
+        $productos = Productos::take(5)->get();
+        return view('welcome', compact('productos'));
+    }
 }

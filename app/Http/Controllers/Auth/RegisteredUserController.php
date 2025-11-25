@@ -33,18 +33,27 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'numerodocumento' => ['required', 'string', 'max:255'],
+            'tipo' => ['required', 'in:admin,empleado'], // Validar que sea un rol válido
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'numerodocumento' => $request->numerodocumento,
+            'tipo' => $request->tipo, // Guardar el rol
+            'estado' => 'inactivo', // Por defecto, nuevo usuario activo
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+       // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+       // return redirect(route('welcome', absolute: false));
+        return redirect()
+            ->route('login')
+            ->with('status', 'Tu cuenta se ha creado correctamente. Espera a que un administrador la active.');
     }
+
 }

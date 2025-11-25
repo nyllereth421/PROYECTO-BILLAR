@@ -42,6 +42,13 @@ class ProveedoresSeeder extends Seeder
     'created_at' => now(),
     'updated_at' => now(),
 ],
+[
+    'nombre' => 'Tiempos Mesas',
+    'contacto' => '9999999999',
+    'direccion' => 'Málaga - Santander',
+    'created_at' => now(),
+    'updated_at' => now(),
+],
 
         ]);
     }
