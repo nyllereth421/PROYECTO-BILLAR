@@ -43,13 +43,17 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'numerodocumento' => $request->numerodocumento,
             'tipo' => $request->tipo, // Guardar el rol
-            'estado' => 'activo', // Por defecto, nuevo usuario activo
+            'estado' => 'inactivo', // Por defecto, nuevo usuario activo
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+       // Auth::login($user);
 
-        return redirect(route('welcome', absolute: false));
+       // return redirect(route('welcome', absolute: false));
+        return redirect()
+            ->route('login')
+            ->with('status', 'Tu cuenta se ha creado correctamente. Espera a que un administrador la active.');
     }
+
 }
