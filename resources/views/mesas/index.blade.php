@@ -11,9 +11,7 @@
 
     {{-- 🔙 Botón volver al Inicio --}}
     <div class="mb-3 d-flex justify-content-between">
-        <a href="{{ route('welcome') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Inicio
-        </a>
+        
         <a href="{{ route('inventario.index') }}" class="btn btn-secondary">Volver a inventario</a>
 
         {{-- ✅ Botones para crear nuevas mesas --}}
@@ -21,16 +19,20 @@
             <a href="{{ route('mesas.create') }}" class="btn btn-success mx-1">
                 <i class="fas fa-plus"></i> Nueva Mesa 
             </a>
-
-            
         </div>
     </div>
 
-    <div class="row">
+    {{-- 🔍 BUSCADOR --}}
+    <div class="mb-4">
+        <input type="text" id="buscadorMesas" class="form-control"
+            placeholder="Buscar mesa por número o tipo...">
+    </div>
 
-        {{-- 🟢 MESAS  --}}
+    <div class="row" id="contenedorMesas">
+
+        {{-- 🟢 MESAS --}}
         @foreach($mesas as $mesa)
-            <div class="col-md-4">
+            <div class="col-md-4 mesa-item">
                 <div class="card {{ $mesa->estado == 'ocupada' ? 'card-danger' : ($mesa->estado == 'reservada' ? 'card-info' : 'card-success') }}">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title">Mesa #{{ $mesa->numeromesa }}</h3>
@@ -63,8 +65,20 @@
             </div>
         @endforeach
 
-        
-
     </div>
 </div>
+
+{{-- 🔎 Script de búsqueda en tiempo real --}}
+<script>
+    document.getElementById('buscadorMesas').addEventListener('keyup', function() {
+        let filtro = this.value.toLowerCase();
+        let mesas = document.querySelectorAll('.mesa-item');
+
+        mesas.forEach(mesa => {
+            let texto = mesa.innerText.toLowerCase();
+            mesa.style.display = texto.includes(filtro) ? '' : 'none';
+        });
+    });
+</script>
+
 @stop

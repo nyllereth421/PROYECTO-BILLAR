@@ -10,6 +10,7 @@ class ProductosController extends Controller
 {
     /**
      * Muestra la lista de productos con buscador y alertas.
+     * Ahora compatible con búsqueda en tiempo real sin paginación.
      */
     public function index(Request $request)
     {
@@ -25,14 +26,17 @@ class ProductosController extends Controller
             });
         }
 
+        // Ordenar por nombre ascendente y obtener todos los resultados
         $productos = $query->orderBy('nombre', 'asc')->get();
 
+        // Verificar productos con stock bajo
         $productosBajoStock = $productos->where('stock', '<', 10)->count();
 
-        if ($productosBajoStock > 0) {
-            session()->flash('alerta_stock', '¡Atención! Algunos productos tienen menos de 10 unidades disponibles.');
+        if ($productosBajoStock > 0 && !$request->ajax()) {
+            session()->flash('alerta_stock', '¡Atención! Hay ' . $productosBajoStock . ' producto(s) con menos de 10 unidades disponibles.');
         }
 
+        // Retornar vista normal
         return view('productos.index', compact('productos', 'buscar'));
     }
 
@@ -99,15 +103,21 @@ class ProductosController extends Controller
     public function destroy($id)
     {
         return redirect()->route('productos.index')
-            ->with('error', '❌ No está permitido eliminar productos.');
+            ->with('error', '❌ No está permitido eliminar productos para proteger el historial de ventas.');
     }
 
+    /**
+     * Obtiene los productos más vendidos.
+     */
     public function topProductos()
     {
         $topProductos = Productos::orderByDesc('cantidad_vendida')->take(5)->get();
         return view('welcome', compact('topProductos'));
     }
 
+    /**
+     * Muestra productos en el inicio.
+     */
     public function mostrarEnInicio()
     {
         $productos = Productos::take(5)->get();

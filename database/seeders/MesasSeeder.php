@@ -19,7 +19,7 @@ class MesasSeeder extends Seeder
             $mesas[] = [
                 'estado' => 'disponible',
                 'tipo' => 'tresbandas',
-                'numeromesa' => 'TB-' . $i,
+                'numeromesa' => 'Tres Bandas -' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -30,7 +30,7 @@ class MesasSeeder extends Seeder
             $mesas[] = [
                 'estado' => 'disponible',
                 'tipo' => 'libre',
-                'numeromesa' => 'L-' . $i,
+                'numeromesa' => 'Libres -' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -41,7 +41,7 @@ class MesasSeeder extends Seeder
             $mesas[] = [
                 'estado' => 'disponible',
                 'tipo' => 'pool',
-                'numeromesa' => 'P-' . $i,
+                'numeromesa' => 'Pool -' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -52,7 +52,7 @@ class MesasSeeder extends Seeder
             $mesas[] = [
                 'estado' => 'disponible',
                 'tipo' => 'consumo',
-                'numeromesa' => 'C-' . $i,
+                'numeromesa' => 'Consumo -' . $i,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

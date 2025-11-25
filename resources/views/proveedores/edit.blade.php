@@ -50,7 +50,7 @@
                 
                 <form action="{{ route('proveedores.update', $proveedor->idproveedor) }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    
                     
                     <div class="card-body">
                         

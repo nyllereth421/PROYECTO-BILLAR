@@ -20,7 +20,9 @@ class AdminUserSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin123'),
             'numerodocumento' => '123456789',
-            'tipo' => 'admin'
+            'tipo' => 'admin',
+            'estado' => 'activo'
+
         ]);
 
         User::create([
@@ -28,7 +30,8 @@ class AdminUserSeeder extends Seeder
             'email' => 'a@a.a',
             'password' => Hash::make('12345678'),
             'numerodocumento' => '12345678',
-            'tipo' => 'admin'
+            'tipo' => 'admin',
+            'estado' => 'activo'
         ]);
 
 
