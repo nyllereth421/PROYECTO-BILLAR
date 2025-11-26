@@ -58,21 +58,6 @@
             </button>
         </div>
     @endif
-
-    {{-- BARRA DE ACCIONES --}}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <a href="{{ route('inventario.index') }}" class="btn btn-outline-secondary mb-2">
-                    <i class="fas fa-arrow-left"></i> Volver a Inventario
-                </a>
-                <a href="{{ route('productos.create') }}" class="btn btn-success mb-2">
-                    <i class="fas fa-plus-circle"></i> Nuevo Producto
-                </a>
-            </div>
-        </div>
-    </div>
-
     {{-- ESTADÍSTICAS RÁPIDAS --}}
     <div class="row mb-4">
         <div class="col-lg-4 col-6">
@@ -110,35 +95,45 @@
         </div>
     </div>
 
-    {{-- BUSCADOR EN TIEMPO REAL --}}
     <div class="row mb-3">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        </div>
-                        <input type="text"
-                               id="buscarProducto"
-                               name="buscar"
-                               class="form-control form-control-lg"
-                               placeholder="Buscar por ID, Nombre o Descripción..."
-                               autocomplete="off"
-                               value="{{ request('buscar')}}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary" id="btnLimpiar" title="Limpiar Búsqueda">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
-                    </div>
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle"></i> La búsqueda filtra en tiempo real todos los productos registrados
-                    </small>
+    <div class="col-12">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <!-- Botón volver -->
+            <a href="{{ route('inventario.index') }}" class="btn btn-outline-secondary mb-2">
+                <i class="fas fa-arrow-left"></i> Volver a Inventario
+            </a>
+
+            <!-- Buscador centrado -->
+            <div class="flex-grow-1 mx-2 mb-2" style="min-width: 300px;">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text"
+                        id="buscarProducto"
+                        class="form-control form-control-lg"
+                        placeholder="Buscar por ID, Nombre o Descripción..."
+                        autocomplete="off">
+
+                    <button type="button" class="btn btn-outline-danger" id="btnLimpiar">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
+
+            <!-- Botón nuevo producto -->
+            <a href="{{ route('productos.create') }}" class="btn btn-success mb-2">
+                <i class="fas fa-plus-circle"></i> Nuevo Producto
+            </a>
+
         </div>
     </div>
+</div>
+
+
+    
+    
     {{-- TABLA DE PRODUCTOS MEJORADA --}}
     <div id="contenedorTablaProductos">
         @include('productos._tabla', ['productos' => $productos])
@@ -146,94 +141,7 @@
 
 
 
-    {{-- MODAL DE DETALLES --}}
-    <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalDetallesLabel">
-                        <i class="fas fa-box-open"></i> Detalles del Producto
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-tag text-primary"></i> Nombre del Producto
-                                </label>
-                                <p class="form-control-static" id="detalle-nombre">-</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-barcode text-info"></i> ID Producto
-                                </label>
-                                <p class="form-control-static" id="detalle-id">-</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-align-left text-secondary"></i> Descripción
-                                </label>
-                                <p class="form-control-static" id="detalle-descripcion">-</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-dollar-sign text-success"></i> Precio
-                                </label>
-                                <p class="form-control-static text-success font-weight-bold" id="detalle-precio">-</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-warehouse text-info"></i> Stock
-                                </label>
-                                <p class="form-control-static" id="detalle-stock">-</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-shopping-cart text-primary"></i> Cantidad Vendida
-                                </label>
-                                <p class="form-control-static" id="detalle-vendida">-</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="font-weight-bold">
-                                    <i class="fas fa-truck text-warning"></i> Proveedor
-                                </label>
-                                <p class="form-control-static" id="detalle-proveedor">-</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        <i class="fas fa-times"></i> Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
+    
 @stop
 
 @section('css')

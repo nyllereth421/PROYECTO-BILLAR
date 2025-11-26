@@ -99,7 +99,7 @@
                                         <i class="fas fa-user-tie"></i>
                                     </span>
                                 </div>
-                                <<input type="text" 
+                                <input type="text" 
                                        name="nombre" 
                                        id="nombre" 
                                        class="form-control @error('nombre') is-invalid @enderror" 

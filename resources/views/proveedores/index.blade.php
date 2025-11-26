@@ -107,20 +107,20 @@
                 <table class="table table-hover mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%" class="text-center">
+                            <th style="width: 5%" class="text-center text-white">
                                 <i class="fas fa-hashtag text-primary"></i>
                             </th>
-                            <th style="width: 25%">
-                                <i class="fas fa-building text-info mr-2"></i>Nombre
+                            <th style="width: 25%" class="text-center text-white">
+                                <i class="fas fa-building text-info mr-2"></i> Nombre
                             </th>
-                            <th style="width: 20%">
-                                <i class="fas fa-phone text-success mr-2"></i>Contacto
+                            <th style="width: 20%" class="text-center text-white">
+                                <i class="fas fa-phone text-success mr-2"></i> Contacto
                             </th>
-                            <th style="width: 30%">
-                                <i class="fas fa-map-marker-alt text-danger mr-2"></i>Dirección
+                            <th style="width: 30%"class="text-center text-white">
+                                <i class="fas fa-map-marker-alt text-danger mr-2"></i> Dirección
                             </th>
-                            <th style="width: 20%" class="text-center">
-                                <i class="fas fa-cogs text-warning mr-2"></i>Acciones
+                            <th style="width: 20%" class="text-center text-white">
+                                <i class="fas fa-cogs text-warning mr-2"></i> Acciones
                             </th>
                         </tr>
                     </thead>
@@ -132,12 +132,12 @@
                                     {{ $proveedor->idproveedor }}
                                 </span>
                             </td>
-                            <td class="align-middle">
+                            <td class="align-middle ">
                                 <div class="d-flex align-items-center">
                                     <div class="proveedor-avatar">
                                         <i class="fas fa-store"></i>
                                     </div>
-                                    <div class="ml-3">
+                                    <div class="ml-3 text">
                                         <strong class="text-dark">{{ $proveedor->nombre }}</strong>
                                         <br>
                                         <small class="text-muted">
