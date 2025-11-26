@@ -26,18 +26,20 @@ class ProductosController extends Controller
             });
         }
 
-        // Ordenar por nombre ascendente y obtener todos los resultados
-        $productos = $query->orderBy('nombre', 'asc')->get();
+        // Paginación de 10 registros
+        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+        $productosAll = Productos::where('idproveedor', '!=', 5)->get();
+
 
         // Verificar productos con stock bajo
-        $productosBajoStock = $productos->where('stock', '<', 10)->count();
+        $productosBajoStock = $productosAll->where('stock', '<', 10)->count();
 
         if ($productosBajoStock > 0 && !$request->ajax()) {
             session()->flash('alerta_stock', '¡Atención! Hay ' . $productosBajoStock . ' producto(s) con menos de 10 unidades disponibles.');
         }
 
         // Retornar vista normal
-        return view('productos.index', compact('productos', 'buscar'));
+        return view('productos.index', compact('productos', 'buscar','productosAll'));
     }
 
     /**
@@ -123,4 +125,29 @@ class ProductosController extends Controller
         $productos = Productos::take(5)->get();
         return view('welcome', compact('productos'));
     }
+
+    public function buscar(Request $request)
+    {
+        $buscar = $request->input('buscar');
+
+        $query = Productos::query();
+
+
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                    ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
+                    ->orWhere('idproducto', $buscar);
+            });
+        }
+
+        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+
+        // Opción 1: devolver solo la tabla renderizada
+        return view('productos._tabla', compact('productos'))->render();
+
+        // Opción 2: devolver JSON (si quieres montar la tabla por JS)
+        // return response()->json($productos);
+    }
+
 }

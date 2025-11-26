@@ -15,7 +15,7 @@
                 <div class="col-sm-6">
                     <div class="float-sm-right">
                         <span class="badge badge-primary p-2" style="font-size: 1.1rem;">
-                            <i class="fas fa-box"></i> {{ count($productos) }} Productos
+                            <i class="fas fa-box"></i> {{ count($productosAll) }} Productos
                         </span>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
         <div class="col-lg-4 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ count($productos) }}</h3>
+                    <h3>{{ count($productosAll) }}</h3>
                     <p>Productos Totales</p>
                 </div>
                 <div class="icon">
@@ -89,7 +89,7 @@
         <div class="col-lg-4 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ $productos->sum('stock') }}</h3>
+                    <h3>{{ $productosAll->sum('stock') }}</h3>
                     <p>Stock Total en Inventario</p>
                 </div>
                 <div class="icon">
@@ -100,7 +100,7 @@
         <div class="col-lg-4 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ $productos->where('stock', '<', 10)->count() }}</h3>
+                    <h3>{{ $productosAll->where('stock', '<', 10)->count() }}</h3>
                     <p>Productos con Stock Bajo</p>
                 </div>
                 <div class="icon">
@@ -119,12 +119,13 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                         </div>
-                        <input type="text" 
-                               id="buscarProducto" 
-                               class="form-control form-control-lg" 
+                        <input type="text"
+                               id="buscarProducto"
+                               name="buscar"
+                               class="form-control form-control-lg"
                                placeholder="Buscar por ID, Nombre o Descripción..."
                                autocomplete="off"
-                               value="{{ $buscar ?? '' }}">
+                               value="{{ request('buscar')}}">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary" id="btnLimpiar" title="Limpiar Búsqueda">
                                 <i class="fas fa-times"></i> Limpiar
@@ -138,139 +139,12 @@
             </div>
         </div>
     </div>
-
     {{-- TABLA DE PRODUCTOS MEJORADA --}}
-    <div class="card shadow-sm">
-        <div class="card-header bg-gradient-primary">
-            <h3 class="card-title">
-                <i class="fas fa-list-alt"></i> Listado de Productos
-            </h3>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0" id="tablaProductos">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="text-center" style="width: 40px;">#</th>
-                            <th style="width: 35%;">Producto</th>
-                            <th class="text-center" style="width: 15%;">Precio</th>
-                            <th class="text-center" style="width: 15%;">Stock</th>
-                            <th class="text-center" style="width: 15%;">Vendidas</th>
-                            <th class="text-center" style="width: 150px;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaProductosBody">
-                        @forelse($productos as $index => $producto)
-                            <tr class="fila-producto" 
-                                data-id="{{ $producto->idproducto }}" 
-                                data-nombre="{{ strtolower($producto->nombre) }}" 
-                                data-descripcion="{{ strtolower($producto->descripcion ?? '') }}">
-                                <td class="text-center align-middle">
-                                    <span class="badge badge-primary badge-pill">{{ $producto->idproducto }}</span>
-                                </td>
-                                <td class="align-middle">
-                                    <div class="d-flex align-items-center">
-                                        <div class="symbol symbol-40 symbol-light-primary mr-3">
-                                            <span class="symbol-label bg-primary text-white rounded-circle">
-                                                <i class="fas fa-box fa-lg"></i>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <strong class="d-block text-dark">{{ $producto->nombre }}</strong>
-                                            @if($producto->descripcion)
-                                                <small class="text-muted d-block">
-                                                    <i class="fas fa-align-left"></i> {{ Str::limit($producto->descripcion, 50) }}
-                                                </small>
-                                            @endif
-                                            @if($producto->proveedor)
-                                                <small class="text-info d-block">
-                                                    <i class="fas fa-truck"></i> {{ $producto->proveedor->nombre }}
-                                                </small>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <i class="fas fa-dollar-sign text-success mb-1"></i>
-                                        <strong class="text-success">${{ number_format($producto->precio, 0, ',', '.') }}</strong>
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <i class="fas fa-warehouse mb-1 {{ $producto->stock < 10 ? 'text-warning' : 'text-info' }}"></i>
-                                        @if($producto->stock < 10)
-                                            <span class="badge badge-warning">
-                                                <i class="fas fa-exclamation-triangle"></i> {{ $producto->stock }}
-                                            </span>
-                                        @else
-                                            <span class="badge badge-success">{{ $producto->stock }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <i class="fas fa-shopping-cart text-primary mb-1"></i>
-                                        <span class="badge badge-info badge-pill">{{ $producto->cantidad_vendida ?? 0 }}</span>
-                                    </div>
-                                </td>
-                                <td class="text-center align-middle">
-                                    <button class="btn btn-sm btn-info btn-icon" 
-                                            onclick="verDetalles({{ $producto->idproducto }})" 
-                                            title="Ver Detalles"
-                                            data-toggle="tooltip">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <a href="{{ route('productos.edit', $producto->idproducto) }}" 
-                                       class="btn btn-sm btn-warning btn-icon" 
-                                       title="Editar"
-                                       data-toggle="tooltip">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-danger btn-icon" 
-                                            onclick="confirmarEliminacion({{ $producto->idproducto }})" 
-                                            title="Eliminar"
-                                            data-toggle="tooltip">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr id="noResultados">
-                                <td colspan="6" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-3x mb-3 text-secondary"></i>
-                                        <h5>No hay productos registrados</h5>
-                                        <p>Comienza agregando tu primer producto</p>
-                                        <a href="{{ route('productos.create') }}" class="btn btn-success mt-2">
-                                            <i class="fas fa-plus-circle"></i> Crear Producto
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        @if(count($productos) > 0)
-            <div class="card-footer bg-light">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <p class="text-muted mb-0">
-                            <i class="fas fa-info-circle"></i> 
-                            Mostrando <strong id="cantidadMostrada">{{ count($productos) }}</strong> producto(s)
-                        </p>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <small class="text-muted">
-                            <i class="fas fa-shield-alt"></i> Los productos con ventas asociadas están protegidos
-                        </small>
-                    </div>
-                </div>
-            </div>
-        @endif
+    <div id="contenedorTablaProductos">
+        @include('productos._tabla', ['productos' => $productos])
     </div>
+
+
 
     {{-- MODAL DE DETALLES --}}
     <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
@@ -369,33 +243,33 @@
         border-radius: 0.5rem;
         box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
     }
-    
+
     .table-hover tbody tr:hover {
         background-color: rgba(0,123,255,.075);
         cursor: pointer;
     }
-    
+
     .badge {
         font-size: 0.9rem;
     }
-    
+
     #buscarProducto:focus {
         border-color: #007bff;
         box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
     }
-    
+
     .alert {
         border-left: 4px solid;
     }
-    
+
     .alert-success {
         border-left-color: #28a745;
     }
-    
+
     .alert-warning {
         border-left-color: #ffc107;
     }
-    
+
     .alert-danger {
         border-left-color: #dc3545;
     }
@@ -507,9 +381,9 @@
     // Búsqueda en tiempo real (filtrado del lado del cliente)
     inputBuscar.addEventListener('keyup', function() {
         clearTimeout(timeoutBusqueda);
-        
+
         const termino = this.value.trim().toLowerCase();
-        
+
         // Esperar 300ms después de que el usuario deje de escribir
         timeoutBusqueda = setTimeout(() => {
             filtrarProductos(termino);
@@ -533,13 +407,13 @@
                 const id = fila.getAttribute('data-id');
                 const nombre = fila.getAttribute('data-nombre');
                 const descripcion = fila.getAttribute('data-descripcion');
-                
+
                 // Buscar en ID, nombre y descripción
-                const coincide = 
-                    id.includes(termino) || 
-                    nombre.includes(termino) || 
+                const coincide =
+                    id.includes(termino) ||
+                    nombre.includes(termino) ||
                     descripcion.includes(termino);
-                
+
                 if (coincide) {
                     fila.style.display = '';
                     contadorVisible++;
@@ -561,7 +435,7 @@
     // Mostrar mensaje cuando no hay resultados
     function mostrarMensajeSinResultados(cantidad) {
         const mensajeExistente = document.getElementById('mensajeSinResultados');
-        
+
         if (cantidad === 0 && !mensajeExistente) {
             const mensaje = `
                 <tr id="mensajeSinResultados">
@@ -621,5 +495,36 @@
     @if($buscar)
         filtrarProductos('{{ strtolower($buscar) }}');
     @endif
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputBuscar = document.getElementById('buscarProducto');
+        const btnLimpiar = document.getElementById('btnLimpiar');
+        const contenedorTabla = document.getElementById('contenedorTablaProductos'); // div que envuelve la tabla
+
+        let timeout;
+
+        inputBuscar.addEventListener('keyup', function () {
+            clearTimeout(timeout);
+
+            timeout = setTimeout(() => {
+                const valor = inputBuscar.value;
+
+                fetch(`{{ route('productos.buscar') }}?buscar=` + encodeURIComponent(valor))
+                    .then(res => res.text())
+                    .then(html => {
+                        contenedorTabla.innerHTML = html;
+                    })
+                    .catch(err => console.error(err));
+            }, 300); // pequeño delay para no saturar el servidor
+        });
+
+        btnLimpiar.addEventListener('click', function () {
+            inputBuscar.value = '';
+            inputBuscar.dispatchEvent(new Event('keyup'));
+        });
+    });
+
+
 </script>
 @stop
