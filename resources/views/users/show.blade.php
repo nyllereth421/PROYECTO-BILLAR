@@ -84,7 +84,7 @@
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-edit mr-2"></i> Editar Usuario
                         </a>
-                        <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline;" data-confirm="¿Deseas eliminar este usuario?" data-action-type="delete">
+                        <form action="{{ route('users.destroy', $user) }}" method="POST" style="display: inline;" data-confirm="¿Deseas eliminar al usuario '{{ $user->name }}'? Esta acción no se puede deshacer." data-action-type="delete">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm w-100 mt-2">

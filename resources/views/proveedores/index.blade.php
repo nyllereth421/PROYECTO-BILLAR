@@ -28,36 +28,7 @@
 @section('content')
 <div class="container-fluid">
 
-    {{-- ALERTAS --}}
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">¡Operación Exitosa!</h5>
-                <p class="mb-0">{{ session('success') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-exclamation-circle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">Error</h5>
-                <p class="mb-0">{{ session('error') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
+    
 
     {{-- BARRA DE ACCIONES --}}
     <div class="card border-0 shadow-lg mb-4">
@@ -195,8 +166,9 @@
                                     </a>
                                     
                                     {{-- Botón Eliminar --}}
-                                    <form action="{{ route('proveedores.destroy', $proveedor->idproveedor) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar este proveedor?" data-action-type="delete">
+                                    <form action="{{ route('proveedores.destroy', $proveedor->idproveedor) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar el proveedor '{{ $proveedor->nombre }}'? Esta acción no se puede deshacer." data-action-type="delete">
                                         @csrf
+                                       
                                         <button 
                                             type="submit" 
                                             class="btn btn-sm btn-danger shadow-sm" 

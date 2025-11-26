@@ -542,7 +542,7 @@
 <div class="modal fade" id="eliminarCuentaModal" tabindex="-1" role="dialog" aria-labelledby="eliminarCuentaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content border-danger">
-            <form action="{{ route('profile.destroy') }}" method="POST" id="eliminarCuentaForm">
+            <form action="{{ route('profile.destroy') }}" method="POST" id="eliminarCuentaForm" data-confirm="¿Deseas eliminar permanentemente tu cuenta? Esta acción no se puede deshacer." data-action-type="delete">
                 @csrf
                 @method('DELETE')
                 

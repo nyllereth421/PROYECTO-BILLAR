@@ -26,53 +26,7 @@
 @stop
 
 @section('content')
-<div class="container-fluid">
-
-    {{-- ALERTAS --}}
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">¡Operación Exitosa!</h5>
-                <p class="mb-0">{{ session('success') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-exclamation-circle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">¡Error!</h5>
-                <p class="mb-0">{{ session('error') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
-
-    @if(session('alerta_stock'))
-    <div class="alert alert-warning alert-dismissible fade show shadow-sm" id="alertaStockAutomatica" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-exclamation-triangle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">Alerta de Stock</h5>
-                <p class="mb-0">{{ session('alerta_stock') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
+<div class="container-fluid" @if(session('alerta_stock')) data-stock-alert="{{ session('alerta_stock') }}" @endif>
 
     {{-- ESTADÍSTICAS RÁPIDAS --}}
     <div class="row mb-4">
@@ -381,14 +335,38 @@
 <script>
     console.log('Vista de productos mejorada lista 🟢');
 
-    // Ocultar alerta de stock automáticamente
-    const alerta = document.getElementById('alertaStockAutomatica');
-    if (alerta) {
-        setTimeout(() => {
-            $(alerta).fadeOut(500, function() {
-                $(this).remove();
+    // Variable para controlar si ya se mostró la alerta de stock
+    let alertaStockYaMostrada = localStorage.getItem('alertaStockMostrada') === 'true';
+
+    // Mostrar alerta de stock solo en la carga inicial
+    if (!alertaStockYaMostrada) {
+        const containerDiv = document.querySelector('[data-stock-alert]');
+        if (containerDiv) {
+            alertaStockYaMostrada = true;
+            localStorage.setItem('alertaStockMostrada', 'true');
+            const mensaje = containerDiv.getAttribute('data-stock-alert');
+            // Eliminar el atributo para que no se vuelva a mostrar
+            containerDiv.removeAttribute('data-stock-alert');
+            Swal.fire({
+                icon: 'warning',
+                title: '⚠️ ¡Alerta de Stock!',
+                text: mensaje,
+                timer: 5000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                confirmButtonColor: '#ffc107',
+                background: 'linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%)',
+                iconColor: '#ffc107',
+                titleColor: '#856404',
+                customClass: {
+                    popup: 'swal-alert-popup swal-warning-popup'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
             });
-        }, 5000);
+        }
     }
 
     // Variables globales
@@ -510,16 +488,10 @@
     // Hacer la función global para que funcione desde el onclick
     window.confirmarEliminacion = confirmarEliminacion;
 
-    // Si hay un término de búsqueda inicial, aplicar filtro
-    @if($buscar)
-        filtrarProductos('{{ strtolower($buscar) }}');
-    @endif
-
-
     document.addEventListener('DOMContentLoaded', function () {
         const inputBuscar = document.getElementById('buscarProducto');
         const btnLimpiar = document.getElementById('btnLimpiar');
-        const contenedorTabla = document.getElementById('contenedorTablaProductos'); // div que envuelve la tabla
+        const contenedorTabla = document.getElementById('contenedorTablaProductos');
 
         let timeout;
 
@@ -533,15 +505,44 @@
                     .then(res => res.text())
                     .then(html => {
                         contenedorTabla.innerHTML = html;
+                        // Agregar event listeners a los links de paginación
+                        attachPaginationListeners();
                     })
                     .catch(err => console.error(err));
-            }, 300); // pequeño delay para no saturar el servidor
+            }, 300);
         });
 
         btnLimpiar.addEventListener('click', function () {
             inputBuscar.value = '';
             inputBuscar.dispatchEvent(new Event('keyup'));
         });
+
+        // Función para manejar clics en paginación
+        function attachPaginationListeners() {
+            const paginationLinks = contenedorTabla.querySelectorAll('a[href*="page="]');
+            
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const url = new URL(this.href);
+                    const page = url.searchParams.get('page');
+                    const buscar = inputBuscar.value || '';
+                    
+                    // Hacer fetch con página y búsqueda
+                    fetch(`{{ route('productos.buscar') }}?buscar=` + encodeURIComponent(buscar) + `&page=` + page)
+                        .then(res => res.text())
+                        .then(html => {
+                            contenedorTabla.innerHTML = html;
+                            // Re-agregar listeners cuando se carguen nuevas páginas
+                            attachPaginationListeners();
+                            // Scroll a la tabla
+                            contenedorTabla.scrollIntoView({ behavior: 'smooth' });
+                        })
+                        .catch(err => console.error(err));
+                });
+            });
+        }
     });
 
 

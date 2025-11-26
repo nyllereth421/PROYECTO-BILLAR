@@ -160,8 +160,9 @@
         <a href="{{ route('compras.edit', $compra) }}" class="btn btn-warning btn-lg">
             <i class="fas fa-edit mr-2"></i> Editar
         </a>
-        <form action="{{ route('compras.destroy', $compra) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar esta compra?" data-action-type="delete">
+        <form action="{{ route('compras.destroy', $compra) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar la compra #{{ $compra->id }}? Esta acción no se puede deshacer." data-action-type="delete">
             @csrf
+            @method('DELETE')
             <button type="submit" class="btn btn-danger btn-lg">
                 <i class="fas fa-trash mr-2"></i> Eliminar
             </button>

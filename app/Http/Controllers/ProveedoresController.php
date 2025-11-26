@@ -95,8 +95,7 @@ class ProveedoresController extends Controller
             $proveedor = Proveedores::findOrFail($id);
             $proveedor->delete();
 
-            AlertHelper::success('Proveedor eliminado exitosamente.');
-            return redirect()->route('proveedores.index');
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado exitosamente.');
         } catch (\Illuminate\Database\QueryException $e) {
             // Capturar error de integridad referencial (foreign key)
             if ($e->getCode() == '23000') {

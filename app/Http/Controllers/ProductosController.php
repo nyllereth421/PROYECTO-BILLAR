@@ -132,7 +132,6 @@ class ProductosController extends Controller
 
         $query = Productos::query();
 
-
         if ($buscar) {
             $query->where(function ($q) use ($buscar) {
                 $q->where('nombre', 'LIKE', "%{$buscar}%")
@@ -141,13 +140,11 @@ class ProductosController extends Controller
             });
         }
 
-        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+        // Paginación con ruta personalizada
+        $productos = $query->orderBy('nombre', 'asc')->paginate(10)->appends(request()->query());
 
-        // Opción 1: devolver solo la tabla renderizada
+        // Retornar la tabla con el paginador usando la ruta /productos
         return view('productos._tabla', compact('productos'))->render();
-
-        // Opción 2: devolver JSON (si quieres montar la tabla por JS)
-        // return response()->json($productos);
     }
 
 }

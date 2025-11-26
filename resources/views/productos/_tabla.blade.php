@@ -1,7 +1,3 @@
-{{-- PAGINACIÓN --}}
-            <div class="d-flex justify-content-center mt-2 mt-md-0">
-                {{ $productos->links('pagination::bootstrap-4') }}
-            </div>
 {{-- TABLA DE PRODUCTOS ESTILO PROVEEDORES --}}
 <div class="card shadow-sm rounded-4">
 
@@ -10,6 +6,11 @@
         <h3 class="card-title font-weight-bold mb-0">
             <i class="fas fa-boxes mr-2"></i> Listado de Productos
         </h3>
+    </div>
+
+    {{-- PAGINACIÓN SUPERIOR --}}
+    <div class="card-body bg-light border-bottom d-flex justify-content-center py-2">
+        {{ $productos->appends(request()->query())->links('pagination::bootstrap-4') }}
     </div>
 
     {{-- BODY TABLA --}}
@@ -141,15 +142,6 @@
 
             </table>
         </div>
-    </div>
-
-    {{-- FOOTER --}}
-    <div class="card-footer bg-light border-top rounded-bottom-4">
-        <small class="text-muted">
-            <i class="fas fa-info-circle"></i>
-            Mostrando <strong>{{ $productos->count() }}</strong> de 
-            <strong>{{ $productos->total() }}</strong> productos
-        </small>
     </div>
 
 </div>

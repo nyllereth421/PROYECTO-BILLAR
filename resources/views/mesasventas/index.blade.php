@@ -74,19 +74,7 @@
         </a>
     </div>
 
-    {{-- Mensajes flash --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    
 
 
     <div class="row">
@@ -94,7 +82,7 @@
         {{-- ================= MESAS  ================= --}}
         @foreach($mesas as $mesa)
         <div class="col-md-3 mb-3">
-            <div class="card card-mesa {{ $mesa->estado == 'ocupada' ? 'border-danger' : ($mesa->estado == 'reservada' ? 'border-info' : 'border-success') }}">
+            <div class="card card-mesa mesa-{{ $mesa->idmesa }} {{ $mesa->estado == 'ocupada' ? 'border-danger' : ($mesa->estado == 'reservada' ? 'border-info' : 'border-success') }}">
                 <div class="card-header text-center">
                     <h4 class="card-title mb-0">Mesa #{{ $mesa->numeromesa }}</h4>
                 </div>
@@ -536,7 +524,19 @@
                 ? data.message
                 : 'Error al finalizar la venta';
 
-            alert(mensaje);
+            Swal.fire({
+                icon: 'warning',
+                title: '⚠️ Atención',
+                text: mensaje,
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#ffc107',
+                background: 'linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%)',
+                iconColor: '#ffc107',
+                titleColor: '#856404',
+                customClass: {
+                    popup: 'swal-alert-popup swal-warning-popup'
+                }
+            });
         }
     })
     .catch(err => console.error('Error en la petición:', err));
@@ -773,31 +773,38 @@ function verificarMesa(id, tipo, estado) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    @foreach($mesas as $mesa)
-    // Tomamos el input y el contenedor de productos
-    const buscador{{ $mesa->idmesa }} = document.querySelector('.buscador-productos-{{ $mesa->idmesa }}');
-    const productosTbody{{ $mesa->idmesa }} = document.querySelectorAll('.productos-tbody tr.producto-row');
-    const resultadosCount{{ $mesa->idmesa }} = document.querySelector('.resultados-count-{{ $mesa->idmesa }}');
+    // Obtener todas las mesas desde atributos data
+    const mesas = document.querySelectorAll('.card-mesa');
+    
+    mesas.forEach(card => {
+        const cardClasses = card.className;
+        const mesaMatch = cardClasses.match(/mesa-(\d+)/);
+        if (!mesaMatch) return;
+        
+        const mesaId = mesaMatch[1];
+        const buscador = document.querySelector(`.buscador-productos-${mesaId}`);
+        const productosTbody = document.querySelectorAll(`.productos-container-${mesaId} .productos-tbody tr.producto-row`);
+        const resultadosCount = document.querySelector(`.resultados-count-${mesaId}`);
 
-    if(buscador{{ $mesa->idmesa }}) {
-        buscador{{ $mesa->idmesa }}.addEventListener('input', function () {
-            const texto = this.value.toLowerCase();
-            let visibles = 0;
+        if(buscador && resultadosCount) {
+            buscador.addEventListener('input', function () {
+                const texto = this.value.toLowerCase();
+                let visibles = 0;
 
-            productosTbody{{ $mesa->idmesa }}.forEach(tr => {
-                const nombre = tr.dataset.nombre;
-                if(nombre.includes(texto)) {
-                    tr.style.display = '';
-                    visibles++;
-                } else {
-                    tr.style.display = 'none';
-                }
+                productosTbody.forEach(tr => {
+                    const nombre = tr.dataset.nombre;
+                    if(nombre.includes(texto)) {
+                        tr.style.display = '';
+                        visibles++;
+                    } else {
+                        tr.style.display = 'none';
+                    }
+                });
+
+                resultadosCount.textContent = visibles;
             });
-
-            resultadosCount{{ $mesa->idmesa }}.textContent = visibles;
-        });
-    }
-    @endforeach
+        }
+    });
 });
 
 
