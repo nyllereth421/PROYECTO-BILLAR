@@ -51,7 +51,7 @@
                     </div>
 
                     <!-- Nombre y Tipo -->
-                    <h3 class="profile-username mb-2 mt-3">
+                    <h3 class="profile-username mb-2 mt-3 text-dark">
                         {{ auth()->user()->name }} {{ auth()->user()->apellidos }}
                     </h3>
 
@@ -827,9 +827,7 @@
         font-weight: bold;
     }
 
-    .box-profile {
-        background-color: #fff;
-    }
+    
 
     .list-group-item {
         border: none;
