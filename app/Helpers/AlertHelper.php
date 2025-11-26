@@ -14,6 +14,16 @@ class AlertHelper
         session()->flash('error', $message);
     }
 
+    public static function warning($message)
+    {
+        session()->flash('warning', $message);
+    }
+
+    public static function info($message)
+    {
+        session()->flash('info', $message);
+    }
+
     public static function confirm($title, $text, $confirmButtonText = 'Sí, eliminar', $cancelButtonText = 'Cancelar')
     {
         session()->flash('confirm', [

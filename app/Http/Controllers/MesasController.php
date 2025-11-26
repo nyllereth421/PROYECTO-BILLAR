@@ -68,9 +68,18 @@ public function index()
      */
     public function destroy($idmesa)
     {
-        $mesa = mesas::findOrFail($idmesa);
-        $mesa->delete();
-        return redirect()->route('mesas.index')->with('success', 'Mesa eliminada correctamente.');
+        try {
+            $mesa = mesas::findOrFail($idmesa);
+            $mesa->delete();
+            return redirect()->route('mesas.index')->with('success', 'Mesa eliminada correctamente.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Capturar error de integridad referencial
+            if ($e->getCode() == '23000') {
+                return redirect()->route('mesas.index')->with('error', 
+                    'No se puede eliminar esta mesa porque tiene registros asociados. Elimina primero esos registros.');
+            }
+            return redirect()->route('mesas.index')->with('error', 'Error al eliminar la mesa.');
+        }
     }
 
     public function updateEstado(Request $request, $idmesa)

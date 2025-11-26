@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST" id="formEditarMesa">
+                <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST" id="formEditarMesa" data-confirm="¿Deseas actualizar esta mesa?" data-action-type="edit">
                     @csrf
                     
 
@@ -137,7 +137,6 @@
 @stop
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $('#formEditarMesa').on('submit', function(e){
         e.preventDefault();
@@ -160,4 +159,6 @@
         });
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

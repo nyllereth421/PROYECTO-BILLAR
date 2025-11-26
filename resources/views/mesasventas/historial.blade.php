@@ -317,4 +317,6 @@
                 
 </script>
 
+@section('js')
+@include('components.sweetalert-global')
 @stop

@@ -262,7 +262,7 @@
 <div class="modal fade" id="editarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form action="{{ route('profile.updateProfile') }}" method="POST">
+            <form action="{{ route('profile.updateProfile') }}" method="POST" data-confirm="¿Deseas actualizar tu perfil?" data-action-type="edit">
                 @csrf
                 @method('PUT')
                 
@@ -388,7 +388,7 @@
 <div class="modal fade" id="cambiarContraseñaModal" tabindex="-1" role="dialog" aria-labelledby="cambiarContraseñaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="{{ route('profile.updatePassword') }}" method="POST">
+            <form action="{{ route('profile.updatePassword') }}" method="POST" data-confirm="¿Deseas actualizar tu contraseña?" data-action-type="edit">
                 @csrf
                 @method('PUT')
                 
@@ -488,7 +488,7 @@
 <div class="modal fade" id="eliminarCuentaModal" tabindex="-1" role="dialog" aria-labelledby="eliminarCuentaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content border-danger">
-            <form id="deleteAccountForm" action="{{ route('profile.destroy') }}" method="POST">
+            <form id="deleteAccountForm" action="{{ route('profile.destroy') }}" method="POST" data-confirm="¿Estás completamente seguro? Esta acción es irreversible." data-action-type="delete">
                 @csrf
                 @method('DELETE')
                 
@@ -561,7 +561,7 @@
 
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás completamente seguro? Esta acción es irreversible.')">
+                    <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash-alt mr-2"></i> Sí, Eliminar Mi Cuenta
                     </button>
                 </div>
@@ -768,10 +768,10 @@
 
                                 @if(auth()->user()->avatar_image)
                                     <div class="mt-3">
-                                        <form action="{{ route('profile.deleteAvatarImage') }}" method="POST" style="display: inline;">
+                                        <form action="{{ route('profile.deleteAvatarImage') }}" method="POST" style="display: inline;" data-confirm="¿Deseas eliminar la imagen de avatar?" data-action-type="delete">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-block" onclick="return confirm('¿Eliminar la imagen de avatar?')">
+                                            <button type="submit" class="btn btn-danger btn-block">
                                                 <i class="fas fa-trash mr-2"></i> Eliminar Imagen Actual
                                             </button>
                                         </form>
@@ -1034,4 +1034,6 @@
         }
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

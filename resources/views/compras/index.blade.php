@@ -132,9 +132,8 @@
                                             <a href="{{ route('compras.edit', $compra) }}" class="btn btn-warning" title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('compras.destroy', $compra) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro?')">
+                                            <form action="{{ route('compras.destroy', $compra) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar esta compra?" data-action-type="delete">
                                                 @csrf
-                                                @method('DELETE')
                                                 <button type="submit" class="btn btn-danger" title="Eliminar">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -150,4 +149,7 @@
         </div>
     </div>
 </div>
-@endsection
+
+@section('js')
+@include('components.sweetalert-global')
+@stop

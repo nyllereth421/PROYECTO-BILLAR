@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="container">
-    <form action="{{ route('mesas.store') }}" method="POST">
+    <form action="{{ route('mesas.store') }}" method="POST" data-confirm="¿Deseas crear esta mesa?" data-action-type="create">
         @csrf
         <div class="form-group">
             <label for="numeromesa">Número de Mesa</label>
@@ -39,4 +39,7 @@
         <a href="{{ route('mesas.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+@section('js')
+@include('components.sweetalert-global')
 @stop

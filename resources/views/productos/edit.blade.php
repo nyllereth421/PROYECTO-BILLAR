@@ -29,7 +29,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
 
-            <form action="{{ route('productos.update', $producto->idproducto) }}" method="POST">
+            <form action="{{ route('productos.update', $producto->idproducto) }}" method="POST" data-confirm="¿Deseas actualizar este producto?" data-action-type="edit">
                 @csrf
 
                 <div class="row">
@@ -138,4 +138,6 @@
         </div>
     </div>
 </div>
+
+@include('components.sweetalert-global')
 @stop

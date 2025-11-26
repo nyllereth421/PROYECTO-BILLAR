@@ -160,7 +160,8 @@
                                             <form action="{{ route('users.destroy', $user) }}" 
                                                   method="POST" 
                                                   style="display:inline;" 
-                                                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                                  data-confirm="¿Deseas eliminar este usuario?" 
+                                                  data-action-type="delete">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger" title="Eliminar">
@@ -340,4 +341,6 @@
         });
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

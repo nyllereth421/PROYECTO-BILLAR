@@ -3,22 +3,23 @@
 @section('title', 'Gestión de Productos')
 
 @section('content_header')
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">
-                        <i class="fas fa-boxes text-primary"></i> Gestión de Productos
-                    </h1>
-                    <p class="text-muted">Administra tu catálogo de productos e inventario</p>
-                </div>
-                <div class="col-sm-6">
-                    <div class="float-sm-right">
-                        <span class="badge badge-primary p-2" style="font-size: 1.1rem;">
-                            <i class="fas fa-box"></i> {{ count($productosAll) }} Productos
-                        </span>
-                    </div>
-                </div>
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-between py-3">
+            <div class="col-md-8">
+                <h1 class="text-dark font-weight-bold mb-2">
+                    <i class="fas fa-boxes mr-3 text-primary"></i> 
+                    Gestión de Productos
+                </h1>
+                <p class="text-muted mb-0 ml-5 pl-2">
+                    <i class="fas fa-box mr-2 text-info"></i>
+                    Administra tu catálogo de productos e inventario
+                </p>
+            </div>
+            <div class="col-md-4 text-right">
+                <span class="badge badge-info badge-lg px-4 py-2">
+                    <i class="fas fa-boxes mr-2"></i>
+                    {{ count($productosAll) }} Productos
+                </span>
             </div>
         </div>
     </div>
@@ -27,113 +28,124 @@
 @section('content')
 <div class="container-fluid">
 
-    {{-- ALERTA DE ÉXITO MEJORADA --}}
+    {{-- ALERTAS --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <h5><i class="icon fas fa-check-circle"></i> ¡Operación Exitosa!</h5>
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle fa-2x mr-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">¡Operación Exitosa!</h5>
+                <p class="mb-0">{{ session('success') }}</p>
+            </div>
         </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <h5><i class="icon fas fa-exclamation-triangle"></i> Error</h5>
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle fa-2x mr-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">¡Error!</h5>
+                <p class="mb-0">{{ session('error') }}</p>
+            </div>
         </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     @endif
 
-    {{-- ALERTA DE STOCK --}}
     @if(session('alerta_stock'))
-        <div class="alert alert-warning alert-dismissible fade show shadow-sm" id="alertaStockAutomatica" role="alert">
-            <h5><i class="icon fas fa-box-open"></i> Alerta de Stock</h5>
-            {{ session('alerta_stock') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm" id="alertaStockAutomatica" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x mr-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Alerta de Stock</h5>
+                <p class="mb-0">{{ session('alerta_stock') }}</p>
+            </div>
         </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     @endif
+
     {{-- ESTADÍSTICAS RÁPIDAS --}}
     <div class="row mb-4">
-        <div class="col-lg-4 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{ count($productosAll) }}</h3>
-                    <p>Productos Totales</p>
-                </div>
-                <div class="icon">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="info-card bg-gradient-info">
+                <div class="info-card-icon">
                     <i class="fas fa-boxes"></i>
                 </div>
+                <div class="info-card-content">
+                    <h3 class="mb-0">{{ count($productosAll) }}</h3>
+                    <p class="mb-0">Productos Totales</p>
+                </div>
             </div>
         </div>
-        <div class="col-lg-4 col-6">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ $productosAll->sum('stock') }}</h3>
-                    <p>Stock Total en Inventario</p>
-                </div>
-                <div class="icon">
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="info-card bg-gradient-success">
+                <div class="info-card-icon">
                     <i class="fas fa-warehouse"></i>
                 </div>
+                <div class="info-card-content">
+                    <h3 class="mb-0">{{ $productosAll->sum('stock') }}</h3>
+                    <p class="mb-0">Stock Total en Inventario</p>
+                </div>
             </div>
         </div>
-        <div class="col-lg-4 col-6">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $productosAll->where('stock', '<', 10)->count() }}</h3>
-                    <p>Productos con Stock Bajo</p>
-                </div>
-                <div class="icon">
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="info-card bg-gradient-warning">
+                <div class="info-card-icon">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-    <div class="col-12">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-
-            <!-- Botón volver -->
-            <a href="{{ route('inventario.index') }}" class="btn btn-outline-secondary mb-2">
-                <i class="fas fa-arrow-left"></i> Volver a Inventario
-            </a>
-
-            <!-- Buscador centrado -->
-            <div class="flex-grow-1 mx-2 mb-2" style="min-width: 300px;">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text"
-                        id="buscarProducto"
-                        class="form-control form-control-lg"
-                        placeholder="Buscar por ID, Nombre o Descripción..."
-                        autocomplete="off">
-
-                    <button type="button" class="btn btn-outline-danger" id="btnLimpiar">
-                        <i class="fas fa-times"></i>
-                    </button>
+                <div class="info-card-content">
+                    <h3 class="mb-0">{{ $productosAll->where('stock', '<', 10)->count() }}</h3>
+                    <p class="mb-0">Stock Bajo</p>
                 </div>
             </div>
-
-            <!-- Botón nuevo producto -->
-            <a href="{{ route('productos.create') }}" class="btn btn-success mb-2">
-                <i class="fas fa-plus-circle"></i> Nuevo Producto
-            </a>
-
         </div>
     </div>
-</div>
 
+    {{-- BARRA DE ACCIONES --}}
+    <div class="card border-0 shadow-lg mb-4">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-3 mb-2 mb-md-0">
+                    <a href="{{ route('inventario.index') }}" class="btn btn-outline-secondary btn-lg btn-block">
+                        <i class="fas fa-arrow-left mr-2"></i> Volver
+                    </a>
+                </div>
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text"
+                            id="buscarProducto"
+                            class="form-control form-control-lg"
+                            placeholder="Buscar por ID, Nombre, Descripción..."
+                            autocomplete="off">
+                        <button type="button" class="btn btn-outline-danger" id="btnLimpiar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3 text-md-right">
+                    <a href="{{ route('productos.create') }}" class="btn btn-primary btn-lg btn-block"> 
+                        <i class="fas fa-plus-circle mr-2"></i> Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    
-    
     {{-- TABLA DE PRODUCTOS MEJORADA --}}
     <div id="contenedorTablaProductos">
         @include('productos._tabla', ['productos' => $productos])
@@ -146,14 +158,89 @@
 
 @section('css')
 <style>
-    /* Mejoras visuales */
-    .small-box {
-        border-radius: 0.5rem;
-        box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    /* Background mejorado */
+    body {
+        background-color: transparent;
     }
 
+    /* Header mejorado */
+    .content-header {
+        background: transparent;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    /* Badge mejorado */
+    .badge-lg {
+        font-size: 1.1rem;
+        padding: 10px 20px;
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Info Cards */
+    .info-card {
+        border-radius: 15px;
+        padding: 25px;
+        color: white;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .info-card-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-right: 20px;
+    }
+
+    .info-card-content h3 {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .info-card-content p {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    /* Gradientes */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    }
+
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    /* Tabla mejorada */
     .table-hover tbody tr:hover {
-        background-color: rgba(0,123,255,.075);
+        background-color: rgba(0, 123, 255, 0.075);
         cursor: pointer;
     }
 
@@ -163,7 +250,7 @@
 
     #buscarProducto:focus {
         border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
 
     .alert {
@@ -235,20 +322,6 @@
         font-weight: 600;
     }
 
-    /* Modal personalizado */
-    .modal-header.bg-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .form-control-static {
-        padding: 8px 12px;
-        background-color: #f8f9fa;
-        border-radius: 4px;
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-    }
-
     /* Animaciones suaves */
     .fila-producto {
         transition: all 0.3s ease;
@@ -256,12 +329,50 @@
 
     .fila-producto:hover {
         transform: translateX(5px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     /* Tooltips */
     [data-toggle="tooltip"] {
         cursor: pointer;
+    }
+
+    /* Botones con sombra */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+
+    /* Cards con bordes suaves */
+    .card {
+        border-radius: 12px;
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Responsivo */
+    @media (max-width: 768px) {
+        .info-card {
+            margin-bottom: 1rem;
+        }
+
+        .btn-lg {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-lg {
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
     }
 </style>
 @stop
@@ -435,4 +546,6 @@
 
 
 </script>
+
+@include('components.sweetalert-global')
 @stop
