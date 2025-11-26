@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 
-                <form action="{{ route('proveedores.store') }}" method="POST" id="formProveedor">
+                <form action="{{ route('proveedores.store') }}" method="POST" id="formProveedor" data-confirm="¿Deseas crear este proveedor?" data-action-type="create">
                     @csrf
                     
                     <div class="card-body">
@@ -482,6 +482,5 @@
     });
 </script>
 
-{{-- SweetAlert2 para confirmaciones modernas --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@include('components.sweetalert-global')
 @stop

@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('mesas.store') }}" method="POST" id="formMesa">
+                <form action="{{ route('mesas.store') }}" method="POST" id="formMesa" data-confirm="¿Deseas crear esta mesa?" data-action-type="create">
                     @csrf
                     <div class="card-body">
 
@@ -97,22 +97,8 @@
                             @enderror
                         </div>
 
-                        {{-- Estado --}}
-                        <div class="form-group">
-                            <label for="estado" class="font-weight-bold">
-                                <i class="fas fa-toggle-on text-success"></i> Estado
-                                <span class="text-danger">*</span>
-                            </label>
-                            <select id="estado" name="estado" class="form-control @error('estado') is-invalid @enderror" required>
-                                <option value="">Seleccione...</option>
-                                <option value="disponible" {{ old('estado') == 'disponible' ? 'selected' : '' }}>Disponible</option>
-                                <option value="ocupada" {{ old('estado') == 'ocupada' ? 'selected' : '' }}>Ocupada</option>
-                                <option value="reservada" {{ old('estado') == 'reservada' ? 'selected' : '' }}>Reservada</option>
-                            </select>
-                            @error('estado')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                       
+                       
 
                     </div>
 
@@ -153,7 +139,6 @@
 @stop
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $('#formMesa').on('submit', function(e){
         e.preventDefault();
@@ -176,4 +161,6 @@
         });
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

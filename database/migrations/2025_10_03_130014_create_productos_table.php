@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('idproducto');
             $table->string('nombre');
             $table->text('descripcion');
-            $table->decimal('precio', 8, 2);
+            $table->decimal('precio', 20, 2);
             $table->integer('stock');
             $table->unsignedBigInteger('idproveedor');
             $table->integer('cantidad_vendida')->default(0);

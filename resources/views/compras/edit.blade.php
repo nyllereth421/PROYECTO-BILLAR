@@ -126,4 +126,7 @@
         </div>
     </div>
 </div>
-@endsection
+
+@section('js')
+@include('components.sweetalert-global')
+@stop

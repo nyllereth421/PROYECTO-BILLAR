@@ -12,11 +12,13 @@ class Proveedores extends Model
     protected $keyType = 'int';    // tipo de dato de tu PK
 
     protected $fillable = [
-        'idproveedor',
         'nombre',
         'contacto',
         'direccion',
     ];
+    
+    // No permitir que se asigne la clave primaria
+    protected $guarded = ['idproveedor'];
      public function productos()
     {
         return $this->hasMany(Productos::class, 'idproveedor');

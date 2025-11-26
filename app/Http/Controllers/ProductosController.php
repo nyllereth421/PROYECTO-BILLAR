@@ -10,6 +10,7 @@ class ProductosController extends Controller
 {
     /**
      * Muestra la lista de productos con buscador y alertas.
+     * Ahora compatible con búsqueda en tiempo real sin paginación.
      */
     public function index(Request $request)
     {
@@ -25,15 +26,20 @@ class ProductosController extends Controller
             });
         }
 
-        $productos = $query->orderBy('nombre', 'asc')->get();
+        // Paginación de 10 registros
+        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+        $productosAll = Productos::where('idproveedor', '!=', 5)->get();
 
-        $productosBajoStock = $productos->where('stock', '<', 10)->count();
 
-        if ($productosBajoStock > 0) {
-            session()->flash('alerta_stock', '¡Atención! Algunos productos tienen menos de 10 unidades disponibles.');
+        // Verificar productos con stock bajo
+        $productosBajoStock = $productosAll->where('stock', '<', 10)->count();
+
+        if ($productosBajoStock > 0 && !$request->ajax()) {
+            session()->flash('alerta_stock', '¡Atención! Hay ' . $productosBajoStock . ' producto(s) con menos de 10 unidades disponibles.');
         }
 
-        return view('productos.index', compact('productos', 'buscar'));
+        // Retornar vista normal
+        return view('productos.index', compact('productos', 'buscar','productosAll'));
     }
 
     /**
@@ -99,18 +105,49 @@ class ProductosController extends Controller
     public function destroy($id)
     {
         return redirect()->route('productos.index')
-            ->with('error', '❌ No está permitido eliminar productos.');
+            ->with('error', '❌ No está permitido eliminar productos para proteger el historial de ventas.');
     }
 
+    /**
+     * Obtiene los productos más vendidos.
+     */
     public function topProductos()
     {
         $topProductos = Productos::orderByDesc('cantidad_vendida')->take(5)->get();
         return view('welcome', compact('topProductos'));
     }
 
+    /**
+     * Muestra productos en el inicio.
+     */
     public function mostrarEnInicio()
     {
         $productos = Productos::take(5)->get();
         return view('welcome', compact('productos'));
     }
+
+    public function buscar(Request $request)
+    {
+        $buscar = $request->input('buscar');
+
+        $query = Productos::query();
+
+
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'LIKE', "%{$buscar}%")
+                    ->orWhere('descripcion', 'LIKE', "%{$buscar}%")
+                    ->orWhere('idproducto', $buscar);
+            });
+        }
+
+        $productos = $query->orderBy('nombre', 'asc')->paginate(10);
+
+        // Opción 1: devolver solo la tabla renderizada
+        return view('productos._tabla', compact('productos'))->render();
+
+        // Opción 2: devolver JSON (si quieres montar la tabla por JS)
+        // return response()->json($productos);
+    }
+
 }

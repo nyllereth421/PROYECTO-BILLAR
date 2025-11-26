@@ -152,10 +152,18 @@ class ComprasController extends Controller
             DB::commit();
             return redirect()->route('compras.index')
                 ->with('success', 'Compra eliminada correctamente');
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollback();
+            if ($e->getCode() == '23000') {
+                return redirect()->back()
+                    ->with('error', 'No se puede eliminar esta compra porque tiene registros asociados.');
+            }
+            return redirect()->back()
+                ->with('error', 'Error al eliminar la compra.');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()
-                ->with('error', 'Error al eliminar la compra: ' . $e->getMessage());
+                ->with('error', 'Error inesperado al eliminar la compra.');
         }
     }
 }

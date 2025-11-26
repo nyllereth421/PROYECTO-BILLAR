@@ -1031,4 +1031,6 @@
         aplicarFiltros();
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

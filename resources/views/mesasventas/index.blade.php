@@ -246,7 +246,8 @@
                                                         <button type="submit" 
                                                                 class="btn btn-sm btn-outline-danger"
                                                                 title="Eliminar cantidad"
-                                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta cantidad?');">
+                                                                data-confirm="¿Deseas eliminar esta cantidad?"
+                                                                data-action-type="delete">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </button>
                                                     </form>
@@ -802,4 +803,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 </script>
+
+@include('components.sweetalert-global')
 @stop
