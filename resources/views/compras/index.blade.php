@@ -140,20 +140,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('compras.edit', $compra) }}" class="btn btn-warning" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            <form action="{{ route('compras.destroy', $compra) }}"
-                                                  method="POST"
-                                                  style="display:inline;"
-                                                  data-confirm="¿Deseas eliminar esta compra?"
-                                                  data-action-type="delete">
-                                                @csrf
-                                                <button type="submit" class="btn btn-danger" title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            
 
                                         </div>
                                     </td>
