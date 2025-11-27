@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas Estandarizadas - Preview</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .alerts-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* ALERTAS */
+        .alert {
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            animation: slideIn 0.3s ease-in-out;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-icon {
+            font-size: 1.5em;
+            flex-shrink: 0;
+            padding-top: 2px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+
+        .alert-message {
+            font-size: 0.95em;
+            margin: 0;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        /* ALERT SUCCESS */
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-success .alert-icon {
+            color: #28a745;
+        }
+
+        /* ALERT ERROR */
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-error .alert-icon {
+            color: #dc3545;
+        }
+
+        /* ALERT WARNING */
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-warning .alert-icon {
+            color: #ffc107;
+        }
+
+        /* ALERT INFO */
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-info .alert-icon {
+            color: #17a2b8;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        .features {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .features h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .features li:last-child {
+            border-bottom: none;
+        }
+
+        .features li::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎨 Alertas Estandarizadas</h1>
+            <p>Sistema de alertas consistente y reutilizable</p>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alerts-section">
+            <h2 class="section-title">Ejemplos de Alertas</h2>
+
+            <!-- Success Alert -->
+            <div class="alert alert-success">
+                <div class="alert-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">¡Éxito!</div>
+                    <p class="alert-message">Registro creado exitosamente.</p>
+                </div>
+                <button class="alert-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Error Alert -->
+            <div class="alert alert-error">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">¡Error!</div>
+                    <p class="alert-message">Ha ocurrido un error al procesar tu solicitud.</p>
+                </div>
+                <button class="alert-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Warning Alert -->
+            <div class="alert alert-warning">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">¡Advertencia!</div>
+                    <p class="alert-message">Por favor revisa los datos antes de continuar.</p>
+                </div>
+                <button class="alert-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Info Alert -->
+            <div class="alert alert-info">
+                <div class="alert-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Información</div>
+                    <p class="alert-message">Operación completada exitosamente.</p>
+                </div>
+                <button class="alert-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Código de Uso -->
+            <div class="code-block">
+                &lt;x-session-alerts /&gt;
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <h2>✨ Características</h2>
+            <ul>
+                <li>Diseño consistente en toda la aplicación</li>
+                <li>Componentes reutilizables y mantenibles</li>
+                <li>Soporte para 4 tipos de alertas (success, error, warning, info)</li>
+                <li>Cierre automático para alertas de éxito</li>
+                <li>Iconos automáticos según el tipo</li>
+                <li>Botón cerrar personalizable</li>
+                <li>AlertHelper para controladores</li>
+                <li>Mensajes predefinidos estandarizados</li>
+                <li>Manejo automático de errores de validación</li>
+                <li>Animaciones suaves</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Proyecto PROYECTO-BILLAR • Noviembre 2025</p>
+        </div>
+    </div>
+</body>
+</html>

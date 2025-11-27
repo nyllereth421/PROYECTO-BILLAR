@@ -31,7 +31,7 @@
                         <i class="fas fa-form mr-2"></i> Formulario de Nuevo Usuario
                     </h3>
                 </div>
-                <form action="{{ route('users.store') }}" method="POST">
+                <form action="{{ route('users.store') }}" method="POST" data-confirm="¿Deseas crear este usuario?" data-action-type="create">
                     @csrf
                     <div class="card-body">
                         {{-- Mostrar errores --}}
@@ -277,4 +277,6 @@
         }
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

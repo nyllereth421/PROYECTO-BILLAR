@@ -19,40 +19,18 @@
         </div>
         <hr class="divider">
     </div>
-@stop
+@endsection
 
 @section('content')
 <div class="container-fluid">
-    {{-- Mostrar mensajes de éxito --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle mr-2"></i>
-            <strong>¡Éxito!</strong> {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    {{-- Mostrar errores --}}
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Errores encontrados:</strong>
-            <ul class="mb-0 mt-2">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
+    {{-- Alertas estandarizadas (usa el componente para mostrar session y errores) --}}
+    <x-session-alerts />
 
     <div class="row">
-        <!-- Tarjeta de Información del Usuario (Sidebar) -->
-        <div class="col-md-4 col-sm-12 mb-4">
-            <div class="card card-outline card-primary">
+        <!-- Perfil del Usuario (Columna izquierda) -->
+        <div class="col-md-4 col-sm-12">
+            <!-- Perfil -->
+            <div class="card card-outline card-primary mb-4">
                 <div class="card-body box-profile text-center">
                     <!-- Avatar con badge de estado -->
                     <div class="profile-user-img mb-4 position-relative d-inline-block w-100">
@@ -73,7 +51,7 @@
                     </div>
 
                     <!-- Nombre y Tipo -->
-                    <h3 class="profile-username mb-2 mt-3">
+                    <h3 class="profile-username mb-2 mt-3 text-dark">
                         {{ auth()->user()->name }} {{ auth()->user()->apellidos }}
                     </h3>
 
@@ -126,19 +104,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Consejo de seguridad -->
-            <div class="card card-outline card-warning mt-3">
-                <div class="card-body p-3">
-                    <h6 class="mb-2"><i class="fas fa-shield-alt mr-2"></i> <strong>Seguridad</strong></h6>
-                    <small class="text-muted">
-                        Mantén tu información actualizada y cambia tu contraseña regularmente.
-                    </small>
-                </div>
-            </div>
         </div>
 
-        <!-- Contenido Principal -->
+        <!-- Contenido Principal (Columna derecha) -->
         <div class="col-md-8 col-sm-12">
             <!-- Información Personal -->
             <div class="card card-outline card-info mb-4">
@@ -260,7 +228,7 @@
 
 <!-- ===== MODAL: EDITAR PERFIL ===== -->
 <div class="modal fade" id="editarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="{{ route('profile.updateProfile') }}" method="POST">
                 @csrf
@@ -275,8 +243,8 @@
                     </button>
                 </div>
 
-                <div class="modal-body">
-                    <div class="row">
+                <div class="modal-body p-3">
+                    <div class="row g-2">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="name"><i class="fas fa-user mr-2 text-primary"></i> <strong>Nombre</strong> *</label>
@@ -490,7 +458,7 @@
         <div class="modal-content border-danger">
             <form id="deleteAccountForm" action="{{ route('profile.destroy') }}" method="POST">
                 @csrf
-                @method('DELETE')
+               
                 
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title" id="eliminarCuentaModalLabel">
@@ -574,7 +542,7 @@
 <div class="modal fade" id="eliminarCuentaModal" tabindex="-1" role="dialog" aria-labelledby="eliminarCuentaModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content border-danger">
-            <form action="{{ route('profile.destroy') }}" method="POST" id="eliminarCuentaForm">
+            <form action="{{ route('profile.destroy') }}" method="POST" id="eliminarCuentaForm" data-confirm="¿Deseas eliminar permanentemente tu cuenta? Esta acción no se puede deshacer." data-action-type="delete">
                 @csrf
                 @method('DELETE')
                 
@@ -638,7 +606,7 @@
 
 <!-- ===== MODAL: CAMBIAR AVATAR ===== -->
 <div class="modal fade" id="cambiarAvatarModal" tabindex="-1" role="dialog" aria-labelledby="cambiarAvatarModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
                 <h5 class="modal-title" id="cambiarAvatarModalLabel">
@@ -649,9 +617,9 @@
                 </button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body p-3">
                 <!-- Nav tabs -->
-                <ul class="nav nav-tabs mb-3" id="avatarTabs" role="tablist">
+                <ul class="nav nav-tabs mb-2" id="avatarTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="colors-tab" data-toggle="tab" href="#colors-content" role="tab" aria-controls="colors-content" aria-selected="true">
                             <i class="fas fa-palette mr-2"></i> Colores
@@ -668,7 +636,7 @@
                 <div class="tab-content" id="avatarTabContent">
                     <!-- Colores Tab -->
                     <div class="tab-pane fade show active" id="colors-content" role="tabpanel" aria-labelledby="colors-tab">
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-md-6">
                                 <h6 class="mb-3"><i class="fas fa-palette mr-2"></i> <strong>Selecciona un Color</strong></h6>
                                 <div class="list-group mb-3" id="avatarList">
@@ -736,7 +704,7 @@
 
                     <!-- Upload Tab -->
                     <div class="tab-pane fade" id="upload-content" role="tabpanel" aria-labelledby="upload-tab">
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-md-6">
                                 <h6 class="mb-3"><i class="fas fa-upload mr-2"></i> <strong>Subir Imagen</strong></h6>
                                 <form action="{{ route('profile.uploadAvatarImage') }}" method="POST" enctype="multipart/form-data" id="uploadAvatarForm">
@@ -808,7 +776,7 @@
     </div>
 </div>
 
-@stop
+@endsection
 
 @section('css')
 <style>
@@ -859,9 +827,7 @@
         font-weight: bold;
     }
 
-    .box-profile {
-        background-color: #fff;
-    }
+    
 
     .list-group-item {
         border: none;
@@ -931,7 +897,7 @@
         background-color: #f8f9fa;
     }
 </style>
-@stop
+@endsection
 
 @section('js')
 <script>
@@ -1034,4 +1000,4 @@
         }
     });
 </script>
-@stop
+@endsection

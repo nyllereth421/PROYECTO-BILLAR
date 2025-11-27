@@ -33,7 +33,7 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('compras.store') }}" id="formCompra">
+    <form method="POST" action="{{ route('compras.store') }}" id="formCompra" data-confirm="¿Deseas crear esta compra?" data-action-type="create">
         @csrf
 
         {{-- SELECCIÓN DE PROVEEDOR --}}
@@ -278,4 +278,6 @@ function agregarProducto(id, nombre) {
 // Inicializar tabla vacía
 actualizarTabla();
 </script>
+
+@include('components.sweetalert-global')
 @endsection

@@ -479,4 +479,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(actualizarProductosRegistrados, 10000);
 });
 </script>
+
+@include('components.sweetalert-global')
 @stop

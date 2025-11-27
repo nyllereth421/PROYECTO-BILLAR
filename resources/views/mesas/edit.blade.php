@@ -60,9 +60,9 @@
                     </div>
                 </div>
 
-                <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST" id="formEditarMesa">
+                <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST" id="formEditarMesa" data-confirm="¿Deseas actualizar esta mesa?" data-action-type="edit">
                     @csrf
-                    @method('PUT')
+                    
 
                     <div class="card-body">
 
@@ -94,23 +94,6 @@
                                 <option value="consumo" {{ old('tipo', $mesa->tipo) == 'consumo' ? 'selected' : '' }}>Consumo</option>
                             </select>
                             @error('tipo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Estado --}}
-                        <div class="form-group">
-                            <label for="estado" class="font-weight-bold">
-                                <i class="fas fa-toggle-on text-success"></i> Estado
-                                <span class="text-danger">*</span>
-                            </label>
-                            <select id="estado" name="estado" class="form-control @error('estado') is-invalid @enderror" required>
-                                <option value="">Seleccione...</option>
-                                <option value="disponible" {{ old('estado', $mesa->estado) == 'disponible' ? 'selected' : '' }}>Disponible</option>
-                                <option value="ocupada" {{ old('estado', $mesa->estado) == 'ocupada' ? 'selected' : '' }}>Ocupada</option>
-                                <option value="reservada" {{ old('estado', $mesa->estado) == 'reservada' ? 'selected' : '' }}>Reservada</option>
-                            </select>
-                            @error('estado')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -154,7 +137,6 @@
 @stop
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $('#formEditarMesa').on('submit', function(e){
         e.preventDefault();
@@ -177,4 +159,6 @@
         });
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

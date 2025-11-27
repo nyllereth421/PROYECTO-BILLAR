@@ -9,6 +9,7 @@ use App\Http\Middleware\CheckEmployeeAccess;
 use App\Http\Middleware\CheckAdminRegistration;
 use App\Http\Middleware\CheckAdminOnly;
 use App\Http\Middleware\CheckUserActive;
+use App\Http\Middleware\ConvertToSweetAlert;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => CheckAdminOnly::class,
             'check-user-active' => CheckUserActive::class,
         ]);
+        
+        // Middleware global para convertir alertas tradicionales a SweetAlert
+        $middleware->append(ConvertToSweetAlert::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

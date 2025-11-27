@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('productos.store') }}" method="POST" id="formProducto">
+                <form action="{{ route('productos.store') }}" method="POST" id="formProducto" data-confirm="¿Deseas crear este producto?" data-action-type="create">
                     @csrf
 
                     <div class="card-body">
@@ -222,5 +222,5 @@
     });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@include('components.sweetalert-global')
 @stop

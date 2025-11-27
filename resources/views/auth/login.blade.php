@@ -114,10 +114,35 @@
                 <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
                     Contraseña
                 </label>
-                <input type="password" id="password" name="password"
-                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                           focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                       placeholder="••••••••" required>
+                <div class="relative">
+                    <input type="password" id="password" name="password"
+                           class="w-full px-4 py-3 pr-10 bg-gray-700 border border-gray-600 rounded-lg text-white
+                      focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                           placeholder="••••••••" required>
+
+                    <!-- Botón ojito -->
+                    <button type="button"
+                            id="togglePassword"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-200">
+                        <!-- Ícono ojo (visible) -->
+                        <svg id="icon-eye" xmlns="http://www.w3.org/2000/svg"
+                             class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M2.46 12.12C3.73 7.94 7.52 5 12 5c4.48 0 8.27 2.94 9.54 7.12a1.12 1.12 0 010 .76C20.27 16.06 16.48 19 12 19c-4.48 0-8.27-2.94-9.54-7.12a1.12 1.12 0 010-.76z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+
+                        <!-- Ícono ojo tachado (oculto por defecto) -->
+                        <svg id="icon-eye-off" xmlns="http://www.w3.org/2000/svg"
+                             class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M3 3l18 18M10.58 10.59A3 3 0 0113.41 13.4M9.88 4.13A8.94 8.94 0 0112 4c4.48 0 8.27 2.94 9.54 7.12a1.12 1.12 0 010 .76 9.01 9.01 0 01-4.03 4.9M6.1 6.1A8.97 8.97 0 002.46 12.12a1.12 1.12 0 000 .76A9.01 9.01 0 007.5 17.78" />
+                        </svg>
+                    </button>
+                </div>
+
             </div>
 
             <!-- Opciones -->
@@ -166,17 +191,17 @@
     loginMethodTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const method = this.dataset.method;
-            
+
             // Remover estilos activos de todos los tabs
             loginMethodTabs.forEach(t => {
                 t.classList.remove('bg-orange-600', 'text-white');
                 t.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
             });
-            
+
             // Activar el tab clickeado
             this.classList.add('bg-orange-600', 'text-white');
             this.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-gray-600');
-            
+
             // Mostrar/ocultar campos
             if (method === 'email') {
                 emailField.classList.remove('hidden');
@@ -205,6 +230,32 @@
         buttonText.classList.add('hidden');
         buttonLoader.classList.remove('hidden');
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+        const iconEye = document.getElementById('icon-eye');
+        const iconEyeOff = document.getElementById('icon-eye-off');
+
+        if (passwordInput && toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const showing = passwordInput.type === 'text';
+                passwordInput.type = showing ? 'password' : 'text';
+
+                // Alternar iconos
+                if (showing) {
+                    iconEye.classList.remove('hidden');
+                    iconEyeOff.classList.add('hidden');
+                } else {
+                    iconEye.classList.add('hidden');
+                    iconEyeOff.classList.remove('hidden');
+                }
+            });
+        }
+    });
+
+
+
 </script>
 
 </body>
