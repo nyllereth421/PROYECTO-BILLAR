@@ -48,9 +48,9 @@
                     </div>
                 </div>
                 
-                <form action="{{ route('proveedores.update', $proveedor->idproveedor) }}" method="POST">
+                <form action="{{ route('proveedores.update', $proveedor->idproveedor) }}" method="POST" data-confirm="¿Deseas actualizar este proveedor?" data-action-type="edit">
                     @csrf
-                    @method('PUT')
+                    
                     
                     <div class="card-body">
                         
@@ -99,7 +99,7 @@
                                         <i class="fas fa-user-tie"></i>
                                     </span>
                                 </div>
-                                <<input type="text" 
+                                <input type="text" 
                                        name="nombre" 
                                        id="nombre" 
                                        class="form-control @error('nombre') is-invalid @enderror" 
@@ -299,17 +299,10 @@
             }
         });
 
-        // Confirmación antes de enviar el formulario
-        $('form').on('submit', function(e) {
-            const nombre = $('#nombre').val();
-            const confirmacion = confirm(`¿Está seguro de actualizar los datos del proveedor "${nombre}"?`);
-            
-            if (!confirmacion) {
-                e.preventDefault();
-            } else {
-                // Deshabilitar botón para evitar doble envío
-                $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
-            }
+        // El formulario usa data-confirm que es manejado por sweetalert-confirmations.js
+        // Deshabilitar botón después de confirmar
+        $('form').on('submit', function() {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
         });
 
         // Tooltip para campos
@@ -322,4 +315,6 @@
 
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

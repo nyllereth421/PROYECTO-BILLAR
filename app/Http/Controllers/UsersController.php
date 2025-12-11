@@ -109,9 +109,16 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
+        try {
+            $user->delete();
+            return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == '23000') {
+                return redirect()->route('users.index')->with('error', 
+                    'No se puede eliminar este usuario porque tiene registros asociados en el sistema.');
+            }
+            return redirect()->route('users.index')->with('error', 'Error al eliminar el usuario.');
+        }
     }
 
     /**

@@ -123,6 +123,7 @@ Route::middleware(['auth', 'active', 'check-user-active'])->group(function () {
         Route::get('/productos/{idproducto}/edit', [ProductosController::class, 'edit'])->name('productos.edit');
         Route::post('/productos/{idproducto}/update', [ProductosController::class, 'update'])->name('productos.update');
         Route::post('/productos/{idproducto}/destroy', [ProductosController::class, 'destroy'])->name('productos.destroy');
+        Route::get('/productos/buscar', [ProductosController::class, 'buscar'])->name('productos.buscar');
 
         // ---------------------- INVENTARIO ----------------------
         Route::get('/inventario/index', [InventarioController::class, 'index'])->name('inventario.index');

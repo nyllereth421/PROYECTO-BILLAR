@@ -8,11 +8,13 @@
             <div class="col">
                 <h1 class="text-dark"><i class="fas fa-receipt mr-2"></i> Detalle de Compra #{{ $compra->id }}</h1>
             </div>
-            <div class="col-auto">
-                <a href="{{ route('compras.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-2"></i> Volver
-                </a>
-            </div>
+            {{-- ACCIONES --}}
+    <div class="mt-4">
+        
+        <a href="{{ route('compras.index') }}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Volver
+        </a>
+    </div>
         </div>
     </div>
 @stop
@@ -96,80 +98,85 @@
         </div>
     </div>
 
-    {{-- DETALLES DE COMPRA --}}
-    <div class="card card-outline card-success shadow-lg mb-4">
-        <div class="card-header bg-success">
-            <h3 class="card-title"><i class="fas fa-box mr-2"></i> Detalles de la Compra</h3>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="bg-light">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Precio Venta</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($compra->detalles as $detalle)
-                            <tr>
-                                <td>{{ $detalle->producto->nombre }}</td>
-                                <td><span class="badge badge-info">{{ $detalle->cantidad }}</span></td>
-                                <td>${{ number_format($detalle->precio_compra, 2, ',', '.') }}</td>
-                                <td>${{ $detalle->precio_venta ? number_format($detalle->precio_venta, 2, ',', '.') : 'N/A' }}</td>
-                                <td><strong>${{ number_format($detalle->subtotal, 2, ',', '.') }}</strong></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    {{-- DETALLES + RESUMEN EN UNA SOLA FILA --}}
+<div class="row">
 
-    {{-- RESUMEN FINANCIERO --}}
-    <div class="row">
-        <div class="col-md-4 ml-auto">
-            <div class="card card-outline card-warning shadow-lg">
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-8">
-                            <h6 class="text-muted">Cantidad de Ítems</h6>
-                        </div>
-                        <div class="col-4 text-right">
-                            <h5>{{ $compra->detalles->count() }}</h5>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-8">
-                            <h6 class="text-muted">Costo Total</h6>
-                        </div>
-                        <div class="col-4 text-right">
-                            <h4 class="text-success">${{ number_format($compra->total, 2, ',', '.') }}</h4>
-                        </div>
-                    </div>
+    {{-- DETALLES DE LA COMPRA (OCUPA 8 COLUMNAS) --}}
+    <div class="col-md-8">
+        <div class="card card-outline card-success shadow-lg mb-4 rounded-4">
+            <div class="card-header bg-success text-white rounded-top">
+                <h3 class="card-title fw-bold"><i class="fas fa-box mr-2"></i> Detalles de la Compra</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive rounded-bottom">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr class="text-center">
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Precio Venta</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($compra->detalles as $detalle)
+                            <tr class="text-center">
+                                <td class="fw-bold text-dark">{{ $detalle->producto->nombre }}</td>
+                                <td>
+                                    <span class="badge bg-info text-white rounded-pill px-3 py-2 shadow-sm">
+                                        {{ $detalle->cantidad }}
+                                    </span>
+                                </td>
+                                <td class="text-success fw-bold">
+                                    ${{ number_format($detalle->precio_compra, 2, ',', '.') }}
+                                </td>
+                                <td class="text-primary fw-bold">
+                                    {{ $detalle->precio_venta 
+                                        ? '$' . number_format($detalle->precio_venta, 2, ',', '.') 
+                                        : 'N/A' }}
+                                </td>
+                                <td class="fw-bold text-dark">
+                                    ${{ number_format($detalle->subtotal, 2, ',', '.') }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ACCIONES --}}
-    <div class="mt-4">
-        <a href="{{ route('compras.edit', $compra) }}" class="btn btn-warning btn-lg">
-            <i class="fas fa-edit mr-2"></i> Editar
-        </a>
-        <form action="{{ route('compras.destroy', $compra) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta compra?')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger btn-lg">
-                <i class="fas fa-trash mr-2"></i> Eliminar
-            </button>
-        </form>
-        <a href="{{ route('compras.index') }}" class="btn btn-secondary btn-lg">
-            <i class="fas fa-arrow-left mr-2"></i> Volver
-        </a>
+    {{-- RESUMEN (OCUPA 4 COLUMNAS) --}}
+    <div class="col-md-4">
+        <div class="card card-outline card-warning shadow-lg rounded-4">
+            <div class="card-header bg-warning text-dark fw-bold rounded-top">
+                <i class="fas fa-chart-pie mr-2"></i> Resumen
+            </div>
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Cantidad de Ítems</span>
+                    <h5 class="fw-bold">{{ $compra->detalles->count() }}</h5>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Costo Total</span>
+                    <h4 class="text-success fw-bold">
+                        ${{ number_format($compra->total, 2, ',', '.') }}
+                    </h4>
+                </div>
+
+            </div>
+        </div>
     </div>
+
 </div>
+
+    
+
 @endsection
+@section('js')
+@include('components.sweetalert-global')
+@stop

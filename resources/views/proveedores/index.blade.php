@@ -28,21 +28,8 @@
 @section('content')
 <div class="container-fluid">
 
-    {{-- ALERTA DE ÉXITO MEJORADA --}}
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-check-circle fa-2x mr-3"></i>
-            <div>
-                <h5 class="alert-heading mb-1">¡Operación Exitosa!</h5>
-                <p class="mb-0">{{ session('success') }}</p>
-            </div>
-        </div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
+    
+
     {{-- BARRA DE ACCIONES --}}
     <div class="card border-0 shadow-lg mb-4">
         <div class="card-body py-3">
@@ -107,20 +94,20 @@
                 <table class="table table-hover mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th style="width: 5%" class="text-center">
+                            <th style="width: 5%" class="text-center text-white">
                                 <i class="fas fa-hashtag text-primary"></i>
                             </th>
-                            <th style="width: 25%">
-                                <i class="fas fa-building text-info mr-2"></i>Nombre
+                            <th style="width: 25%" class="text-center text-white">
+                                <i class="fas fa-building text-info mr-2"></i> Nombre
                             </th>
-                            <th style="width: 20%">
-                                <i class="fas fa-phone text-success mr-2"></i>Contacto
+                            <th style="width: 20%" class="text-center text-white">
+                                <i class="fas fa-phone text-success mr-2"></i> Contacto
                             </th>
-                            <th style="width: 30%">
-                                <i class="fas fa-map-marker-alt text-danger mr-2"></i>Dirección
+                            <th style="width: 30%"class="text-center text-white">
+                                <i class="fas fa-map-marker-alt text-danger mr-2"></i> Dirección
                             </th>
-                            <th style="width: 20%" class="text-center">
-                                <i class="fas fa-cogs text-warning mr-2"></i>Acciones
+                            <th style="width: 20%" class="text-center text-white">
+                                <i class="fas fa-cogs text-warning mr-2"></i> Acciones
                             </th>
                         </tr>
                     </thead>
@@ -132,12 +119,12 @@
                                     {{ $proveedor->idproveedor }}
                                 </span>
                             </td>
-                            <td class="align-middle">
+                            <td class="align-middle ">
                                 <div class="d-flex align-items-center">
                                     <div class="proveedor-avatar">
                                         <i class="fas fa-store"></i>
                                     </div>
-                                    <div class="ml-3">
+                                    <div class="ml-3 text">
                                         <strong class="text-dark">{{ $proveedor->nombre }}</strong>
                                         <br>
                                         <small class="text-muted">
@@ -179,13 +166,16 @@
                                     </a>
                                     
                                     {{-- Botón Eliminar --}}
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-sm btn-danger shadow-sm" 
-                                        onclick="alertaEliminarProveedor('{{ $proveedor->nombre }}')" 
-                                        title="Eliminar">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                    <form action="{{ route('proveedores.destroy', $proveedor->idproveedor) }}" method="POST" style="display:inline;" data-confirm="¿Deseas eliminar el proveedor '{{ $proveedor->nombre }}'? Esta acción no se puede deshacer." data-action-type="delete">
+                                        @csrf
+                                       
+                                        <button 
+                                            type="submit" 
+                                            class="btn btn-sm btn-danger shadow-sm" 
+                                            title="Eliminar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -646,57 +636,6 @@
     console.log('Vista de proveedores mejorada lista 🚀');
 
     /**
-     * Función que muestra una alerta personalizada al intentar eliminar un proveedor
-     */
-    function alertaEliminarProveedor(nombre) {
-        // Crear modal personalizado
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
-        overlay.style.display = 'flex';
-        overlay.innerHTML = `
-            <div class="modal-container">
-                <div class="modal-content-custom">
-                    <div class="modal-header-custom bg-gradient-danger text-white" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;">
-                        <h5 class="modal-title-custom">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            No se puede eliminar
-                        </h5>
-                        <button type="button" class="modal-close-btn" onclick="this.closest('.modal-overlay').remove()">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body-custom text-center py-4">
-                        <i class="fas fa-ban fa-4x text-danger mb-3"></i>
-                        <h4 class="mb-3 text-white">El proveedor "${nombre}" no puede ser eliminado</h4>
-                        <p class="mb-4" style="color: #adb5bd;">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            Este proveedor tiene registros asociados (productos o compras) en el sistema.
-                        </p>
-                        <div class="alert alert-warning border-0" style="background: rgba(255, 193, 7, 0.2); color: #ffc107;">
-                            <i class="fas fa-lightbulb mr-2"></i>
-                            <strong>Sugerencia:</strong> Debe eliminar primero todos los registros asociados antes de poder eliminar este proveedor.
-                        </div>
-                    </div>
-                    <div class="modal-footer-custom">
-                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">
-                            <i class="fas fa-times mr-2"></i>Entendido
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(overlay);
-        
-        // Cerrar al hacer clic fuera
-        overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) {
-                overlay.remove();
-            }
-        });
-    }
-
-    /**
      * Función para mostrar detalles del proveedor
      */
     function verDetallesProveedor(nombre, contacto, direccion) {
@@ -725,4 +664,6 @@
         }
     });
 </script>
+
+@include('components.sweetalert-global')
 @stop

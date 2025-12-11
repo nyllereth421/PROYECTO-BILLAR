@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="container">
-    <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST">
+    <form action="{{ route('mesas.update', $mesa->idmesa) }}" method="POST" data-confirm="¿Deseas actualizar esta mesa?" data-action-type="edit">
         @csrf
     
         <div class="form-group">
@@ -40,4 +40,7 @@
         <a href="{{ route('mesas.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+@section('js')
+@include('components.sweetalert-global')
 @stop

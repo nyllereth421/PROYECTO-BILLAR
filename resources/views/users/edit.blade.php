@@ -31,7 +31,7 @@
                         <i class="fas fa-form mr-2"></i> Formulario de Edición
                     </h3>
                 </div>
-                <form action="{{ route('users.update', $user) }}" method="POST">
+                <form action="{{ route('users.update', $user) }}" method="POST" data-confirm="¿Deseas actualizar este usuario?" data-action-type="edit">
                     @csrf
                     @method('PUT')
                     <div class="card-body">
@@ -212,4 +212,7 @@
         font-size: 0.875rem;
     }
 </style>
+
+@section('js')
+@include('components.sweetalert-global')
 @stop

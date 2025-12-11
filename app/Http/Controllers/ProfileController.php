@@ -103,20 +103,24 @@ $user->update($validatedData);
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+        try {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
 
-        $user = $request->user();
+            $user = $request->user();
 
-        Auth::logout();
+            Auth::logout();
 
-        $user->delete();
+            $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+            return Redirect::to('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al eliminar la cuenta: ' . $e->getMessage());
+        }
     }
 
     /**

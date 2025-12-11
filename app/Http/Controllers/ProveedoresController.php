@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\proveedores;
+use App\Models\Proveedores;
 use Illuminate\Http\Request;
-
+use App\Helpers\AlertHelper;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreProveedorRequest;
+use App\Http\Requests\UpdateProveedorRequest;
 
 class ProveedoresController extends Controller
 {
@@ -32,17 +35,20 @@ class ProveedoresController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProveedorRequest $request)
     {
-        $validatedData = $request->validate([
-            'idproveedor' => 'required|unique:proveedores,idproveedor|numeric',
-            'nombre' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:100',
-            'contacto' => 'required|numeric|digits_between:7,15',
-            'direccion' => 'required|string|max:255',
-        ]);
-
-        proveedores::create($validatedData);
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor creado correctamente.');
+        try {
+            Proveedores::create($request->validated());
+            AlertHelper::success('Proveedor creado exitosamente.');
+            return redirect()->route('proveedores.index');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                AlertHelper::error('El proveedor ya existe.');
+            } else {
+                AlertHelper::error('Error al crear el proveedor: ' . $e->getMessage());
+            }
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
@@ -66,18 +72,41 @@ class ProveedoresController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $idproveedor)
+    public function update(UpdateProveedorRequest $request, $id)
     {
-        $proveedor = proveedores::findOrFail($idproveedor);
-        
-        $validatedData = $request->validate([
-            'nombre' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:100',
-            'contacto' => 'required|numeric|digits_between:7,15',
-            'direccion' => 'required|string|max:255',
-        ]);
+        try {
+            $proveedor = Proveedores::findOrFail($id);
+            $proveedor->update($request->validated());
+            AlertHelper::success('Proveedor actualizado exitosamente.');
+            return redirect()->route('proveedores.index');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1062) {
+                AlertHelper::error('El nombre del proveedor ya existe.');
+            } else {
+                AlertHelper::error('Error al actualizar el proveedor: ' . $e->getMessage());
+            }
+            return redirect()->back()->withInput();
+        }
+    }
 
-        $proveedor->update($validatedData);
+    public function destroy($id)
+    {
+        try {
+            $proveedor = Proveedores::findOrFail($id);
+            $proveedor->delete();
 
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado exitosamente.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Capturar error de integridad referencial (foreign key)
+            if ($e->getCode() == '23000') {
+                return redirect()->route('proveedores.index')->with('error', 
+                    'No se puede eliminar este proveedor porque tiene registros asociados (compras o productos). Elimina primero esos registros.');
+            }
+            // Otros errores de base de datos
+            return redirect()->route('proveedores.index')->with('error', 'Error al eliminar el proveedor: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // Otros errores generales
+            return redirect()->route('proveedores.index')->with('error', 'Error inesperado: ' . $e->getMessage());
+        }
     }
 }
