@@ -133,6 +133,9 @@
 
 
 </div>
+<footer class="text-center mt-4 mb-2">
+    realizado por &copy; <strong >Nyllereth Jimenez & Anderson Roa</strong> <br> Todos los derechos reservados.
+</footer>
 @stop
 
 @section('css')

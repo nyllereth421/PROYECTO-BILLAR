@@ -161,10 +161,7 @@
                         </div>
                     </div>
 
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-lightbulb mr-2"></i>
-                        <small><strong>Tip:</strong> Haz clic en "Editar Información" para modificar tu perfil.</small>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -189,10 +186,21 @@
                         </button>
                     </div>
 
-                    <div class="alert alert-warning mt-3">
-                        <i class="fas fa-shield-alt mr-2"></i>
-                        <small><strong>Recomendación:</strong> Cambia tu contraseña regularmente y utiliza contraseñas fuertes.</small>
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: '⚠️ Recomendación',
+                                text: 'Cambia tu contraseña regularmente y utiliza contraseñas fuertes.',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#ffc107',
+                                background: 'linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%)',
+                                iconColor: '#ffc107',
+                                titleColor: '#856404',
+                                
+                            });
+                        }, { once: true });
+                    </script>
                 </div>
             </div>
 
@@ -216,10 +224,23 @@
                         </button>
                     </div>
 
-                    <div class="alert alert-danger mt-3">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        <small><strong>Advertencia:</strong> No podemos recuperar tu cuenta una vez eliminada.</small>
-                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: '🚨 Advertencia',
+                                text: 'No podemos recuperar tu cuenta una vez eliminada.',
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#dc3545',
+                                background: 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                                iconColor: '#dc3545',
+                                titleColor: '#721c24',
+                                customClass: {
+                                    popup: 'swal-alert-popup swal-danger-popup'
+                                }
+                            });
+                        }, { once: true });
+                    </script>
                 </div>
             </div>
         </div>
@@ -529,7 +550,7 @@
 
                 <div class="modal-footer bg-light">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás completamente seguro? Esta acción es irreversible.')">
+                    <button type="button" class="btn btn-danger btn-eliminar-cuenta" data-form-id="deleteAccountForm">
                         <i class="fas fa-trash-alt mr-2"></i> Sí, Eliminar Mi Cuenta
                     </button>
                 </div>
@@ -900,6 +921,8 @@
 @endsection
 
 @section('js')
+
+   
 <script>
     // Función para alternar visibilidad de contraseña
     function togglePassword(fieldId) {
@@ -998,6 +1021,33 @@
         if (typeof $ !== 'undefined') {
             $('[data-toggle="tooltip"]').tooltip();
         }
+
+        // Manejar eliminación de cuenta con SweetAlert2
+        document.querySelector('.btn-eliminar-cuenta').addEventListener('click', function(e) {
+            e.preventDefault();
+            const formId = this.getAttribute('data-form-id');
+            
+            Swal.fire({
+                icon: 'warning',
+                title: '🚨 Confirmar Eliminación',
+                html: '<strong>¿Estás completamente seguro?</strong><br><br>Esta acción es <strong style="color: #dc3545;">irreversible</strong> y eliminará permanentemente tu cuenta y todos tus datos.',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, Eliminar Mi Cuenta',
+                cancelButtonText: 'Cancelar',
+                background: 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                iconColor: '#dc3545',
+                titleColor: '#721c24',
+                customClass: {
+                    popup: 'swal-alert-popup swal-danger-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        });
     });
 </script>
 @endsection
